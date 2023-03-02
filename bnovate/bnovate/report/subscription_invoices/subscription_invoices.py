@@ -17,6 +17,8 @@ def get_columns():
         {'fieldname': 'sales_invoice', 'label': _('Invoice'), 'fieldtype': 'Link', 'options': 'Sales Invoice', 'width': 100},
         # {'fieldname': 'docstatus', 'label': _('Status'), 'fieldtype': 'Data', 'width': 100},
         {'fieldname': 'status', 'label': _('Status'), 'fieldtype': 'Data', 'width': 100},
+        {'fieldname': 'service_start_date', 'label': _('Start Date'), 'fieldtype': 'Date', 'width': 100},
+        {'fieldname': 'service_end_date', 'label': _('End Date'), 'fieldtype': 'Date', 'width': 100},
     ]
 
 
@@ -32,7 +34,9 @@ def get_data(filters):
         si.posting_date AS posting_date,
         si.name AS sales_invoice,
         si.docstatus AS docstatus,
-        si.status AS status
+        si.status AS status,
+        sii.service_start_date,
+        sii.service_end_date
     FROM `tabSales Invoice Item` sii
         JOIN `tabSales Invoice` si ON sii.parent = si.name
         JOIN `tabSubscription Service` ss ON ss.name = sii.subscription
