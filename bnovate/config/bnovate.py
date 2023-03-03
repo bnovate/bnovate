@@ -136,7 +136,7 @@ def get_data():
                         "type": "report",
                         "name": "Aggregate Invoicing",
                         "label": _("Aggregate Invoicing"),
-                        "doctype": "Subscription Service",
+                        "doctype": "Subscription Contract",
                         "is_query_report": True    
                    }                   
             ]

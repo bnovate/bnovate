@@ -106,31 +106,26 @@ ORDER BY
 
     print(sql_query)
     data = frappe.db.sql(sql_query, as_dict=True)
-    
-    week_colours = itertools.cycle(['black', '#6660A9', '#297045', '#CC5A2B'])
-    day_colours = itertools.cycle(['black', '#6660A9', '#297045', '#CC5A2B'])
-
-    
     last_week_num = ''
     last_day = ''
-    week_colour = next(week_colours)
-    day_colour = next(day_colours)
+    week_index = 0
+    day_index = 0
     
     for row in data:       
+        row['week_index'] = week_index
+        row['day_index'] = day_index
+
         if row['weeknum'] != last_week_num:
-            week_colour = next(week_colours)
+            week_index += 1
             last_week_num = row['weeknum']
-        row['weeknum'] = "<span style='color:{week_colour}!important;font-weight:bold;'>{weeknum}</span>".format(week_colour=week_colour, weeknum=row['weeknum'])
         
         if row['delivery_date'] != last_day:
-            day_colour = next(day_colours)
+            day_index += 1
             last_day = row['delivery_date']
-        row['ship_date'] = "<span style='color:{day_colour}!important;font-weight:bold;'>{delivery_date}</span>".format(day_colour=day_colour, delivery_date=row['delivery_date'].strftime('%d-%m-%Y'))
+        row['ship_date'] = row['delivery_date']
 
         if row['is_packed_item']:
             row['indent'] = 1
-            row['weeknum'] = ''
-            row['ship_date'] = ''
         else:
             row['indent'] = 0
             row['item_name'] = "<b>{name}</b>".format(name=row['item_name'])

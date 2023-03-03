@@ -14,7 +14,7 @@ frappe.query_reports["Subscription Invoices"] = {
             "fieldname": "subscription",
             "label": __("Subscription"),
             "fieldtype": "Link",
-            "options": "Subscription Service"
+            "options": "Subscription Contract"
         },
     ],
     formatter(value, row, col, data, default_formatter) {

@@ -12,7 +12,7 @@ def get_columns():
     return [
         {'fieldname': 'customer', 'label': _('Customer'), 'fieldtype': 'Link', 'options': 'Customer', 'width': 100},
         {'fieldname': 'customer_name', 'label': _('Customer name'), 'fieldtype': 'Data', 'width': 150},
-        {'fieldname': 'subscription', 'label': _('Subscription'), 'fieldtype': 'Link', 'options': 'Subscription Service', 'width': 100},
+        {'fieldname': 'subscription', 'label': _('Subscription'), 'fieldtype': 'Link', 'options': 'Subscription Contract', 'width': 100},
         {'fieldname': 'posting_date', 'label': _('Posting Date'), 'fieldtype': 'Date', 'width': 100},
         {'fieldname': 'sales_invoice', 'label': _('Invoice'), 'fieldtype': 'Link', 'options': 'Sales Invoice', 'width': 100},
         # {'fieldname': 'docstatus', 'label': _('Status'), 'fieldtype': 'Data', 'width': 100},
@@ -35,7 +35,7 @@ def get_data(filters):
         si.status AS status
     FROM `tabSales Invoice Item` sii
         JOIN `tabSales Invoice` si ON sii.parent = si.name
-        JOIN `tabSubscription Service` ss ON ss.name = sii.subscription
+        JOIN `tabSubscription Contract` ss ON ss.name = sii.subscription
         JOIN `tabCustomer` c on ss.customer = c.name
     WHERE ss.name LIKE "{subscription}"
         AND ss.customer LIKE "{customer}"

@@ -17,5 +17,26 @@ frappe.query_reports["Orders to Fulfill"] = {
 			"default": 0
 		}
 	],
-	initial_depth: 0
+	initial_depth: 0,
+	onload(report) {
+		this.report = report;
+		this.week_index = 1;
+		this.date_index = 1;
+		this.colours = ["light", "dark"];
+	},
+	formatter(value, row, col, data, default_formatter) {
+		if (col.fieldname === "weeknum") {
+			if (data.indent === 1) {
+				return ""
+			}
+			return `<span class="coloured ${this.colours[data.week_index % this.colours.length]}">${default_formatter(value, row, col, data)}</span>`
+		}
+		if (col.fieldname === "ship_date") {
+			if (data.indent === 1) {
+				return ""
+			}
+			return `<span class="coloured ${this.colours[data.day_index % this.colours.length]}">${default_formatter(value, row, col, data)}</span>`
+		}
+		return default_formatter(value, row, col, data);
+	}
 };

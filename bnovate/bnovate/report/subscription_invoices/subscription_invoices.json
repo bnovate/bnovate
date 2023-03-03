@@ -14,7 +14,7 @@
  "name": "Subscription Invoices",
  "owner": "Administrator",
  "prepared_report": 0,
- "ref_doctype": "Subscription Service",
+ "ref_doctype": "Subscription Contract",
  "report_name": "Subscription Invoices",
  "report_type": "Script Report",
  "roles": [

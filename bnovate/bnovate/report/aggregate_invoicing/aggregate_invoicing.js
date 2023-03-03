@@ -24,7 +24,7 @@ frappe.query_reports["Aggregate Invoicing"] = {
             "fieldname": "doctype",
             "label": __("Document Type"),
             "fieldtype": "Select",
-            "options": "\nDelivery Note\nSubscription Service"
+            "options": "\nDelivery Note\nSubscription Contract"
         },
         {
             "fieldname": "show_invoiced",

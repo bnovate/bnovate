@@ -1,11 +1,15 @@
 // Copyright (c) 2023, bNovate, ITST, libracore and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('Subscription Service', {
+frappe.ui.form.on('Subscription Contract', {
 	onload(frm) {
-		frm.set_query("item", "items", function () {
+		frm.set_query("item_code", "items", function () {
 			return { filters: { enable_deferred_revenue: true } }
 		});
+
+		if (!frm.doc.start_date) {
+			frm.doc.start_date = frappe.datetime.add_days(frappe.datetime.month_end(), 1);
+		}
 	},
 	refresh(frm) {
 		frm.add_custom_button(__("Create Invoice"), async function () {
@@ -15,19 +19,35 @@ frappe.ui.form.on('Subscription Service', {
 			await frappe.set_route("query-report", "Aggregate Invoicing");
 			frappe.query_report.refresh();
 		});
+	},
+	async before_cancel(frm) {
+		// Only allow cancellation if no invoices are open
+		const invoices = await frappe.db.get_list("Sales Invoice", { filters: { subscription: frm.doc.name } });
+		if (!invoices.length) {
+			return;
+		}
+		await new Promise((resolve, reject) => {
+			frappe.confirm("If invoices are already created, do not cancel. Change the subscription End Date instead.<br><br>Do you still want to try?",
+				() => { resolve(); },
+				() => {
+					frappe.validated = false;
+					resolve();
+				}
+			)
+		});
 	}
 });
 
-frappe.ui.form.on('Subscription Service Item', {
-	item(frm, cdt, cdn) {
+frappe.ui.form.on('Subscription Contract Item', {
+	item_code(frm, cdt, cdn) {
 		var d = locals[cdt][cdn];
-		if (d.item) {
+		if (d.item_code) {
 			frappe.call({
 				'method': "frappe.client.get_list",
 				'args': {
 					'doctype': "Item Price",
 					'filters': [
-						["item_code", "=", d.item],
+						["item_code", "=", d.item_code],
 						["selling", "=", 1]
 					],
 					'fields': ["price_list_rate"]
@@ -75,9 +95,9 @@ async function draw_report(frm) {
 // frappe.ui.form.on("Sales Invoice", {
 // 	before_load(frm) {
 // 		frm.dashboard.add_transactions({
-// 			'items': ['Subscription Service'],
+// 			'items': ['Subscription Contract'],
 // 			'label': 'Subscription',
 // 		})
-// 		frm.dashboard.data.internal_links['Subscription Service'] = ['items', 'subscription'];
+// 		frm.dashboard.data.internal_links['Subscription Contract'] = ['items', 'subscription'];
 // 	},
 // })
