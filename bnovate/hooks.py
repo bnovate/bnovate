@@ -21,16 +21,10 @@ fixtures = [
         "filters": [["role_name", "like", "IoT%"]],
     },
     {
-        "dt": "Custom DocPerm",
-        "filters": [["role", "like", "IoT%"]],
-    },
-    {
         "dt": "Custom Field",
         "filters": [["name", "in", [
             "Customer Group-taxes_and_charges_template", # Used to invoice subscriptions
             "Sales Invoice Item-subscription",
-            "Sales Invoice Item-start_date",
-            "Sales Invoice Item-end_date",
             "Delivery Note-payment_terms_template", # Used to match invoice to SO payment terms through DN
             "Work Order-time_per_unit", # Used for time tracking from Work Order Execution page
             "Work Order-total_time",
@@ -61,6 +55,7 @@ app_include_js = [ # Note to self: in case of changes, may need to run bench bui
 
 # include js in doctype views
 doctype_js = {
+    "Item" : ["public/js/item.js"],
     "Customer" : ["public/js/customer.js"],
     "Quotation" : ["public/js/quotation.js"],
     "Sales Order" : ["public/js/sales_order.js"],

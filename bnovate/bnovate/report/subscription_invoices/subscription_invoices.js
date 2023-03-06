@@ -19,7 +19,7 @@ frappe.query_reports["Subscription Invoices"] = {
             "fieldname": "subscription",
             "label": __("Subscription"),
             "fieldtype": "Link",
-            "options": "Subscription Service"
+            "options": "Subscription Contract"
         },
     ],
     async onload(report) {

@@ -29,7 +29,7 @@ def get_columns(filters):
         {'fieldname': 'reference', 'label': _('Reference'), 'fieldtype': 'Dynamic Link', 'options': 'dt', 'width': 100},
         {'fieldname': 'date', 'label': _('Start Billing / Ship Date'), 'fieldtype': 'Date', 'width': 80},
         {'fieldname': 'period_end', 'label': _('End Billing Period'), 'fieldtype': 'Date', 'width': 80},
-        {'fieldname': 'item', 'label': _('Item'), 'fieldtype': 'Link', 'options': 'Item', 'width': 200},
+        {'fieldname': 'item_code', 'label': _('Item'), 'fieldtype': 'Link', 'options': 'Item', 'width': 200},
         {'fieldname': 'qty', 'label': _('Qty'), 'fieldtype': 'Float', 'width': 50},
         {'fieldname': 'rate', 'label': _('Item Rate'), 'fieldtype': 'Currency', 'options': 'currency', 'width': 100},
         {'fieldname': 'amount', 'label': _('Total'), 'fieldtype': 'Currency', 'options': 'currency', 'width': 100},
@@ -139,7 +139,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
             dni.against_sales_order AS sales_order,
             dni.so_detail AS so_detail,
             dni.name AS detail,
-            dni.item_code AS item,
+            dni.item_code,
             dni.item_name AS item_name,
             NULL AS hours,
             dni.qty AS qty,
@@ -148,8 +148,7 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
             dni.amount AS amount,
             dn.discount_amount AS additional_discount,
             dn.currency AS currency,
-            dni.description AS remarks,
-            "" AS additional_remarks,
+            dni.description,
             dni.blanket_order_customer_reference,
             IFNULL(dns.shipping, 0) AS shipping,
             dn.payment_terms_template,
@@ -204,8 +203,8 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
                     WHEN 'Yearly' THEN LAST_DAY(DATE_ADD(ss.start_date, INTERVAL 11 MONTH))
                     WHEN 'Monthly' THEN LAST_DAY(ss.start_date)
                 END AS period_end
-            FROM `tabSubscription Service Item` ssi
-            JOIN `tabSubscription Service` ss on ssi.parent = ss.name
+            FROM `tabSubscription Contract Item` ssi
+            JOIN `tabSubscription Contract` ss on ssi.parent = ss.name
             UNION ALL
             SELECT
                 name,
@@ -230,13 +229,13 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
             ss.customer AS customer,
             ss.customer_name AS customer_name,
             bp.period_start AS date,
-            "Subscription Service" AS dt,
+            "Subscription Contract" AS dt,
             ss.name AS reference,
             ssi.name AS detail,
             NULL AS sales_order,
             NULL AS so_detail,
-            ssi.item AS item,
-            ssi.item_name AS item_name,
+            ssi.item_code,
+            ssi.item_name,
             NULL AS hours,
             ssi.qty AS qty,
             ssi.rate AS rate,
@@ -244,9 +243,8 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
             (IFNULL(ssi.qty, 1) * IFNULL(ssi.rate, 0)) AS amount,
             0 as additional_discount,
             "CHF" AS currency,
-            ss.name AS remarks,
+            ssi.description,
             NULL as blanket_order_customer_reference,
-            IFNULL(ss.remarks, "") AS additional_remarks,
             NULL AS shipping,
             ss.payment_terms_template,
             ss.interval AS sub_interval,
@@ -261,13 +259,14 @@ def get_invoiceable_entries(from_date=None, to_date=None, customer=None, doctype
             sii.service_start_date AS sii_start_date,
             sii.service_end_date AS sii_end_date
         FROM bp
-        JOIN `tabSubscription Service` ss on ss.name = bp.name
-        JOIN `tabSubscription Service Item` ssi on ssi.name = ssi_docname
+        JOIN `tabSubscription Contract` ss on ss.name = bp.name
+        JOIN `tabSubscription Contract Item` ssi on ssi.name = ssi_docname
         LEFT JOIN `tabSales Invoice Item` sii on sii.subscription = ss.name AND sii.service_start_date = bp.period_start
         LEFT JOIN `tabSales Invoice` si on sii.parent = si.name
         WHERE (si.name IS NULL {invoiced_filter})
             AND ss.customer LIKE "{customer}"
             AND (bp.period_start >= "{from_date}" AND bp.period_end <= "{to_date}")
+            AND ss.docstatus = 1
         ORDER BY ss.name, period_start, ssi_index
         ) AS subs
         
@@ -334,14 +333,12 @@ def create_invoice(from_date, to_date, customer, doctype):
     last_dn = None
     for e in entries:
         #Format Remarks 
-        remarkstring = e.remarks.replace("\n", "<br>")
-        remarkstring += ("<br>" + e.additional_remarks.replace("\n", "<br>")) if e.additional_remarks else ""
 
         item = {
-            'item_code': e.item,
+            'item_code': e.item_code,
             'qty': e.qty,
             'rate': e.rate,
-            'description': remarkstring,
+            'description': e.description,
         }
         if e.dt == "Delivery Note":
             item['delivery_note'] = e.reference
@@ -356,7 +353,7 @@ def create_invoice(from_date, to_date, customer, doctype):
                 shipping_total += e.shipping
                 shipping_remarks.append("{}: {} {}".format(e.reference, currency, e.shipping))
             last_dn = e.reference
-        elif e.dt == "Subscription Service":
+        elif e.dt == "Subscription Contract":
             item['subscription'] = e.reference
             item['enable_deferred_revenue'] = 1  # Should be automatic if activated on item
             item['service_start_date'] = e.period_start
@@ -374,19 +371,6 @@ def create_invoice(from_date, to_date, customer, doctype):
         })
     
     sinv.insert()
-    
-    # insert abo references (*renamed Abo to Subscription Service)
-    # abos = []
-    # for e in entries:
-    #     if e.dt == "Subscription Service" and e.reference not in abos:
-    #         abos.append(e.reference)
-    # for a in abos:
-    #     abo = frappe.get_doc("Subscription Service", a)
-    #     abo.append("invoices", {
-    #         'date': datetime.datetime.now(),
-    #         'sales_invoice': sinv.name
-    #     })
-    #     abo.save()
     
     frappe.db.commit()
     

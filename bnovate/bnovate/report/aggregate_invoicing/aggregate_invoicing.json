@@ -14,7 +14,7 @@
  "name": "Aggregate Invoicing",
  "owner": "Administrator",
  "prepared_report": 0,
- "ref_doctype": "Subscription Service",
+ "ref_doctype": "Subscription Contract",
  "report_name": "Aggregate Invoicing",
  "report_type": "Script Report",
  "roles": [
