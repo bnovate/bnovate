@@ -20,7 +20,7 @@ def get_columns():
         {'fieldname': 'purchase_document_no', 'fieldtype': 'Link', 'label': _('Transfer doc'), 'options': 'Stock Entry', 'width': 100}, 
         {'fieldname': 'purchase_date', 'fieldtype': 'Date', 'label': _('Since date'), 'width': 80},
         {'fieldname': 'from_customer', 'fieldtype': 'Link', 'label': _('Last Customer'), 'options': 'Customer', 'width': 120},
-        {'fieldname': 'customer_name', 'fieldtype': 'Data', 'label': _('Last Customer Name'), 'width': 300}, 
+        {'fieldname': 'customer_name', 'fieldtype': 'Data', 'label': _('Last Customer Name'), 'width': 300, 'align': 'left'}, 
     ]
     
 def get_data(filters):

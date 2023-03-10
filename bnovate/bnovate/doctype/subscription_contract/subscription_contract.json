@@ -13,6 +13,7 @@
   "column_main",
   "enabled",
   "start_date",
+  "planned_end_date",
   "end_date",
   "section_items",
   "items",
@@ -27,6 +28,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Customer",
    "options": "Customer",
    "reqd": 1
@@ -52,6 +54,7 @@
   {
    "fieldname": "start_date",
    "fieldtype": "Date",
+   "in_preview": 1,
    "label": "Start Date",
    "reqd": 1
   },
@@ -59,7 +62,8 @@
    "allow_on_submit": 1,
    "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "End Date"
+   "in_preview": 1,
+   "label": "Actual End Date"
   },
   {
    "fieldname": "section_items",
@@ -77,6 +81,8 @@
    "default": "Yearly",
    "fieldname": "interval",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
    "label": "Interval",
    "options": "Yearly\nMonthly",
    "reqd": 1
@@ -111,6 +117,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "hidden": 1,
+   "in_preview": 1,
    "label": "Title"
   },
   {
@@ -122,10 +129,16 @@
    "fieldname": "terms",
    "fieldtype": "Text Editor",
    "label": "Terms and Conditions"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "planned_end_date",
+   "fieldtype": "Date",
+   "label": "Planned End Date"
   }
  ],
  "is_submittable": 1,
- "modified": "2023-03-03 17:02:40.260783",
+ "modified": "2023-03-09 15:38:58.962997",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Subscription Contract",

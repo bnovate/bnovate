@@ -1,31 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
 
 body {
-    font-family: 'Open Sans', Roboto, Oxygen, Cantarell, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-family: "Open Sans", Roboto, Oxygen, Cantarell, "Segoe UI",
+    "Helvetica Neue", sans-serif;
+}
+
+body.party-time {
+  font-family: "Comic Sans MS", "Open Sans", Roboto, Oxygen, Cantarell,
+    "Segoe UI", "Helvetica Neue", sans-serif;
 }
 
 /* Remove border below report table headers - spans too wide when embedded in Form */
 .dt-scrollable {
-    border-top: 0px;
+  border-top: 0px;
 }
 
 /* Change padding of table cells to simulate a full background fill */
 div:has(> span.coloured) {
-    padding: 0px;
-    padding-bottom: var(--dt-focus-border-width);
+  padding: 0px;
+  padding-bottom: var(--dt-focus-border-width);
 }
 
 span.coloured {
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: var(--dt-spacer-2);
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: var(--dt-spacer-2);
 }
 
 span.coloured.light {
-    background-color: #f5f8fd;
+  background-color: #f5f8fd;
 }
 
 span.coloured.dark {
-    background-color: #dde6f7;
+  background-color: #dde6f7;
+}
+
+/* Style popovers in reports */
+
+.bs-popover-bottom .arrow {
+  /* Horizontally center the arrow */
+  left: 50% !important;
+  margin-left: -10px !important;
+}
+
+.popover {
+  max-width: 500px;
+}
+
+/* sacrificial div used to bind popover at click location on chart */
+#sacrificial{
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  z-index: 1; /* to ensure it appears above the target element */
+}
+
+.tooltip-inner {
+  text-align: left;
+}
+
+.tooltip-inner ul {
+  padding-left: 20px;
+}
+
+.bn-modal {
+  z-index: 9999;
+}
+
+.bn-modal .modal-xl {
+  min-width: 1050px;
+}
+
+.bn-modal .datatable {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
 }

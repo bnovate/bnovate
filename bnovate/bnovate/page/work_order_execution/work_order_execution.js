@@ -245,8 +245,8 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 		for (let doc of state.ste_docs) {
 			[doc.indicator_label, doc.indicator_color, ...rest] = frappe.listview_settings['Stock Entry'].get_indicator(doc); // safe, get_indicator always returns a value.
 			doc.link = frappe.utils.get_form_link('Stock Entry', doc.name);
-			doc.produced_serial_nos = doc.items.find(it => it.item_code == state.work_order_doc.production_item)?.serial_no?.replaceAll("\n", ", ");
-			doc.produced_batch = doc.items.find(it => it.item_code == state.work_order_doc.production_item)?.batch_no?.replaceAll("\n", ", ");
+			doc.produced_serial_nos = doc.items.find(it => it.item_code == state.work_order_doc.production_item)?.serial_no?.trim().replaceAll("\n", ", ");
+			doc.produced_batch = doc.items.find(it => it.item_code == state.work_order_doc.production_item)?.batch_no?.trim().replaceAll("\n", ", ");
 		}
 
 		// Load attachments / linked docs

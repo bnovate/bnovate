@@ -55,6 +55,11 @@ frappe.query_reports["Aggregate Invoicing"] = {
             "Cancelled": "red"
         };
 
+        if (row[0].rowIndex == 0) {
+            this.ref_index = 1;
+            this.bp_index = 1;
+        }
+
         if (data.indent == 0) {
             return '<b>' + default_formatter(value, row, col, data) + "</b>";
         }

@@ -25,10 +25,13 @@ fixtures = [
         "filters": [["name", "in", [
             "Customer Group-taxes_and_charges_template", # Used to invoice subscriptions
             "Sales Invoice Item-subscription",
+            "Sales Invoice Item-sc_detail",
             "Delivery Note-payment_terms_template", # Used to match invoice to SO payment terms through DN
             "Work Order-time_per_unit", # Used for time tracking from Work Order Execution page
             "Work Order-total_time",
             "Work Order-time_log",
+            "BOM-workstation", # Used to assign work order to a workstation
+            "Work Order-workstation",
         ]]]
     }
 ]

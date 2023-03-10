@@ -1,13 +1,15 @@
 // Set navbar to an obvious colour if running on dev machine:
-// window.addEventListener("load", () => {
 if (window.location.host.indexOf("localhost") >= 0) {
   let link = document.createElement('link');
   link.type = 'text/css';
   link.rel = 'stylesheet';
   link.href = '/assets/bnovate/bnovate-dev.css';
-  document.getElementsByTagName('head')[0].appendChild(link);
+  document.querySelector('head').appendChild(link);
 }
-// })
+if (parseInt(Math.random() * 100) == 42 || frappe.datetime.get_today().endsWith('04-01')) {
+  console.log("Party time!")
+  document.querySelector("body").classList.add('party-time');
+}
 
 
 /*  ***********************

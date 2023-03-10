@@ -17,7 +17,7 @@ def get_columns():
         {'fieldname': 'purchase_order', 'fieldtype': 'Link', 'label': _('PO'), 'options': 'Purchase Order', 'width': 80},
         {'fieldname': 'supplier', 'fieldtype': 'Link', 'label': _('Supplier'), 'options': 'Supplier', 'width': 80},
         {'fieldname': 'expected_delivery_date', 'fieldtype': 'Date', 'label': _('Expected date'), 'width': 80},
-        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Sold item'), 'options': 'Item', 'width': 200},
+        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Sold item'), 'options': 'Item', 'width': 200, 'align': 'left'},
         {'fieldname': 'qty', 'fieldtype': 'Int', 'label': _('Qty total'), 'width': 100}, 
         {'fieldname': 'remaining_qty', 'fieldtype': 'Int', 'label': _('Qty to Receive'), 'width': 100},
         {'fieldname': 'bnovate_person', 'fieldtype': 'Data', 'label': _('bNovate Contact'), 'width': 200},

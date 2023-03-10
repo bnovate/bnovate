@@ -20,7 +20,7 @@ def get_columns():
         {'fieldname': 'SO', 'fieldtype': 'Link', 'label': _('SO'), 'options': 'Sales Order', 'width': 100},
         {'fieldname': 'customer', 'fieldtype': 'Link', 'label': _('Customer'), 'options': 'Customer', 'width': 80},
         {'fieldname': 'customer_name', 'fieldtype': 'Data', 'label': _('Customer Name'), 'width': 150},
-        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Item code'), 'options': 'Item', 'width': 200},
+        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Item code'), 'options': 'Item', 'width': 200, 'align': 'left'},
         # {'fieldname': 'item_name', 'fieldtype': 'Data', 'label': _('Item name'), 'width': 200},
         {'fieldname': 'item_group', 'fieldtype': 'Data', 'label': _('Item group'), 'width': 200},
         {'fieldname': 'planned_date', 'fieldtype': 'Date', 'label': _('Planned date'), 'width': 100},

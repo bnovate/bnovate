@@ -10,7 +10,12 @@ from frappe import _
 def execute(filters=None):
     columns = get_columns()
     data = get_data(filters)
-    chart = get_chart(data)
+
+    print("\n\n\n\n\nfilters---------------", filters)
+
+    chart = None
+    if filters.item_code and filters.warehouse:
+        chart = get_chart(data)
     
     return columns, data, None, chart
     
@@ -18,17 +23,21 @@ def get_columns():
     return [
         {'fieldname': 'date', 'fieldtype': 'Date', 'label': _('Date'), 'width': 80},
         {'fieldname': 'doctype', 'fieldtype': 'Data', 'label': _('Doctype'), 'width': 100},
-        {'fieldname': 'docname', 'fieldtype': 'Data', 'label': _('Docname'), 'width': 100},
-        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Item code'), 'options': 'Item', 'width': 300},
-        {'fieldname': 'warehouse', 'fieldtype': 'Link', 'label': _('Warehouse'), 'options': 'Warehouse', 'width': 300},
-        {'fieldname': 'qty', 'fieldtype': 'Number', 'label': _('Qty'), 'width': 100}, 
-        {'fieldname': 'balance', 'fieldtype': 'Number', 'label': _('Stock balance'), 'width': 100}, 
+        {'fieldname': 'docname', 'fieldtype': 'Data', 'label': _('Docname'), 'width': 100, 'align': 'left'},
+        {'fieldname': 'item_code', 'fieldtype': 'Link', 'label': _('Item code'), 'options': 'Item', 'width': 250, 'align': 'left'},
+        {'fieldname': 'warehouse', 'fieldtype': 'Link', 'label': _('Warehouse'), 'options': 'Warehouse', 'width': 100},
+        {'fieldname': 'qty', 'fieldtype': 'Number', 'label': _('Qty'), 'width': 80}, 
+        {'fieldname': 'balance', 'fieldtype': 'Number', 'label': _('Balance'), 'width': 80}, 
+        {'fieldname': 'stock_uom', 'fieldtype': 'Data', 'label': _('Unit'), 'width': 100}, 
     ]
     
 def get_data(filters):
-    
-    if not filters.item_code or not filters.warehouse:
-        return None
+    item_filter = "true"
+    warehouse_filter = "true"
+    if filters.item_code:
+        item_filter = "e.item_code = '{}'".format(filters.item_code)
+    if filters.warehouse:
+        warehouse_filter = "e.warehouse = '{}'".format(filters.warehouse)
         
     sql_query = """
 SELECT 
@@ -37,9 +46,12 @@ SELECT
     e.docname,
     e.item_code,
     i.item_name,
+    i.stock_uom,
     e.warehouse,
     e.qty,
-    ROUND(@running_total := @running_total + qty, 3) AS balance
+    ROUND(SUM(e.qty) OVER (
+      PARTITION BY e.item_code, e.warehouse ORDER BY e.order_prio, e.date ASC, e.docname
+    ), 3) AS balance
 FROM (
   (SELECT
     0 as order_prio, -- to keep stock balance as first item in list
@@ -126,12 +138,11 @@ WHERE wo.docstatus = 1
     AND wo.qty > wo.produced_qty
     AND wo.status != 'Stopped'
 )) as e -- "entries"
-JOIN (SELECT @running_total := 0) r
 JOIN `tabItem` as i on e.item_code = i.name
-WHERE e.item_code = '{item_code}' AND e.warehouse = '{warehouse}'
-ORDER BY order_prio, date ASC
+WHERE {item_filter} AND {warehouse_filter}
+ORDER BY item_code, warehouse, order_prio, date ASC, docname
 
-    """.format(item_code=filters.item_code, warehouse=filters.warehouse)
+    """.format(item_filter=item_filter, warehouse_filter=warehouse_filter)
     
     data = frappe.db.sql(sql_query, as_dict=True)
     
