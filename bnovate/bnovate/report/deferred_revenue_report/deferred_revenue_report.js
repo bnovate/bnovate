@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 frappe.query_reports["Deferred Revenue Report"] = {
-    initial_depth: 2,
+    initial_depth: 1,
     filters: [
         {
             "fieldname": "account",

@@ -17,12 +17,14 @@ def get_columns():
         {'fieldname': 'invoiced_amount', 'label': _('Invoiced Amount'), 'fieldtype': 'Currency', 'options': 'account_currency', 'width': 150},
         {'fieldname': 'recognized_revenue', 'label': _('Recognized Amount'), 'fieldtype': 'Currency', 'options': 'account_currency', 'width': 150},
         {'fieldname': 'deferred_revenue', 'label': _('Deferred Amount'), 'fieldtype': 'Currency', 'options': 'account_currency', 'width': 150},
+        {'fieldname': 'customer', 'label': _('Customer'), 'fieldtype': 'Link', 'options': 'Item', 'width': 200},
+        {'fieldname': 'customer_name', 'label': _('Customer Name'), 'fieldtype': 'Data', 'width': 400},
         {'fieldname': 'item_code', 'label': _('Item'), 'fieldtype': 'Link', 'options': 'Item', 'width': 200},
         {'fieldname': 'service_start_date', 'label': _('Service Start Date'), 'fieldtype': 'Date', 'width': 100},
         {'fieldname': 'service_end_date', 'label': _('Service End Date'), 'fieldtype': 'Date', 'width': 100},
         # {'fieldname': 'docstatus', 'label': _('Status'), 'fieldtype': 'Data', 'width': 100},
         # {'fieldname': 'status', 'label': _('Status'), 'fieldtype': 'Data', 'width': 100},
-        {'fieldname': 'account', 'label': _('Account'), 'fieldtype': 'data', 'width': 200},
+        {'fieldname': 'account', 'label': _('Account'), 'fieldtype': 'Data', 'width': 200},
         {'fieldname': 'type', 'label': _('Type'), 'fieldtype': 'data', 'width': 200},
     ]
 
@@ -35,6 +37,8 @@ def get_data(filters):
 WITH rr AS ( -- recognized revenue
   SELECT
     inv.name AS doc,
+    inv.customer AS customer,
+    c.customer_name AS customer_name,
     inv_item.idx,
  		inv_item.name as detail_docname,
     inv.posting_date as doc_posting_date,
@@ -54,6 +58,7 @@ WITH rr AS ( -- recognized revenue
   FROM `tabSales Invoice Item` inv_item
   JOIN `tabSales Invoice` inv ON inv.name = inv_item.parent
   JOIN `tabItem` i on i.name = inv_item.item_code
+  JOIN `tabCustomer` c on inv.customer = c.name
   LEFT JOIN ( SELECT * FROM `tabGL Entry` 
              WHERE posting_date <= "{to_date}" 
              AND account IN (SELECT DISTINCT(deferred_revenue_account)
@@ -107,6 +112,8 @@ ORDER BY account, doc_posting_date, doc, idx, gle_posting_date
                 'recognized_revenue': row.doc_recognized_revenue,
                 'deferred_revenue': deferred,
                 'type': "Invoice",
+                'customer': row.customer,
+                'customer_name': row.customer_name,
             })
 
         if not prev_row or prev_row.detail_docname != row.detail_docname:
