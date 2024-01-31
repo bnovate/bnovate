@@ -89,6 +89,9 @@ fixtures = [
             "Quotation-shipping_country",
             # Stock management
             "Material Request Item-default_supplier",
+            # QC
+            "Item-qc_required",
+            "Work Order-qc_required",
         ]]]
     }
 ]
