@@ -1,0 +1,53 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<div id="app">
+    <h1>[[ doc.title ]]</h1>
+    <p>[[ doc.description ]]</p>
+    <li v-for="country in doc.countries">
+        [[ country ]]
+    </li>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+
+<script>
+
+    const { createApp, ref, reactive } = Vue
+
+    frappe.require([
+        "/assets/bnovate/js/web_includes/translations.js",
+        "/assets/bnovate/js/web_includes/helpers.js",
+    ]).then(createVueApp);
+
+    function createVueApp() {
+
+        createApp({
+            setup() {
+                const message = ref('Hello vue!')
+                const doc = reactive({
+                    title: "Document Name",
+                    description: "Here are the contents of my issue",
+                    countries: [],
+                })
+
+                bnovate.web.get_countries()
+                    .then(countries => doc.countries = countries );
+
+                return {
+                    doc,
+                    message
+                }
+            },
+            delimiters: ['[[', ']]']
+        }).mount('#app');
+    }
+
+</script>
+{% endblock %}
