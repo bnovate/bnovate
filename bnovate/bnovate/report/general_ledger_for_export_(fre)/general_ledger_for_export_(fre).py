@@ -118,6 +118,16 @@ def get_columns(filters):
 			"width": 400
 		},
 		{
+			"label": _("Item Names"),
+			"fieldname": "item_names",
+			"width": 400
+		},
+		{
+			"label": _("Descriptions"),
+			"fieldname": "descriptions",
+			"width": 400
+		},
+		{
 			"label": _("Company"),
 			"fieldname": "company",
 			"fieldtype": "Link",
@@ -139,6 +149,18 @@ def get_data(filters):
 	
 
     sql = """
+WITH labels AS (
+  SELECT
+	parent AS pinv,
+	item_code,
+	SUM(net_amount) as sum_amount,
+	GROUP_CONCAT(item_name) AS item_names,
+	GROUP_CONCAT(description) AS descriptions,
+	expense_account,
+	cost_center
+  FROM `tabPurchase Invoice Item` poi
+  GROUP BY parent, expense_account, cost_center
+)
 SELECT
     gl.posting_date,
     gl.account,
@@ -156,9 +178,13 @@ SELECT
     gl.against_voucher,
 	pinv.bill_no,
     gl.remarks,
-    gl.company
+    gl.company,
+	labels.item_names,
+    labels.descriptions,
+    labels.sum_amount
 FROM `tabGL Entry` gl
 LEFT JOIN `tabPurchase Invoice` pinv ON gl.against_voucher = pinv.name
+LEFT JOIN labels on labels.pinv = gl.voucher_no AND labels.expense_account = gl.account AND labels.cost_center = gl.cost_center
 WHERE gl.posting_date BETWEEN "{from_date}" AND "{to_date}"
     {conditions}
 ORDER BY gl.posting_date
