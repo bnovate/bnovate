@@ -40,6 +40,12 @@ def get_columns():
             "options": "Item Group"
         },
         {
+            "fieldname": "revenue_stream",
+            "label": _("Revenue Stream"),
+            "fieldtype": "Data",
+            "width": 100,
+        },
+        {
             "fieldname": "item_code",
             "label": _("Item Code"),
             "fieldtype": "Link",
@@ -266,7 +272,14 @@ def get_columns():
             "label": _("Billing Basis"),
             "fieldtype": "Data",
             "width": 120
+        },
+        {
+            "fieldname": "enable_deferred_revenue",
+            "label": _("Deferred Revenue"),
+            "fieldtype": "Check",
+            "width": 120
         }
+
     ]
 
     return columns
@@ -363,6 +376,7 @@ def get_items(filters):
             sii.item_code, 
             it.item_name,
             it.item_group, 
+            ig.revenue_stream,
             it.description, 
 
             sii.sales_order,
@@ -400,11 +414,13 @@ def get_items(filters):
             cogs.cogs as cogs,
 
             sr.name as service_report,
-            sr.billing_basis
+            sr.billing_basis,
+            sii.enable_deferred_revenue
 
         FROM sinv
         LEFT JOIN `tabSales Invoice Item` sii ON sii.parent = sinv.name
         LEFT JOIN `tabItem` it ON it.item_code = sii.item_code
+        LEFT JOIN `tabItem Group` ig ON ig.name = it.item_group
         LEFT JOIN cogs_per_sii cogs ON cogs.sii_name = sii.name
         LEFT JOIN `tabSales Order` so ON so.name = sii.sales_order
         LEFT JOIN `tabSales Order Item` soi ON soi.name = sii.so_detail
@@ -424,6 +440,7 @@ def get_items(filters):
             NULL as item_code, 
             NULL as item_name,
             "Taxes and Charges" as item_group, 
+            "Taxes and Charges" as revenue_stream, 
             t.description, 
 
             NULL as sales_order,
@@ -461,7 +478,8 @@ def get_items(filters):
             NULL as cogs,
 
             NULL as service_report,
-            NULL as billing_basis
+            NULL as billing_basis,
+            NULL as enable_deferred_revenue
         FROM sinv
         JOIN `tabSales Taxes and Charges` t ON t.parent = sinv.name
         
