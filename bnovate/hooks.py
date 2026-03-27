@@ -142,6 +142,7 @@ fixtures = [
             "Delivery Note-pallets",
             "Delivery Note-pickup_comment",
             "Delivery Note-skip_autoship",
+            "Delivery Note-breakbulk_master_no",
             "Shipment Parcel Template-is_pallet",
             "Shipment Parcel-is_pallet",
 
