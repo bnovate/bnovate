@@ -4,9 +4,11 @@
 from __future__ import unicode_literals
 import frappe
 
+
 def execute(filters=None):
     columns, data = [], []
     return get_columns(), get_data(filters)
+
 
 def get_columns():
     return [
@@ -34,7 +36,7 @@ def get_columns():
             "fieldname": "posting_date",
             "fieldtype": "Data",
             "width": 120
-            
+
         },
         {
             "label": "Code Client",
@@ -44,7 +46,7 @@ def get_columns():
         },
         {
             "label": "Total Gross Weight",
-            "fieldname": "total_net_weight",
+            "fieldname": "total_gross_weight",
             "fieldtype": "Float",
             "width": 120
         },
@@ -116,9 +118,20 @@ def get_columns():
         }
     ]
 
+
 def get_data(filters):
 
     query = """
+    WITH breakbulk_totals AS (
+        SELECT
+           dn.name as dn_name, 
+           SUM((SELECT COALESCE(SUM(weight), 0) FROM `tabShipment Parcel` WHERE parent = dn.name)) AS gross_weight,
+           SUM(dn.total_net_weight) AS net_weight,
+           dn.breakbulk_master_no
+        FROM `tabDelivery Note` dn
+        WHERE dn.posting_date = '{date}'
+        GROUP BY dn.breakbulk_master_no
+    )
     SELECT
         dni.idx,
         "S." as agreement,
@@ -127,19 +140,22 @@ def get_data(filters):
         "xxx" as customer_number,
         dni.customs_tariff_number,
         dni.country_of_origin,
-        dn.total_net_weight,
+        bt.gross_weight AS total_gross_weight,
+        bt.net_weight AS total_net_weight,
         dn.eori_number,
         dn.tax_id,
         dni.total_weight,
-        "???" as preferential_origin,
+        "NO" as preferential_origin,
         dni.qty,
         dni.amount,
         dn.currency,
         dn.breakbulk_master_no as master_awb_number
     FROM `tabDelivery Note Item` dni
     LEFT JOIN `tabDelivery Note` dn ON dni.parent = dn.name
+    LEFT JOIN breakbulk_totals bt ON bt.breakbulk_master_no = dn.breakbulk_master_no
     WHERE dn.posting_date = '{date}'
-        AND TRIM(dn.breakbulk_master_no) IS NOT NULL
+        AND dn.docstatus != 2
+        AND dn.breakbulk_master_no IS NOT NULL AND TRIM(dn.breakbulk_master_no) != ''
+    ORDER BY dn.name, dni.idx
     """.format(date=filters.date)
     return frappe.db.sql(query, as_dict=1)
-    
