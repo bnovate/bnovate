@@ -18,7 +18,16 @@ def get_columns():
             "label": "BOM",
             "width": 200,
             "fieldtype": "Link",
-            "options": "BOM"
+            "options": "BOM",
+            "align": "left"
+        },
+        {
+            "fieldname": "bundle_name",
+            "label": "Bundle",
+            "width": 200,
+            "fieldtype": "Link",
+            "options": "Product Bundle",
+            "align": "left"
         },
         {
             "fieldname": "item",
@@ -74,10 +83,17 @@ def get_data(filters):
         additional_filters += " AND bom.is_active = 1"
     if filters.only_default:
         additional_filters += " AND bom.is_default = 1"
+    if filters.only_active_items:
+        additional_filters += " AND item.disabled = 0"
+
+    additional_bundle_filters = ""
+    if filters.only_active_items:
+        additional_bundle_filters += " AND item.disabled = 0"
 
     query = """
     SELECT
         bom.name,
+        NULL as bundle_name,
         bom.item,
         bom.item_name,
         bom.bom_description,
@@ -87,9 +103,28 @@ def get_data(filters):
         bi.qty AS item_qty
     FROM `tab{doctype}` bi
     JOIN `tabBOM` bom ON bom.name = bi.parent
+    JOIN `tabItem` item ON item.item_code = bi.item_code
     WHERE bi.item_code = "{item1}"
         {additional_filters}
-    """.format(doctype=doctype, item1=filters.item1, additional_filters=additional_filters)
+
+    UNION ALL
+    
+    SELECT
+        NULL as name,
+        bundle.name as bundle_name,
+        bundle.new_item_code as item,
+        item.item_name as item_name,
+        bundle.description as bom_description,
+        1 as is_active,
+        1 as is_default,
+        1 as bom_qty,
+        bi.qty as item_qty
+    FROM `tabProduct Bundle Item` bi
+    JOIN `tabProduct Bundle` bundle ON bundle.name = bi.parent
+    JOIN `tabItem` item ON item.item_code = bundle.new_item_code
+    WHERE bi.item_code = "{item1}"
+        {additional_bundle_filters}
+    """.format(doctype=doctype, item1=filters.item1, additional_filters=additional_filters, additional_bundle_filters=additional_bundle_filters)
 
     return frappe.db.sql(query, as_dict=1)
  

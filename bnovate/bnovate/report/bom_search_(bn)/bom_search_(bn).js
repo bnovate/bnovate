@@ -22,6 +22,12 @@ frappe.query_reports["BOM Search (bN)"] = {
 			fieldtype: "Check",
 			default: 1
 		},
+		{
+			fieldname: "only_active_items",
+			label: __("Only Active Output Items"),
+			fieldtype: "Check",
+			default: 1
+		},
 		// {
 		// 	fieldname: "search_sub_assemblies",
 		// 	label: __("Search Sub Assemblies"),
