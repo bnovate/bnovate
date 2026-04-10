@@ -545,6 +545,7 @@ def _rms_start_session(config_id, device_id, duration=30*60, settings=None, auth
         if last_update['status'] == 'completed':
             return last_update['link']
 
+        time.sleep(0.5)
         return wait_for_link(attempt+1)
 
     return wait_for_link()
