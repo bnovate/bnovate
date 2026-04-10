@@ -1,9 +1,9 @@
-# Copyright (c) 2013-2020, libracore and contributors
+# Copyright (c) 2013-2026, libracore and contributors
 # For license information, please see license.txt
 
-from __future__ import unicode_literals
 import frappe
 from frappe import _
+from frappe.utils import flt
 
 def execute(filters=None):
     filters = frappe._dict(filters or {})
@@ -22,6 +22,7 @@ def get_columns():
         {"label": _("Quantity"), "fieldname": "qty", "fieldtype": "Float", "width": 100},
         {"label": _("Stock UOM"), "fieldname": "stock_uom", "fieldtype": "Link", "width": 100, "options": "UOM"},
         {"label": _("Value"), "fieldname": "value", "fieldtype": "Currency", "width": 100},
+        {"label": _("Disabled"), "fieldname": "disabled", "fieldtype": "Check", "width": 50},
         {"label": _(""), "fieldname": "blank", "fieldtype": "Data", "width": 20}
     ]
 
@@ -40,17 +41,24 @@ def get_data(filters):
     
     for item_warehouse in item_warehouses:
         # get stock level per warehouse based on last level from stock ledger
-        sql_query = """SELECT `qty_after_transaction` AS `qty`, 
-                            `stock_value` AS `value`
-                       FROM `tabStock Ledger Entry` AS `sle1`
-                       WHERE `sle1`.`item_code` = '{item_code}'
-        
-                           AND `sle1`.`posting_date` <= NOW()
-                           AND `sle1`.`warehouse` LIKE '{warehouse}'
-                       ORDER BY `posting_date` DESC, `posting_time` DESC, `modified` DESC
-                       LIMIT 1;""".format(item_code=item_warehouse['item_code'], 
-                                          warehouse=item_warehouse['warehouse'])
-        stock_level = frappe.db.sql(sql_query, as_dict=True)
+        stock_level = frappe.db.sql("""
+			SELECT `qty_after_transaction` AS `qty`, 
+				`stock_value` AS `value`
+		    FROM `tabStock Ledger Entry` AS `sle1`
+		    WHERE `sle1`.`item_code` = %(item_code)s
+
+			   AND `sle1`.`posting_date` <= %(date)s
+			   AND `sle1`.`warehouse` LIKE %(warehouse)s
+		    ORDER BY `posting_date` DESC, `posting_time` DESC, `modified` DESC
+		    LIMIT 1;
+		    """,
+		    {
+				'item_code': item_warehouse['item_code'], 
+                'warehouse': item_warehouse['warehouse'],
+                'date': filters.get("date")
+            }, 
+            as_dict=True
+        )
 
         if stock_level[0]['qty'] > 0 or stock_level[0]['value'] > 0:
             stock_levels.append({
@@ -70,6 +78,7 @@ def get_data_with_snr(filters):
           `tabStock Ledger Entry`.`warehouse`,
           `tabItem`.`has_serial_no` AS `has_serial_no`,
           `tabItem`.`stock_uom` AS `stock_uom`,
+          `tabItem`.`disabled` AS `disabled`,
           `tabSerial No`.`name` AS `serial_no`
         FROM `tabStock Ledger Entry`
         LEFT JOIN `tabItem` ON `tabStock Ledger Entry`.`item_code` = `tabItem`.`name`
@@ -82,25 +91,32 @@ def get_data_with_snr(filters):
     
     for item_warehouse in item_warehouses:
         # get stock level per warehouse based on last level from stock ledger
-        sql_query = """SELECT `qty_after_transaction` AS `qty`, 
-                            `stock_value` AS `value`
-                       FROM `tabStock Ledger Entry` AS `sle1`
-                       WHERE `sle1`.`item_code` = '{item_code}'
-        
-                           AND `sle1`.`posting_date` <= NOW()
-                           AND `sle1`.`warehouse` LIKE '{warehouse}'
-                       ORDER BY `posting_date` DESC, `posting_time` DESC, `modified` DESC
-                       LIMIT 1;""".format(item_code=item_warehouse['item_code'], 
-                                          warehouse=item_warehouse['warehouse'])
-        stock_level = frappe.db.sql(sql_query, as_dict=True)
+        stock_level = frappe.db.sql("""
+			SELECT `qty_after_transaction` AS `qty`, 
+				`stock_value` AS `value`
+		    FROM `tabStock Ledger Entry` AS `sle1`
+		    WHERE `sle1`.`item_code` = %(item_code)s
 
-        if stock_level[0]['qty'] > 0 or stock_level[0]['value'] > 0:
+			   AND `sle1`.`posting_date` <= %(date)s
+			   AND `sle1`.`warehouse` LIKE %(warehouse)s
+		    ORDER BY `posting_date` DESC, `posting_time` DESC, `modified` DESC
+		    LIMIT 1;""", 
+		    {
+				'item_code': item_warehouse['item_code'], 
+                'warehouse': item_warehouse['warehouse'],
+                'date': filters.get("date")
+            },
+			as_dict=True
+		)
+
+        if len(stock_level) > 0 and (flt(stock_level[0].get('qty')) > 0 or flt(stock_level[0].get('value')) > 0):
             item = {
                 'item_code': item_warehouse['item_code'],
                 'warehouse': item_warehouse['warehouse'],
                 'qty': stock_level[0]['qty'],
                 'stock_uom': item_warehouse['stock_uom'],
-                'value': stock_level[0]['value']
+                'value': stock_level[0]['value'],
+                'disabled': item_warehouse['disabled']
             }
             if item_warehouse['has_serial_no']:
                 item['snr'] = item_warehouse['serial_no']

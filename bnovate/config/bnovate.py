@@ -283,6 +283,32 @@ def get_data():
             ]
         },
         {
+            "label": _("IC Accounting"),
+            "icon": "octicon octicon-git-compare",
+            "items": [
+                {
+                    "type": "doctype",
+                    "name": "IC Account Group",
+                    "label": _("IC Account Group"),
+                    "description": _("Definition of the IC Accounting aggregation groups")
+                },
+                {
+                    "type": "report",
+                    "name": "IC Balance Sheet",
+                    "label": _("IC Balance Sheet"),
+                    "doctype": "GL Entry",
+                    "is_query_report": True   
+                },
+                {
+                    "type": "report",
+                    "name": "IC Profit And Loss Statement",
+                    "label": _("IC Profit And Loss Statement"),
+                    "doctype": "GL Entry",
+                    "is_query_report": True   
+                }
+            ]
+        },
+        {
             "label": _("IoT"),
             "icon": "octicon octicon-git-compare",
             "items": [
