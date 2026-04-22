@@ -73,6 +73,12 @@ def get_columns():
             "width": 50,
             "fieldtype": "Check"
         },
+        {
+            "fieldname": "item_disabled",
+            "label": "Output Item Disabled?",
+            "width": 50,
+            "fieldtype": "Check"
+        }
     ]	
 
 def get_data(filters):
@@ -100,10 +106,11 @@ def get_data(filters):
         bom.is_active,
         bom.is_default,
         bom.quantity AS bom_qty,
-        bi.qty AS item_qty
+        bi.qty AS item_qty,
+        item.disabled AS item_disabled
     FROM `tab{doctype}` bi
     JOIN `tabBOM` bom ON bom.name = bi.parent
-    JOIN `tabItem` item ON item.item_code = bi.item_code
+    JOIN `tabItem` item ON item.item_code = bom.item
     WHERE bi.item_code = "{item1}"
         {additional_filters}
 
@@ -118,7 +125,8 @@ def get_data(filters):
         1 as is_active,
         1 as is_default,
         1 as bom_qty,
-        bi.qty as item_qty
+        bi.qty as item_qty,
+        item.disabled as item_disabled
     FROM `tabProduct Bundle Item` bi
     JOIN `tabProduct Bundle` bundle ON bundle.name = bi.parent
     JOIN `tabItem` item ON item.item_code = bundle.new_item_code
