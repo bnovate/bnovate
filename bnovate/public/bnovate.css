@@ -25,8 +25,10 @@ body.party-time {
 /* Style navbar according to default company */
 
 .navbar-default {
-  background-color: var(--navbar-color);  /* default libracore colour */
-  border-color: var(--navbar-color);  /* default libracore colour */
+  background-color: var(--navbar-color);
+  /* default libracore colour */
+  border-color: var(--navbar-color);
+  /* default libracore colour */
 
   background-image: var(--flag);
   background-repeat: no-repeat;
@@ -63,7 +65,7 @@ body.party-time {
 }
 
 /* Change padding of table cells to simulate a full background fill */
-div:has(> span.coloured) {
+/* div:has(> span.coloured) {
   padding: 0px;
   padding-bottom: var(--dt-focus-border-width);
 }
@@ -83,6 +85,23 @@ span.coloured.dark {
   background-color: #dde6f7;
 }
 
+span.coloured.darker {
+  background-color: #c5d1e6;
+} */
+
+div.dt-cell:has(.coloured.light) {
+  background-color: #f5f8fd;
+}
+
+div.dt-cell:has(.coloured.dark) {
+  background-color: #dde6f7;
+}
+
+div.dt-cell:has(.coloured.darker) {
+  background-color: #c5d1e6;
+}
+
+
 /* Style popovers in reports */
 
 .bs-popover-bottom .arrow {
@@ -96,11 +115,12 @@ span.coloured.dark {
 }
 
 /* sacrificial div used to bind popover at click location on chart */
-#sacrificial{
+#sacrificial {
   position: absolute;
   width: 0px;
   height: 0px;
-  z-index: 1; /* to ensure it appears above the target element */
+  z-index: 1;
+  /* to ensure it appears above the target element */
 }
 
 .tooltip-inner {
