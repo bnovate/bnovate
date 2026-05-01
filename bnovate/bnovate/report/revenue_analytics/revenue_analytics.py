@@ -108,28 +108,48 @@ def get_data(filters):
         key = (row.revenue_stream_name, row.month)
         amounts[key] = flt(row.amount)
 
-    # Build the data rows
+    # Build the data rows with initial values
     data = []
+    rows_by_name = {}
+    from_date = getdate(filters.get("from_date"))
+    to_date = getdate(filters.get("to_date"))
+
     for rs in revenue_streams:
         row = {
+            "name": rs.name,
             "revenue_stream_name": rs.revenue_stream_name,
             "parent_revenue_stream": rs.parent_revenue_stream,
             "indent": rs.depth
         }
 
         total = 0
-        from_date = getdate(filters.get("from_date"))
-        to_date = getdate(filters.get("to_date"))
-
         current = from_date
         while current <= to_date:
             month_key = current.strftime("%Y-%m")
-            amount = amounts.get((rs.revenue_stream_name, month_key), 0)
+            amount = amounts.get((rs.name, month_key), 0)
             row[month_key] = amount
             total += amount
             current = add_months(current, 1)
 
         row["total"] = total
         data.append(row)
+        rows_by_name[rs.name] = row
+
+    # Rollup child amounts into parent revenue streams
+    for rs in reversed(revenue_streams):
+        if not rs.parent_revenue_stream:
+            continue
+        child_row = rows_by_name.get(rs.name)
+        parent_row = rows_by_name.get(rs.parent_revenue_stream)
+        if not child_row or not parent_row:
+            continue
+
+        current = from_date
+        while current <= to_date:
+            month_key = current.strftime("%Y-%m")
+            parent_row[month_key] = parent_row.get(month_key, 0) + child_row.get(month_key, 0)
+            current = add_months(current, 1)
+
+        parent_row["total"] = parent_row.get("total", 0) + child_row.get("total", 0)
 
     return data

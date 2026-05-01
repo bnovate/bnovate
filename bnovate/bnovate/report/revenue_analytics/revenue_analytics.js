@@ -8,14 +8,14 @@ frappe.query_reports["Revenue Analytics"] = {
 			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -12),
+			"default": new Date(new Date().getFullYear(), 0, 1), // First day of calendar year.
 			"reqd": 1
 		},
 		{
 			"fieldname": "to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
-			"default": frappe.datetime.get_today(),
+			"default": new Date(new Date().getFullYear(), 11, 31), // Last day of calendar year.
 			"reqd": 1
 		},
 		{
