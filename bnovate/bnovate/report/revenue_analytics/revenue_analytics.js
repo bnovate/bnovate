@@ -19,6 +19,13 @@ frappe.query_reports["Revenue Analytics"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname": "include",
+			"label": __("Include"),
+			"fieldtype": "Select",
+			"options": ["All", "Billed", "Unbilled"],
+			"default": "All"
+		},
+		{
 			"fieldname": "company",
 			"label": __("Company"),
 			"fieldtype": "Link",

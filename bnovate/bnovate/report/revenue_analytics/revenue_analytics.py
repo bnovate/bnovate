@@ -63,6 +63,8 @@ def get_columns(filters):
 
 def get_data(filters):
     currency = get_company_currency(filters.get("company"))
+    filters.include_sinv = filters.get("include") in ("All", "Billed")
+    filters.include_so = filters.get("include") in ("All", "Unbilled")
 
     # Get all revenue streams in tree order
     revenue_streams = frappe.db.sql("""
@@ -82,23 +84,47 @@ def get_data(filters):
 
     # Get aggregated data
     data_query = """
+        WITH orders AS (
+            SELECT
+                sii.item_code,
+                DATE_FORMAT(si.posting_date, '%%Y-%%m') as month,
+                sii.base_net_amount as amount,
+                "Billed" as stage
+            FROM `tabSales Invoice` si
+            JOIN `tabSales Invoice Item` sii ON sii.parent = si.name 
+            WHERE si.docstatus = 1
+                AND si.company = '{company}'
+                AND si.posting_date BETWEEN '{from_date}' AND '{to_date}'
+                AND {include_sinv}
+
+            UNION ALL
+
+            SELECT
+                soi.item_code,
+                DATE_FORMAT(so.delivery_date, '%%Y-%%m') as month,
+                (soi.net_amount - ifnull(soi.billed_amt, 0)) * so.conversion_rate AS amount,  -- Unbilled amount in company currency
+                "Unbilled" as stage
+            FROM `tabSales Order` so
+            JOIN `tabSales Order Item` soi ON soi.parent = so.name 
+            WHERE so.docstatus = 1
+                AND so.status != 'Closed'
+                AND so.company = '{company}'
+                AND so.delivery_date BETWEEN '{from_date}' AND '{to_date}'
+                AND {include_so}
+        )
+
         SELECT
             rs.name as revenue_stream_name,
             rs.parent_revenue_stream,
-            DATE_FORMAT(si.posting_date, '%%Y-%%m') as month,
-            SUM(sii.base_net_amount) as amount,
-            rs.lft,
-            rs.rgt
-        FROM `tabSales Invoice` si
-        JOIN `tabSales Invoice Item` sii ON sii.parent = si.name
-        JOIN `tabItem` i ON i.item_code = sii.item_code
+            month,
+            SUM(o.amount) as amount
+        FROM orders o
+        JOIN `tabItem` i on i.item_code = o.item_code
         JOIN `tabItem Group` ig ON ig.name = i.item_group
         JOIN `tabRevenue Stream` rs ON rs.name = ig.revenue_stream
-        WHERE si.docstatus = 1
-            AND si.company = %(company)s
-            AND si.posting_date BETWEEN %(from_date)s AND %(to_date)s
-        GROUP BY rs.name, DATE_FORMAT(si.posting_date, '%%Y-%%m')
-    """
+        GROUP BY rs.name, month
+
+    """.format(**filters)
 
     aggregated_data = frappe.db.sql(data_query, filters, as_dict=True)
 
