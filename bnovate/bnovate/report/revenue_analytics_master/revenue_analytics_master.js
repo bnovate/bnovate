@@ -33,6 +33,11 @@ frappe.query_reports["Revenue Analytics Master"] = {
 			"default": frappe.defaults.get_user_default("Company"),
 			"reqd": 1
 		},
+		{
+			"fieldname": "revenue_stream",
+			"label": __("Revenue Stream"),
+			"fieldtype": "Link",
+			"options": "Revenue Stream",
+		}
 	],
-
 };

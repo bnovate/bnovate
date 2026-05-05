@@ -88,9 +88,15 @@ def get_columns(filters):
     }]
 
 def get_data(filters):
-
     filters.include_sinv = filters.get("include") in ("All", "Billed")
     filters.include_so = filters.get("include") in ("All", "Unbilled")
+
+    filters.where_conditions = "WHERE true"    
+    if filters.revenue_stream:
+        filters.where_conditions += " AND IFNULL(rs.name, 'Other') = '{revenue_stream}' ".format(**filters)
+
+
+    # TODO: add shipping, separate from VAT.
 
     data_query = """
         WITH orders AS (
@@ -131,9 +137,10 @@ def get_data(filters):
 
         SELECT
             o.stage,
-            rs.name as revenue_stream_name,
+            IFNULL(rs.name, 'Other') as revenue_stream_name,
             ig.name as item_group,
             o.item_code,
+            i.item_name,
             o.posting_date,
             o.month,
             o.amount,
@@ -142,8 +149,8 @@ def get_data(filters):
         FROM orders o
         JOIN `tabItem` i on i.item_code = o.item_code
         JOIN `tabItem Group` ig ON ig.name = i.item_group
-        JOIN `tabRevenue Stream` rs ON rs.name = ig.revenue_stream
-        GROUP BY rs.name, month
+        LEFT JOIN `tabRevenue Stream` rs ON rs.name = ig.revenue_stream
+        {where_conditions}
     """.format(**filters)
     
     aggregated_data = frappe.db.sql(data_query, as_dict=True)

@@ -1,6 +1,7 @@
 // Copyright (c) 2016, libracore and contributors
 // For license information, please see license.txt
 /* eslint-disable */
+frappe.require("/assets/bnovate/js/modals.js")  // provides bnovate.modals
 
 frappe.query_reports["Revenue Analytics"] = {
 	filters: [
@@ -42,6 +43,8 @@ frappe.query_reports["Revenue Analytics"] = {
 		this.report = report;
 		this.colours = ["darker", "dark", "light"];
 		this.max_indent = null;
+
+		bnovate.modals.attach_report_modal("masterModal");
 	},
 	formatter: function (value, row, col, data, default_formatter) {
 
@@ -51,8 +54,28 @@ frappe.query_reports["Revenue Analytics"] = {
 
 		if (data.indent < this.max_indent) {
 			return `<span class="coloured ${this.colours[data.indent % this.colours.length]}">${default_formatter(value, row, col, data)}</span>`;
+		} else {
+			return this.build_master_link(default_formatter(value, row, col, data), data.revenue_stream_name, col.fieldname);
 		}
 
 		return default_formatter(value, row, col, data);
-	}
+	},
+	build_master_link(display_text, revenue_stream, month) {
+		const m = moment(month, "YYYY-MM");
+		const filters = {
+			revenue_stream,
+			from_date: m.startOf("month").format("YYYY-MM-DD"),
+			to_date: m.endOf("month").format("YYYY-MM-DD"),
+			company: frappe.query_report.filters?.find(f => f.fieldname === "company")?.get_value() || frappe.defaults.get_user_default("Company"),
+			include: frappe.query_report.filters?.find(f => f.fieldname === "include")?.get_value() || "All",
+		};
+
+		return bnovate.modals.report_link(
+			display_text,
+			"masterModal",
+			"Revenue Analytics Master",
+			`Revenue Analytics - ${revenue_stream} - ${m.format("MMMM YYYY")}`,
+			filters
+		)
+	},
 };

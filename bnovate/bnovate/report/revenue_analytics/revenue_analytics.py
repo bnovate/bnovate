@@ -7,6 +7,9 @@ from frappe import _
 from frappe.utils import flt, getdate, add_months
 from erpnext import get_company_currency
 
+from bnovate.bnovate.report.revenue_analytics_master.revenue_analytics_master import get_data as get_master_data , validate_filters
+
+
 def execute(filters=None):
     if not filters:
         filters = {}
@@ -17,13 +20,6 @@ def execute(filters=None):
     data = get_data(filters)
 
     return columns, data
-
-def validate_filters(filters):
-    from_date = getdate(filters.get("from_date"))
-    to_date = getdate(filters.get("to_date"))
-
-    if from_date > to_date:
-        frappe.throw(_("From Date must be before To Date"))
 
 def get_columns(filters):
     columns = [
@@ -62,9 +58,6 @@ def get_columns(filters):
     return columns
 
 def get_data(filters):
-    currency = get_company_currency(filters.get("company"))
-    filters.include_sinv = filters.get("include") in ("All", "Billed")
-    filters.include_so = filters.get("include") in ("All", "Unbilled")
 
     # Get all revenue streams in tree order
     revenue_streams = frappe.db.sql("""
@@ -82,56 +75,17 @@ def get_data(filters):
         ORDER BY rs.lft
     """, as_dict=True)
 
-    # Get aggregated data
-    data_query = """
-        WITH orders AS (
-            SELECT
-                sii.item_code,
-                DATE_FORMAT(si.posting_date, '%%Y-%%m') as month,
-                sii.base_net_amount as amount,
-                "Billed" as stage
-            FROM `tabSales Invoice` si
-            JOIN `tabSales Invoice Item` sii ON sii.parent = si.name 
-            WHERE si.docstatus = 1
-                AND si.company = '{company}'
-                AND si.posting_date BETWEEN '{from_date}' AND '{to_date}'
-                AND {include_sinv}
+    aggregated_data = get_master_data(filters)
 
-            UNION ALL
-
-            SELECT
-                soi.item_code,
-                DATE_FORMAT(so.delivery_date, '%%Y-%%m') as month,
-                (soi.net_amount - ifnull(soi.billed_amt, 0)) * so.conversion_rate AS amount,  -- Unbilled amount in company currency
-                "Unbilled" as stage
-            FROM `tabSales Order` so
-            JOIN `tabSales Order Item` soi ON soi.parent = so.name 
-            WHERE so.docstatus = 1
-                AND so.status != 'Closed'
-                AND so.company = '{company}'
-                AND so.delivery_date BETWEEN '{from_date}' AND '{to_date}'
-                AND {include_so}
-        )
-
-        SELECT
-            rs.name as revenue_stream_name,
-            month,
-            SUM(o.amount) as amount
-        FROM orders o
-        JOIN `tabItem` i on i.item_code = o.item_code
-        JOIN `tabItem Group` ig ON ig.name = i.item_group
-        JOIN `tabRevenue Stream` rs ON rs.name = ig.revenue_stream
-        GROUP BY rs.name, month
-
-    """.format(**filters)
-
-    aggregated_data = frappe.db.sql(data_query, filters, as_dict=True)
-
-    # Create a dict for quick lookup
+    # Aggregate 
     amounts = {}
     for row in aggregated_data:
         key = (row.revenue_stream_name, row.month)
-        amounts[key] = flt(row.amount)
+        if key not in amounts:
+            amounts[key] = 0
+
+        amounts[key] += row.amount
+            
 
     # Build the data rows with initial values
     data = []
