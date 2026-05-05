@@ -115,7 +115,6 @@ def get_data(filters):
 
         SELECT
             rs.name as revenue_stream_name,
-            rs.parent_revenue_stream,
             month,
             SUM(o.amount) as amount
         FROM orders o
