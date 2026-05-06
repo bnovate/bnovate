@@ -309,48 +309,58 @@ def get_columns():
 def get_conditions(filters):
     conditions = ""
 
-    for opts in (("company", " and si.company=%(company)s"),
-        ("customer", " and si.customer = %(customer)s"),
-        ("item_code", " and si.item_code = %(item_code)s"),
-        ("from_date", " and si.posting_date>=%(from_date)s"),
-        ("to_date", " and si.posting_date<=%(to_date)s"),
-        ("company_gstin", " and si.company_gstin = %(company_gstin)s"),
-        ("invoice_type", " and si.invoice_type = %(invoice_type)s")):
+    for opts in (("company", " and si.company='{company}'"),
+        ("customer", " and si.customer = '{customer}'"),
+        ("item_code", " and si.item_code = '{item_code}'"),
+        ("from_date", " and si.posting_date>='{from_date}'"),
+        ("to_date", " and si.posting_date<='{to_date}'"),
+        ("company_gstin", " and si.company_gstin = '{company_gstin}'"),
+        ("invoice_type", " and si.invoice_type = '{invoice_type}'")):
             if filters.get(opts[0]):
                 conditions += opts[1]
 
     if filters.get("mode_of_payment"):
         conditions += """ and exists(select name from `tabSales Invoice Payment`
             where parent=si.name
-                and ifnull(`tabSales Invoice Payment`.mode_of_payment, '') = %(mode_of_payment)s)"""
+                and ifnull(`tabSales Invoice Payment`.mode_of_payment, '') = '{mode_of_payment}')"""
 
     if filters.get("warehouse"):
         conditions +=  """ and exists(select name from `tabSales Invoice Item`
              where parent=si.name
-                 and ifnull(`tabSales Invoice Item`.warehouse, '') = %(warehouse)s)"""
+                 and ifnull(`tabSales Invoice Item`.warehouse, '') = '{warehouse}')"""
 
 
     if filters.get("brand"):
         conditions +=  """ and exists(select name from `tabSales Invoice Item`
              where parent=si.name
-                 and ifnull(`tabSales Invoice Item`.brand, '') = %(brand)s)"""
+                 and ifnull(`tabSales Invoice Item`.brand, '') = '{brand}')"""
 
     if filters.get("item_group"):
         conditions +=  """ and exists(select name from `tabSales Invoice Item`
              where parent=si.name
-                 and ifnull(`tabSales Invoice Item`.item_group, '') = %(item_group)s)"""
+                 and ifnull(`tabSales Invoice Item`.item_group, '') = '{item_group}')"""
 
 
     return conditions
 
 def get_items(filters):
-    conditions = get_conditions(filters)
-    match_conditions = frappe.build_match_conditions("Sales Invoice")
+
+    # Filter logic recycled from Original Sales Register...
+
+    conditions = get_conditions(filters).format(**filters)
+    match_conditions = frappe.build_match_conditions("Sales Invoice").format(**filters)
 
     if match_conditions:
         match_conditions = " and {0} ".format(match_conditions)
 
-    return frappe.db.sql("""
+    # Shipping categorisation
+    shipping_default_account = frappe.get_value("Company", filters.company, "default_freight_sales_account")
+    shipping_item_group = "Shipping"
+    shipping_revenue_stream = frappe.get_value("Item Group", shipping_item_group, "revenue_stream")
+    shipping_revenue_stream_parent = frappe.get_value("Revenue Stream", shipping_revenue_stream, "parent_revenue_stream")
+    
+
+    query = """
         WITH 
         cogs_per_sii AS (
             -- One row SINV items = One row of DN items
@@ -388,7 +398,7 @@ def get_items(filters):
             LEFT JOIN `tabCustomer Group` cg on cg.name = cu.customer_group
             JOIN `tabTerritory` te ON te.name = cu.territory
             JOIN `tabCompany` co ON co.name = si.company
-            WHERE si.docstatus = 1 %s %s 
+            WHERE si.docstatus = 1 {conditions} {match_conditions}
         )
 
         SELECT -- Sales invoice items
@@ -467,11 +477,12 @@ def get_items(filters):
             sinv.customer, 
             sinv.company, 
 
+            -- Identify shipping based on income account. The rest is grouped under "Taxes and Charges"
             NULL as item_code, 
             NULL as item_name,
-            "Taxes and Charges" as item_group, 
-            "Taxes and Charges" as revenue_stream, 
-            "Taxes and Charges" as revenue_stream_parent, 
+            IF(t.account_head = '{shipping_default_account}', '{shipping_item_group}', 'Taxes and Charges') as item_group,
+            IF(t.account_head = '{shipping_default_account}', '{shipping_revenue_stream}', 'Taxes and Charges') as revenue_stream,
+            IF(t.account_head = '{shipping_default_account}', '{shipping_revenue_stream_parent}', 'Taxes and Charges') as revenue_stream_parent,
             t.description, 
 
             NULL as sales_order,
@@ -518,4 +529,10 @@ def get_items(filters):
         
 
         ORDER BY posting_date DESC, invoice, item_code DESC
-        """ % (conditions, match_conditions), filters, as_dict=1)
+    """.format(conditions=conditions, match_conditions=match_conditions, 
+               shipping_default_account=shipping_default_account, 
+               shipping_item_group=shipping_item_group, 
+               shipping_revenue_stream=shipping_revenue_stream, 
+               shipping_revenue_stream_parent=shipping_revenue_stream_parent)
+        
+    return frappe.db.sql(query, as_dict=1)

@@ -114,8 +114,8 @@ fixtures = [
             "Delivery Note-shipping_country",
 
             # Shipments (most fields are in exported customizations - shipment.json)
-            "Company-eori_number",
-            "Company-default_address",
+            # "Company-eori_number", # Now exported in company.json
+            # "Company-default_address",
             "Supplier-eori_number",
             "Delivery Note-eori_number",
             "Customer-eori_number",
