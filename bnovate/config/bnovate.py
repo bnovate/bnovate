@@ -199,7 +199,15 @@ def get_data():
                     "label": _("On Time Delivery KPIs"),
                     "doctype": "Sales Order",
                     "is_query_report": True
-                }
+                },
+                {
+                    "type": "report",
+                    "name": "Revenue Analytics",
+                    "label": _("Revenue Analytics"),
+                    "doctype": "Sales Invoice",
+                    "is_query_report": True
+                },
+                
             ]
         },
         {

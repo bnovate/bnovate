@@ -61,6 +61,18 @@ def get_columns(filters):
         "width": 150
     },
     {
+        "fieldname": "year",
+        "label": _("Year"),
+        "fieldtype": "Data",
+        "width": 150
+    },
+    {
+        "fieldname": "quarter",
+        "label": _("Quarter"),
+        "fieldtype": "Data",
+        "width": 150
+    },
+    {
         "fieldname": "month",
         "label": _("Month"),
         "fieldtype": "Data",
@@ -96,20 +108,40 @@ def get_data(filters):
         filters.where_conditions += " AND IFNULL(rs.name, 'Other') = '{revenue_stream}' ".format(**filters)
 
 
-    # TODO: add shipping, separate from VAT.
+    filters.shipping_default_account = frappe.get_value("Company", filters.company, "default_freight_sales_account")
+    filters.shipping_item_group = "Shipping"
 
     data_query = """
         WITH orders AS (
-            SELECT
+            SELECT  -- SINV items
                 sii.item_code,
+                i.item_group as item_group,
                 si.posting_date as posting_date,
-                DATE_FORMAT(si.posting_date, '%Y-%m') as month,
                 sii.base_net_amount as amount,
                 sii.sales_order as so_name,
                 si.name as sinv_name,
                 "Billed" as stage
             FROM `tabSales Invoice` si
             JOIN `tabSales Invoice Item` sii ON sii.parent = si.name 
+            JOIN `tabItem` i on i.item_code = sii.item_code
+            
+            WHERE si.docstatus = 1
+                AND si.company = '{company}'
+                AND si.posting_date BETWEEN '{from_date}' AND '{to_date}'
+                AND {include_sinv}
+
+            UNION ALL
+            
+            SELECT -- SINV Taxes and Charges, including Shipping
+                NULL as item_code,
+                IF(t.account_head = '{shipping_default_account}', '{shipping_item_group}', 'Taxes and Charges') as item_group,
+                si.posting_date as posting_date,
+                t.base_tax_amount as amount,
+                NULL as so_name,
+                si.name as sinv_name,
+                "Billed" as stage
+            FROM `tabSales Invoice` si
+            JOIN `tabSales Taxes and Charges` t ON t.parent = si.name
             WHERE si.docstatus = 1
                 AND si.company = '{company}'
                 AND si.posting_date BETWEEN '{from_date}' AND '{to_date}'
@@ -117,16 +149,17 @@ def get_data(filters):
 
             UNION ALL
 
-            SELECT
+            SELECT  -- Unbilled SO items
                 soi.item_code,
+                i.item_group as item_group,
                 soi.delivery_date as posting_date,
-                DATE_FORMAT(soi.delivery_date, '%Y-%m') as month,
                 (soi.net_amount - ifnull(soi.billed_amt, 0)) * so.conversion_rate AS amount,  -- Unbilled amount in company currency
                 so.name as so_name,
                 NULL as sinv_name,
                 "Unbilled" as stage
             FROM `tabSales Order` so
             JOIN `tabSales Order Item` soi ON soi.parent = so.name 
+            JOIN `tabItem` i on i.item_code = soi.item_code
             WHERE so.docstatus = 1
                 AND so.status != 'Closed'
                 AND so.company = '{company}'
@@ -138,17 +171,19 @@ def get_data(filters):
         SELECT
             o.stage,
             IFNULL(rs.name, 'Other') as revenue_stream_name,
-            ig.name as item_group,
+            o.item_group as item_group,
             o.item_code,
             i.item_name,
             o.posting_date,
-            o.month,
+            YEAR(o.posting_date) as year,
+            CONCAT(YEAR(o.posting_date), '-Q', QUARTER(o.posting_date)) as quarter,
+            DATE_FORMAT(o.posting_date, '%Y-%m') as month,
             o.amount,
             o.so_name,
             o.sinv_name
         FROM orders o
-        JOIN `tabItem` i on i.item_code = o.item_code
-        JOIN `tabItem Group` ig ON ig.name = i.item_group
+        LEFT JOIN `tabItem` i on i.item_code = o.item_code
+        LEFT JOIN `tabItem Group` ig ON ig.name = o.item_group
         LEFT JOIN `tabRevenue Stream` rs ON rs.name = ig.revenue_stream
         {where_conditions}
     """.format(**filters)

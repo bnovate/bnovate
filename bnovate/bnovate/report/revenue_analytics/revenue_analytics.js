@@ -26,6 +26,13 @@ frappe.query_reports["Revenue Analytics"] = {
 			"options": ["All", "Billed", "Unbilled"],
 			"default": "All"
 		},
+		// {
+		// 	"fieldname": "interval",
+		// 	"label": __("Time Interval"),
+		// 	"fieldtype": "Select",
+		// 	"options": ["Month", "Quarter", "Year"],
+		// 	"default": "Month"
+		// },
 		{
 			"fieldname": "company",
 			"label": __("Company"),
@@ -61,11 +68,19 @@ frappe.query_reports["Revenue Analytics"] = {
 		return default_formatter(value, row, col, data);
 	},
 	build_master_link(display_text, revenue_stream, month) {
-		const m = moment(month, "YYYY-MM");
+		let from_date = frappe.query_report.filters?.find(f => f.fieldname === "from_date")?.get_value();
+		let to_date = frappe.query_report.filters?.find(f => f.fieldname === "to_date")?.get_value();
+
+		if (month !== 'total') {
+			const m = moment(month, "YYYY-MM");
+			from_date = m.startOf("month").format("YYYY-MM-DD");
+			to_date = m.endOf("month").format("YYYY-MM-DD");
+		};
+
 		const filters = {
 			revenue_stream,
-			from_date: m.startOf("month").format("YYYY-MM-DD"),
-			to_date: m.endOf("month").format("YYYY-MM-DD"),
+			from_date,
+			to_date,
 			company: frappe.query_report.filters?.find(f => f.fieldname === "company")?.get_value() || frappe.defaults.get_user_default("Company"),
 			include: frappe.query_report.filters?.find(f => f.fieldname === "include")?.get_value() || "All",
 		};
@@ -74,7 +89,7 @@ frappe.query_reports["Revenue Analytics"] = {
 			display_text,
 			"masterModal",
 			"Revenue Analytics Master",
-			`Revenue Analytics - ${revenue_stream} - ${m.format("MMMM YYYY")}`,
+			`Revenue Analytics - ${revenue_stream} - ${month}`,
 			filters
 		)
 	},

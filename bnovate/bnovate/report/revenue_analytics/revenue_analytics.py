@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate, add_months
+from frappe.utils import flt, getdate, add_months, add_years
 from erpnext import get_company_currency
 
 from bnovate.bnovate.report.revenue_analytics_master.revenue_analytics_master import get_data as get_master_data , validate_filters
@@ -34,6 +34,7 @@ def get_columns(filters):
     from_date = getdate(filters.get("from_date"))
     to_date = getdate(filters.get("to_date"))
 
+
     current = from_date
     while current <= to_date:
         month_year = current.strftime("%b %Y")
@@ -45,6 +46,7 @@ def get_columns(filters):
             "options": "currency",
             "width": 120
         })
+
         current = add_months(current, 1)
 
     columns.append({
@@ -58,6 +60,7 @@ def get_columns(filters):
     return columns
 
 def get_data(filters):
+
 
     # Get all revenue streams in tree order
     revenue_streams = frappe.db.sql("""
@@ -80,7 +83,7 @@ def get_data(filters):
     # Aggregate 
     amounts = {}
     for row in aggregated_data:
-        key = (row.revenue_stream_name, row.month)
+        key = (row.revenue_stream_name, row.get("month"))
         if key not in amounts:
             amounts[key] = 0
 
