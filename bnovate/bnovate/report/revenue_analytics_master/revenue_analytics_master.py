@@ -104,8 +104,11 @@ def get_data(filters):
     filters.include_so = filters.get("include") in ("All", "Unbilled")
 
     filters.where_conditions = "WHERE true"    
-    if filters.revenue_stream:
-        filters.where_conditions += " AND IFNULL(rs.name, 'Other') = '{revenue_stream}' ".format(**filters)
+
+    if filters.revenue_streams:
+        if isinstance(filters.revenue_streams, str):
+            filters.revenue_streams = [filters.revenue_streams]
+        filters.where_conditions += " AND IFNULL(rs.name, 'Other') IN ({0}) ".format(", ".join("'{0}'".format(f) for f in filters.revenue_streams))
 
 
     filters.shipping_default_account = frappe.get_value("Company", filters.company, "default_freight_sales_account")

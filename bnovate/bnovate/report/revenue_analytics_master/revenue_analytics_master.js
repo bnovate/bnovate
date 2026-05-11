@@ -34,10 +34,38 @@ frappe.query_reports["Revenue Analytics Master"] = {
 			"reqd": 1
 		},
 		{
-			"fieldname": "revenue_stream",
-			"label": __("Revenue Stream"),
-			"fieldtype": "Link",
-			"options": "Revenue Stream",
-		}
+			fieldname: "revenue_streams",
+			label: __("Revenue Streams"),
+			fieldtype: "MultiSelectList",
+			get_data: async function () {
+				const revenue_streams = await frappe.db.get_list("Revenue Stream", {
+					fields: ["name", "revenue_stream_name"],
+					order_by: "lft",
+					filters: {
+						is_group: 0,
+					}
+				});
+				return revenue_streams.map(rs => ({ value: rs.name, label: rs.revenue_stream_name }));
+			},
+			on_change: function () {
+				frappe.query_report.refresh();
+			},
+		},
+
 	],
+	async onload(report) {
+		// Select all revenue streams by default
+		const stream_filter = frappe.query_report.get_filter("revenue_streams");
+		if (stream_filter && !stream_filter.get_value()?.length) {
+			const revenue_streams = await frappe.db.get_list("Revenue Stream", {
+				fields: ["name"],
+				order_by: "lft",
+				filters: {
+					is_group: 0,
+				}
+			});
+
+			stream_filter.set_value(revenue_streams.map(rs => rs.name));
+		}
+	},
 };

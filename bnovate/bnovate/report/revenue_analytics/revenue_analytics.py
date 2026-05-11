@@ -60,8 +60,6 @@ def get_columns(filters):
     return columns
 
 def get_data(filters):
-
-
     # Get all revenue streams in tree order
     revenue_streams = frappe.db.sql("""
         SELECT 

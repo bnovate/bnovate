@@ -26,6 +26,24 @@ frappe.query_reports["Revenue Analytics"] = {
 			"options": ["All", "Billed", "Unbilled"],
 			"default": "All"
 		},
+		{
+			fieldname: "revenue_streams",
+			label: __("Revenue Streams"),
+			fieldtype: "MultiSelectList",
+			get_data: async function () {
+				const revenue_streams = await frappe.db.get_list("Revenue Stream", {
+					fields: ["name", "revenue_stream_name"],
+					order_by: "lft",
+					filters: {
+						is_group: 0,
+					}
+				});
+				return revenue_streams.map(rs => ({ value: rs.name, label: rs.revenue_stream_name }));
+			},
+			on_change: function () {
+				frappe.query_report.refresh();
+			},
+		},
 		// {
 		// 	"fieldname": "interval",
 		// 	"label": __("Time Interval"),
@@ -46,14 +64,28 @@ frappe.query_reports["Revenue Analytics"] = {
 	name_field: "revenue_stream_name",
 	parent_field: "parent_revenue_stream",
 	initial_depth: 2,
-	onload: function (report) {
+	async onload(report) {
 		this.report = report;
 		this.colours = ["darker", "dark", "light"];
 		this.max_indent = null;
 
 		bnovate.modals.attach_report_modal("masterModal");
+
+		// Select all revenue streams by default
+		const stream_filter = frappe.query_report.get_filter("revenue_streams");
+		if (stream_filter && !stream_filter.get_value()?.length) {
+			const revenue_streams = await frappe.db.get_list("Revenue Stream", {
+				fields: ["name"],
+				order_by: "lft",
+				filters: {
+					is_group: 0,
+				}
+			});
+
+			stream_filter.set_value(revenue_streams.map(rs => rs.name));
+		}
 	},
-	formatter: function (value, row, col, data, default_formatter) {
+	formatter(value, row, col, data, default_formatter) {
 
 		if (this.max_indent === null) {
 			this.max_indent = Math.max(...frappe.query_report.data.map(d => d.indent || 0));
@@ -78,11 +110,11 @@ frappe.query_reports["Revenue Analytics"] = {
 		};
 
 		const filters = {
-			revenue_stream,
 			from_date,
 			to_date,
 			company: frappe.query_report.filters?.find(f => f.fieldname === "company")?.get_value() || frappe.defaults.get_user_default("Company"),
 			include: frappe.query_report.filters?.find(f => f.fieldname === "include")?.get_value() || "All",
+			revenue_streams: new Array([revenue_stream]),
 		};
 
 		return bnovate.modals.report_link(
