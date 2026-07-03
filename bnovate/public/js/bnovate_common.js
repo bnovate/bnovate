@@ -544,6 +544,15 @@ bnovate.utils.check_vat_number = async function (vat_number) {
   }
 }
 
+bnovate.utils.get_mawbs = async function () {
+  let resp = await frappe.call({
+    method: 'bnovate.bnovate.utils.get_mawbs',
+    args: {
+    }
+  })
+  return resp.message;
+}
+
 bnovate.utils.convert_deferred_revenue_to_income = async function (start_date, end_date) {
   let resp = await frappe.call({
     method: 'bnovate.bnovate.utils.convert_deferred_revenue_to_income',
