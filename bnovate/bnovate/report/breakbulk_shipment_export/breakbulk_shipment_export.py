@@ -10,7 +10,7 @@ def execute(filters=None):
  
 def get_columns():
     return [
-        {"label": "Shipper Reference", "fieldname": "shipperReference", "fieldtype": "Data", "width": 140},
+        {"label": "Shipper Reference", "fieldname": "shipperReference", "fieldtype": "Link", "options": "Delivery Note", "width": 140},
         {"label": "Receiver Company Name", "fieldname": "receiverCompanyName", "fieldtype": "Data", "width": 180},
         {"label": "Receiver Contact Person Name", "fieldname": "receiverContactPersonName", "fieldtype": "Data", "width": 180},
         {"label": "Receiver Address Line 1", "fieldname": "receiverAddressLine1", "fieldtype": "Data", "width": 180},

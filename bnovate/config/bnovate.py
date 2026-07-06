@@ -36,8 +36,15 @@ def get_data():
                 },
                 {
                     "type": "report",
-                    "name": "Breakbulk Data Export",
-                    "label": _("Breakbulk Data Export"),
+                    "name": "Breakbulk Shipment Export",
+                    "label": _("Breakbulk Shipment Export"),
+                    "doctype": "Sales Order",
+                    "is_query_report": True
+                },
+                {
+                    "type": "report",
+                    "name": "Breakbulk Invoice Export",
+                    "label": _("Breakbulk Invoice Export"),
                     "doctype": "Sales Order",
                     "is_query_report": True
                 },

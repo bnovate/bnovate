@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Breakbulk Data Export"] = {
+frappe.query_reports["Breakbulk Invoice Export"] = {
 	filters: [
 		{
 			fieldname: "mawb",
