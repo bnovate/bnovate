@@ -320,6 +320,17 @@ def get_print_html(doctype, docname, print_format, no_letterhead=True, lang=None
 
     return """<style>{css}</style>{html}""".format(css=html_and_style['style'], html=html_and_style['html'])
 
+@frappe.whitelist()
+def get_mawbs():
+    """ Return list of all MAWBs in the system, sorted by date descending. """
+    res = frappe.db.sql("""
+        SELECT DISTINCT breakbulk_master_no 
+        FROM `tabDelivery Note` 
+        WHERE breakbulk_master_no IS NOT NULL AND TRIM(breakbulk_master_no) != '' 
+        ORDER BY posting_date DESC""", 
+        as_dict=1)
+    return [r.breakbulk_master_no for r in res]
+
 
 @frappe.whitelist()
 def convert_deferred_revenue_to_income(start_date=None, end_date=None):

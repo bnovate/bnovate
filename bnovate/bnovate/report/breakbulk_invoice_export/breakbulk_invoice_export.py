@@ -137,9 +137,9 @@ def get_data(filters):
     shipping_default_account = frappe.get_value("Company", filters.company, "default_freight_sales_account")
     company_currency = get_company_currency(filters.company)
 
-    date_filter = ""
-    if filters and filters.date:
-        date_filter = "AND dn.posting_date = '{date}'".format(date=filters.date)
+    filter_conditions = ""
+    if filters.mawb:
+        filter_conditions += " AND dn.breakbulk_master_no = '{mawb}'".format(mawb=filters.mawb)
 
     query = """
     WITH breakbulk_totals AS (
@@ -149,7 +149,7 @@ def get_data(filters):
            SUM(dn.total_net_weight) AS net_weight,
            dn.breakbulk_master_no
         FROM `tabDelivery Note` dn
-        WHERE TRUE {date_filter}
+        WHERE TRUE {filter_conditions}
         GROUP BY dn.breakbulk_master_no
     )
 
@@ -178,7 +178,7 @@ def get_data(filters):
     LEFT JOIN breakbulk_totals bt ON bt.breakbulk_master_no = dn.breakbulk_master_no
     LEFT JOIN `tabAddress` addr ON addr.name = dn.customer_address
     WHERE dn.docstatus != 2
-        {date_filter}
+        {filter_conditions}
         AND dn.breakbulk_master_no IS NOT NULL AND TRIM(dn.breakbulk_master_no) != ''
 
     UNION ALL
@@ -208,12 +208,12 @@ def get_data(filters):
     LEFT JOIN breakbulk_totals bt ON bt.breakbulk_master_no = dn.breakbulk_master_no
     LEFT JOIN `tabAddress` addr ON addr.name = dn.customer_address
     WHERE dn.docstatus != 2
-        {date_filter}
+        {filter_conditions}
         AND dn.breakbulk_master_no IS NOT NULL AND TRIM(dn.breakbulk_master_no) != ''
         AND tc.account_head = '{shipping_default_account}'
         AND tc.tax_amount > 0
 
     ORDER BY dn_name, idx
     
-    """.format(date_filter=date_filter, shipping_default_account=shipping_default_account, company_currency=company_currency)
+    """.format(filter_conditions=filter_conditions, shipping_default_account=shipping_default_account, company_currency=company_currency)
     return frappe.db.sql(query, as_dict=1)
