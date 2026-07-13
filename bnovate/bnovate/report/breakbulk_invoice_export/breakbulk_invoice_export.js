@@ -40,5 +40,14 @@ frappe.query_reports["Breakbulk Invoice Export"] = {
 			const dn_list = Array.from(new Set(frappe.query_report.data.map(row => row.dn_name)));
 			bnovate.utils.open_pdf_urls("Delivery Note", dn_list, "Commercial Invoice CHF");
 		});
+
+		report.page.add_inner_button(__('Sum shipping'), () => {
+			let shipping = frappe.query_report.data
+				.filter(row => row.item_name === 'Shipping')
+				.reduce((acc, row) => acc + row.amount, 0);
+
+			bnovate.utils.html_dialog('Total shipping charged',
+				`Sum of shipping rows:<br><br> <b>${shipping.toFixed(2)}</b> CHF`);
+		})
 	},
 };
