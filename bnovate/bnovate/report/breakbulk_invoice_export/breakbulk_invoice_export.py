@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 import frappe
 from erpnext import get_company_currency
 
+from bnovate.bnovate.report.breakbulk_shipment_export.breakbulk_shipment_export import get_data as get_shipment_data
+
 
 def execute(filters=None):
     columns, data = [], []
@@ -15,7 +17,7 @@ def get_columns():
     return [
         {
             "label": "Line No",
-            "fieldname": "idx",
+            "fieldname": "dni_idx",
             "fieldtype": "Int",
             "width": 80
         },
@@ -71,7 +73,7 @@ def get_columns():
         },
         {
             "label": "Recipient's Country",
-            "fieldname": "country",
+            "fieldname": "billing_country",
             "fieldtype": "Data",
             "width": 150
         },
@@ -89,7 +91,7 @@ def get_columns():
         },
         {
             "label": "Net Weight",
-            "fieldname": "total_weight",
+            "fieldname": "dni_total_weight",
             "fieldtype": "Float",
             "width": 120
         },
@@ -113,7 +115,7 @@ def get_columns():
         },
         {
             "label": "Items Value",
-            "fieldname": "amount",
+            "fieldname": "base_declared_amount",
             "fieldtype": "Float",
             "width": 120
         },
@@ -125,95 +127,32 @@ def get_columns():
         },
         {
             "label": "AWB Number",
-            "fieldname": "master_awb_number",
+            "fieldname": "breakbulk_master_no",
             "fieldtype": "Data",
             "width": 150
         }
     ]
 
-
 def get_data(filters):
 
-    shipping_default_account = frappe.get_value("Company", filters.company, "default_freight_sales_account")
-    company_currency = get_company_currency(filters.company)
+    # Fetch data from other report to ensure consistant filtering / value calculation.
+    data = get_shipment_data(filters, include_parcels=False, include_shipping=True)
 
-    filter_conditions = ""
-    if filters.mawb:
-        filter_conditions += " AND dn.breakbulk_master_no = '{mawb}'".format(mawb=filters.mawb)
-
-    query = """
-    WITH breakbulk_totals AS (
-        SELECT
-           dn.name as dn_name, 
-           SUM((SELECT COALESCE(SUM(weight), 0) FROM `tabShipment Parcel` WHERE parent = dn.name)) AS gross_weight,
-           SUM(dn.total_net_weight) AS net_weight,
-           dn.breakbulk_master_no
-        FROM `tabDelivery Note` dn
-        WHERE TRUE {filter_conditions}
-        GROUP BY dn.breakbulk_master_no
-    )
-
-    SELECT
-        dni.idx,
-        "S." as agreement,
-        dni.parent as dn_name,
-        dni.item_name,
-        DATE_FORMAT(dn.posting_date, '%Y%m%d') as posting_date,
-        "" as customer_number,
-        dni.customs_tariff_number,
-        dni.country_of_origin,
-        bt.gross_weight AS total_gross_weight,
-        bt.net_weight AS total_net_weight,
-        dn.eori_number,
-        REGEXP_REPLACE(dn.tax_id, '[^a-zA-Z0-9]', '') as tax_id,
-        addr.country as country,
-        dni.total_weight,
-        "NO" as preferential_origin,
-        dni.qty,
-        IF(dni.base_amount, dni.base_amount, dni.base_price_list_rate * dni.qty) as amount,
-        "{company_currency}" as currency,
-        dn.breakbulk_master_no as master_awb_number
-    FROM `tabDelivery Note Item` dni
-    LEFT JOIN `tabDelivery Note` dn ON dni.parent = dn.name
-    LEFT JOIN breakbulk_totals bt ON bt.breakbulk_master_no = dn.breakbulk_master_no
-    LEFT JOIN `tabAddress` addr ON addr.name = dn.customer_address
-    WHERE dn.docstatus != 2
-        {filter_conditions}
-        AND dn.breakbulk_master_no IS NOT NULL AND TRIM(dn.breakbulk_master_no) != ''
-
-    UNION ALL
-
-    SELECT
-        0 as idx,
-        "S." as agreement,
-        dn.name as dn_name,
-        tc.description as item_name,
-        DATE_FORMAT(dn.posting_date, '%Y%m%d') as posting_date,
-        "" as customer_number,
-        "" as customs_tariff_number,
-        "" as country_of_origin,
-        bt.gross_weight AS total_gross_weight,
-        bt.net_weight AS total_net_weight,
-        dn.eori_number,
-        REGEXP_REPLACE(dn.tax_id, '[^a-zA-Z0-9]', '') as tax_id,
-        addr.country as country,
-        0 as total_weight,
-        "NO" as preferential_origin,
-        1 as qty,
-        tc.base_tax_amount as amount,
-        "{company_currency}" as currency,
-        dn.breakbulk_master_no as master_awb_number
-    FROM `tabSales Taxes and Charges` tc
-    LEFT JOIN `tabDelivery Note` dn ON tc.parent = dn.name
-    LEFT JOIN breakbulk_totals bt ON bt.breakbulk_master_no = dn.breakbulk_master_no
-    LEFT JOIN `tabAddress` addr ON addr.name = dn.customer_address
-    WHERE dn.docstatus != 2
-        {filter_conditions}
-        AND dn.breakbulk_master_no IS NOT NULL AND TRIM(dn.breakbulk_master_no) != ''
-        AND tc.account_head = '{shipping_default_account}'
-        AND tc.tax_amount > 0
-
-    ORDER BY dn_name, idx
+    # Get gross weight per breakbulk. Count each DN only once
+    unique_weights = list(set((r['breakbulk_master_no'], r['dn_name'], r['dn_total_gross_weight']) for r in data))
     
-    """.format(filter_conditions=filter_conditions, shipping_default_account=shipping_default_account, company_currency=company_currency)
-    return frappe.db.sql(query, as_dict=1)
+    # Add ACL-specific data
+    company_currency = get_company_currency(filters.company)
+    for row in data:
+        row.update({
+            'agreement': 'S.',
+            'customer_number': '',
+            'preferential_origin': 'NO',
+            'total_gross_weight': sum(el[2] for el in unique_weights if el[0] == row['breakbulk_master_no']),
+            'total_net_weight': sum(r['dni_total_weight'] for r in data if r['breakbulk_master_no'] == row['breakbulk_master_no']),
+        })
+
+    return data
+
+
+        
