@@ -37,7 +37,7 @@ fixtures = [
             "Sales Invoice Item-subscription",
             "Sales Invoice Item-sc_detail",
             # Used to match invoice to SO payment terms through DN
-            "Delivery Note-payment_terms_template",
+            # "Delivery Note-payment_terms_template",
 
             # Time tracking and workstation assignment on work orders
             "Work Order-time_per_unit", 
@@ -90,34 +90,32 @@ fixtures = [
             "Stock Entry-from_customer_name",
             "Blanket Order-currency",
             "Address-portal_hide",
-            "Item-compatibility",
-            "Item-stability_in_months",
-            "Item-check_serial_no_on_delivery",
+            # "Item-compatibility",
+            # "Item-stability_in_months",
+            # "Item-check_serial_no_on_delivery",
 
             # Addresses
             "Address-company_name",
             # DN workflow
-            "Delivery Note-shipment",
-            "Delivery Note-carrier"
-            "Delivery Note-carrier_account_no"
-            "Delivery Note-tracking_no"
-            "Delivery Note-column_break_25",
-            "Delivery Note-packing_stage",
+            # "Delivery Note-shipment",
+            # "Delivery Note-carrier"
+            # "Delivery Note-carrier_account_no"
+            # "Delivery Note-tracking_no"
+            # "Delivery Note-column_break_25",
+            # "Delivery Note-packing_stage",
 
             # Custom shipping rules
-            "Sales Taxes and Charges-hide_if_zero",
+            # "Sales Taxes and Charges-hide_if_zero",
             "Quotation-custom_shipping_rule",
             "Quotation-shipping_country",
             "Sales Order-custom_shipping_rule",
             "Sales Order-shipping_country",
-            "Delivery Note-custom_shipping_rule",
-            "Delivery Note-shipping_country",
+            # "Delivery Note-custom_shipping_rule",
+            # "Delivery Note-shipping_country",
 
             # Shipments (most fields are in exported customizations - shipment.json)
-            # "Company-eori_number", # Now exported in company.json
-            # "Company-default_address",
             "Supplier-eori_number",
-            "Delivery Note-eori_number",
+            # "Delivery Note-eori_number",
             "Customer-check_vat",
             "Customer-eori_number",
             "Customer-check_eori",
@@ -125,27 +123,27 @@ fixtures = [
             "Quotation-incoterm",
             "Sales Order-incoterm",
             "Sales Order-skip_autoship",
-            "Delivery Note-incoterm",
+            # "Delivery Note-incoterm",
             "Sales Invoice-incoterm",
             "Address-contact_name",
-            "Delivery Note-carrier",
-            "Delivery Note-carrier_account_no",
-            "Delivery Note-tracking_no",
-            "Delivery Note-column_break_20",
-            "Delivery Note-parcels",
-            "Delivery Note-shipment_parcel",
-            "Delivery Note-parcel_template",
-            "Delivery Note-add_template",
-            "Delivery Note-shipping_label",
-            "Delivery Note-pickup_confirmation_number",
-            "Delivery Note-return_tracking_no",
-            "Delivery Note-return_shipping_label",
-            "Delivery Note-pallets",
-            "Delivery Note-pickup_comment",
-            "Delivery Note-skip_autoship",
-            "Delivery Note-breakbulk_master_no",
-            "Shipment Parcel Template-is_pallet",
-            "Shipment Parcel-is_pallet",
+            # "Delivery Note-carrier",
+            # "Delivery Note-carrier_account_no",
+            # "Delivery Note-tracking_no",
+            # "Delivery Note-column_break_20",
+            # "Delivery Note-parcels",
+            # "Delivery Note-shipment_parcel",
+            # "Delivery Note-parcel_template",
+            # "Delivery Note-add_template",
+            # "Delivery Note-shipping_label",
+            # "Delivery Note-pickup_confirmation_number",
+            # "Delivery Note-return_tracking_no",
+            # "Delivery Note-return_shipping_label",
+            # "Delivery Note-pallets",
+            # "Delivery Note-pickup_comment",
+            # "Delivery Note-skip_autoship",
+            # "Delivery Note-breakbulk_master_no",
+            # "Shipment Parcel Template-is_pallet",
+            # "Shipment Parcel-is_pallet",
 
             # Stock management
             "Material Request Item-default_supplier",
@@ -167,8 +165,8 @@ fixtures = [
             "Quotation Item-hide_price",
             "Sales Order Item-is_subitem",
             "Sales Order Item-hide_price",
-            "Delivery Note Item-is_subitem",
-            "Delivery Note Item-hide_price",
+            # "Delivery Note Item-is_subitem",
+            # "Delivery Note Item-hide_price",
             "Sales Invoice Item-is_subitem",
             "Sales Invoice Item-hide_price",
             "Quotation-translate_all",
@@ -179,7 +177,7 @@ fixtures = [
             # Service report and instrument portal
             "Warehouse-for_user",
             "Sales Order Item-service_report",
-            "Item-website_shortname",
+            # "Item-website_shortname",
             "Customer-portal_col_2",
             "Customer-is_service_partner",
         ]]]
