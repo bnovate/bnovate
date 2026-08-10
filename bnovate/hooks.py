@@ -233,6 +233,7 @@ doctype_js = {
         "public/js/doctype_includes/delivery_note.js",
     ],
     "Item": ["public/js/doctype_includes/item.js"],
+    "Supplier": ["public/js/doctype_includes/supplier.js"],
     "Purchase Order": ["public/js/doctype_includes/purchase_order.js"],
     "Purchase Receipt": ["public/js/doctype_includes/purchase_receipt.js"],
     "Purchase Invoice": ["public/js/doctype_includes/purchase_invoice.js"],

@@ -1,0 +1,46 @@
+{
+ "creation": "2026-08-07 09:37:29.648190",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "info",
+  "permissions"
+ ],
+ "fields": [
+  {
+   "fieldname": "permissions",
+   "fieldtype": "Table",
+   "label": "Permissions",
+   "options": "Approval Permission"
+  },
+  {
+   "fieldname": "info",
+   "fieldtype": "HTML",
+   "label": "Info",
+   "options": "<p>Currently only top-level (COMEX) approvals are supported. List Users who are allowed to give COMEX approval</p>"
+  }
+ ],
+ "issingle": 1,
+ "modified": "2026-08-07 09:44:23.108903",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Approval Permissions",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,53 @@
+{
+ "creation": "2026-08-06 16:22:53.020038",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "display_name",
+  "timestamp_approved",
+  "timestamp_revoked"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User ID",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "user.full_name",
+   "fieldname": "display_name",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "timestamp_approved",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp Approved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "timestamp_revoked",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp Revoked",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-08-06 17:29:21.611898",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Supplier Approval",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

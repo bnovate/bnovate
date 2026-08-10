@@ -1,0 +1,39 @@
+{
+ "creation": "2026-08-07 09:36:12.497422",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "for_doctype"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User ID",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "for_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Doctype",
+   "options": "DocType",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-08-07 09:42:11.451069",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Approval Permission",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
