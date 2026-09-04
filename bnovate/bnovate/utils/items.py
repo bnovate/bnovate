@@ -3,6 +3,7 @@
 # General utility functions for working with items
 
 import frappe
+from frappe.client import attach_file
 
 def get_highest_item_code(prefix=1):
     """ Return highest item code in a naming series """
@@ -22,7 +23,7 @@ WHERE item_code LIKE "{prefix}%"
 
 @frappe.whitelist()
 def get_next_item_code(prefix):
-    """ Return next item code in naming series, with .02 suffix """
+    """ Return next item code in naming series, with .01 suffix """
 
     last_code = get_highest_item_code(prefix)
     if not last_code:
@@ -50,3 +51,44 @@ def set_naming_series(prefix, number=0):
 @frappe.whitelist()
 def get_naming_series():
     return frappe.db.sql("SELECT * FROM `tabSeries`", as_dict=True)
+
+    
+@frappe.whitelist()
+def create_item(item_name, description, item_code=None, prefix="1", image=None):
+    """ Create item based on a naming series 
+
+    
+    Image should be a file attachment and will be set as the item image if provided.
+    Additional form data supported:
+    - image [file]: adds image as attachemnt and sets as cover image
+    - any other file: adds as attachment
+    
+    """
+
+    if not item_code:
+        item_code = get_next_item_code(prefix)
+
+
+    item = frappe.get_doc({
+        "doctype": "Item",
+        "item_code": item_code,
+        "item_name": item_name,
+        "description": description,
+        "item_group": "R&D",
+        "is_stock_item": 0,
+        "has_variants": 0,
+        "is_sales_item": 0,
+        "is_purchase_item": 1
+    })
+    item.insert()
+
+    # Check for attachments. Special treatent if form value name is "image".
+    for name, filestorage in frappe.request.files.items():
+        print(name, filestorage)
+        content = filestorage.stream.read()
+        filename = filestorage.filename
+        docfield = name == "image" and "image" or None
+
+        file = attach_file(filename, content, "Item", item_code, docfield=docfield, is_private=1)
+
+    return item.name
