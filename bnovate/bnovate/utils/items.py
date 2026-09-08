@@ -131,11 +131,15 @@ def create_item(item_name, description, item_code=None, prefix="1"):
 
     
 @frappe.whitelist()
-def upload_attachments(item_code):
+def upload_attachments(item_code, ignore_duplicate_error=False):
     """ Upload attachments to an item.  
 
-     Any files included in the form data will be attached to the item. 
-     If the form value name is "image", it will be attached to the image field of the item.
+    Any files included in the form data will be attached to the item. 
+    If the form value name is "image", it will be attached to the image field of the item.
+
+    If an identical file is uploaded twice to an item, frappe raises a DuplicateEntryError. 
+    If ignore_duplicates is True, the error will be ignored. The result is that the correct file
+    remains attached to the item. The response will be 200 OK but show the error message.
    
     """
 
@@ -155,7 +159,12 @@ def upload_attachments(item_code):
         filename = filestorage.filename
         docfield = name == "image" and "image" or None
 
-        file = attach_file(filename, content, "Item", item_code, docfield=docfield, is_private=1)
+        try:
+            file = attach_file(filename, content, "Item", item_code, docfield=docfield, is_private=1)
+        except DuplicateEntryError as e:
+            if ignore_duplicate_error:
+                continue
+            raise e
 
 
         
@@ -170,6 +179,6 @@ def update_item(item_code, **kwargs):
             setattr(item, key, value)
     item.save()
 
-    upload_attachments(item_code)
+    upload_attachments(item_code, ignore_duplicate_error=True)
 
     return changes
