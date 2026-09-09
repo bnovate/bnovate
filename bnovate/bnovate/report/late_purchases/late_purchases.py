@@ -22,6 +22,8 @@ def get_columns():
         {'fieldname': 'qty', 'fieldtype': 'Int', 'label': _('Qty total'), 'width': 100}, 
         {'fieldname': 'remaining_qty', 'fieldtype': 'Int', 'label': _('Qty to Receive'), 'width': 100},
         {'fieldname': 'bnovate_person', 'fieldtype': 'Data', 'label': _('bNovate Contact'), 'width': 200},
+        {'fieldname': 'purchase_receipt', 'fieldtype': 'Link', 'label': _('Purchase Receipt'), 'options': 'Purchase Receipt', 'width': 200},
+        {'fieldname': 'purchase_receipt_qty', 'fieldtype': 'Int', 'label': _('Received Qty in Purchase Receipt'), 'width': 200},
     ]
       
     
@@ -45,11 +47,14 @@ SELECT
     poi.qty, 
     (poi.qty - poi.received_qty) as remaining_qty,
     IFNULL(poi.expected_delivery_date, poi.schedule_date) as expected_delivery_date,
-    po.bnovate_person
+    po.bnovate_person,
+    pri.parent as purchase_receipt,
+    pri.received_qty as purchase_receipt_qty
 FROM `tabPurchase Order` as po
     JOIN `tabPurchase Order Item` as poi ON po.name = poi.parent
     JOIN `tabItem` as it ON poi.item_code = it.name
     JOIN `tabSupplier` as s ON po.supplier = s.name
+    LEFT JOIN (SELECT name, parent, purchase_order_item, received_qty FROM `tabPurchase Receipt Item` WHERE docstatus = 0) as pri ON poi.name = pri.purchase_order_item
 WHERE poi.received_qty < poi.qty
     AND IFNULL(poi.expected_delivery_date, poi.schedule_date) <= DATE_ADD(CURRENT_DATE(), INTERVAL {days_from_now} DAY)
     AND po.docstatus = 1
