@@ -42,7 +42,6 @@ def get_next_item_code(prefix):
     
     return "{}.01".format(last_code + 1)
 
-
 @frappe.whitelist()
 def get_item_codes(prefix):
     """ Return list of all item codes matching the prefix.
@@ -98,6 +97,9 @@ def get_attachments(item_code):
         fields=["name", "file_name", "file_url", "is_private"],
         order_by="creation asc",
     )
+
+    
+# TODO: check that odd-items are only ever part of R&D group?
 
     
 @frappe.whitelist()
@@ -173,10 +175,19 @@ def update_item(item_code, **kwargs):
     """ Update item details for a given item code. """
     changes = {"item_code": item_code}
     item = frappe.get_doc("Item", item_code)
+    old_item_group = item.item_group
     for key, value in kwargs.items():
         if hasattr(item, key):
             changes[key] = value
             setattr(item, key, value)
+
+    # Item defaults are specific to an item group: if the item group changes,
+    # the existing defaults (default warehouse, price lists, taxes, ...) no
+    # longer apply and are cleared.
+    if changes.get("item_group") and changes["item_group"] != old_item_group:
+        item.set("item_defaults", [])
+        changes["item_defaults"] = []
+
     item.save()
 
     upload_attachments(item_code, ignore_duplicate_error=True)
