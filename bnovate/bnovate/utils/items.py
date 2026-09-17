@@ -142,6 +142,8 @@ def upload_attachments(item_code, ignore_duplicate_error=False):
     If an identical file is uploaded twice to an item, frappe raises a DuplicateEntryError. 
     If ignore_duplicates is True, the error will be ignored. The result is that the correct file
     remains attached to the item. The response will be 200 OK but show the error message.
+
+    Known Limitation: can't relabel a file that is already attached.
    
     """
 
@@ -154,19 +156,42 @@ def upload_attachments(item_code, ignore_duplicate_error=False):
 
     
 
-    # Check for attachments. Special treatent if form value name is "image".
-    for name, filestorage in frappe.request.files.items():
-        print(name, filestorage)
+    # Check for attachments. Special treatment if form key is "image".
+    for label, filestorage in frappe.request.files.items():
         content = filestorage.stream.read()
         filename = filestorage.filename
-        docfield = name == "image" and "image" or None
+        docfield = label == "image" and "image" or None
+        item = frappe.get_doc("Item", item_code)
+        old_image_url = item.image
 
         try:
             file = attach_file(filename, content, "Item", item_code, docfield=docfield, is_private=1)
         except DuplicateEntryError as e:
+            # note that `file` was never assigned due to exception, so we can't assign label.
             if ignore_duplicate_error:
                 continue
             raise e
+            
+        if label == "image":
+            frappe.db.delete("File", {"file_url": old_image_url, "attached_to_doctype": "Item", "attached_to_name": item_code})
+            continue  # image already has a dedicated field, no need for an additional label.
+
+        # Label the attachment. If the label already exists, delete the old
+        # file and update the row, otherwise append a new row to the child table.
+        item = frappe.get_doc("Item", item_code)
+        existing_row = next(
+            (row for row in (item.attachment_labels or []) if row.label == label),
+            None,
+        )
+        if existing_row:
+            frappe.db.delete("File", {"file_url": existing_row.file_url, "attached_to_doctype": "Item", "attached_to_name": item_code})
+            existing_row.file_url = file.file_url
+        else:
+            item.append("attachment_labels", {
+                "label": label,
+                "file_url": file.file_url,
+            })
+        item.save()
 
 
         
