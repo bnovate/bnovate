@@ -138,6 +138,12 @@ frappe.ui.form.on("Sales Order", {
         bnovate.utils.set_item_discounts(frm);
     },
 
+    breakbulk_master_no(frm) {
+        if (frm.doc.breakbulk_master_no) {
+            frm.set_value("skip_autoship", 1);
+        }
+    },
+
     apply_default_discount(frm) {
         bnovate.utils.set_item_discounts(frm);
     },
