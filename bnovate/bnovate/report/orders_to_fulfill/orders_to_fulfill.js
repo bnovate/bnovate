@@ -89,7 +89,7 @@ frappe.query_reports["Orders to Fulfill"] = {
 			return `<span class="coloured ${this.colours[data.so_index % this.colours.length]}">${frappe.utils.get_form_link("Customer", data.customer, true, data.customer_name)}</span>`;
 		}
 		if (col.fieldname === "sales_order" || col.fieldname === "customer") {
-			return `<span class="coloured ${this.colours[data.so_index % this.colours.length]}">${default_formatter(value, row, col, data)}</span>`;
+			return `<span class="coloured ${this.colours[data.so_index % this.colours.length]}">${default_formatter(value, row, col, data)} ${breakbulk_indicator(data)} </span>`;
 		}
 		if (col.fieldname === "ship_date") {
 			return `<span class="coloured ${this.colours[data.day_index % this.colours.length]}">${default_formatter(value, row, col, data)}</span>`;
@@ -126,6 +126,13 @@ function work_order_indicator(doc) {
 function delivery_note_indicator(row) {
 	// With the current SQL query, only draft DNs can appear...
 	return ["Draft", "red"]
+}
+
+function breakbulk_indicator(row) {
+	if (!row.breakbulk_master_no) {
+		return "";
+	}
+	return ` <i class="fa fa-cubes text-muted" data-toggle="tooltip" data-placement="right" title="${__("Breakbulk")}: ${frappe.utils.escape_html(row.breakbulk_master_no)}"></i>`;
 }
 
 function cartridge_status_link(serial_nos) {

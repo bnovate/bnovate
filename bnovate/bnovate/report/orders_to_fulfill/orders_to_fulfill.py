@@ -52,7 +52,7 @@ def get_columns(filters):
         {'fieldname': 'sufficient_stock', 'fieldtype': 'Data', 'label': _('Go?'), 'width': 50, 'align': 'center'},
         {'fieldname': 'weeknum', 'fieldtype': 'Data', 'label': _('WK'), 'width': 40},
         {'fieldname': 'indicator', 'fieldtype': 'Data', 'label': _('Status'), 'width': 90},
-        {'fieldname': 'sales_order', 'fieldtype': 'Link', 'label': _('SO'), 'options': 'Sales Order', 'width': 70},
+        {'fieldname': 'sales_order', 'fieldtype': 'Link', 'label': _('SO'), 'options': 'Sales Order', 'width': 100},
         # {'fieldname': 'customer', 'fieldtype': 'Link', 'label': _('Customer'), 'options': 'Customer', 'width': 80, 'align': 'left'},
         {'fieldname': 'customer_name', 'fieldtype': 'Data', 'label': _('Customer Name'), 'width': 150, 'align': 'left'},
         {'fieldname': 'ship_date', 'fieldtype': 'Data', 'label': _('Ship date'), 'width': 80},
@@ -123,7 +123,8 @@ def get_data(filters):
         soi.idx as idx,
         0 as pidx, -- packed item index
         so.docstatus as docstatus,
-        so.company as company
+        so.company as company,
+        so.breakbulk_master_no
     FROM `tabSales Order Item` as soi
     JOIN `tabSales Order` as so ON soi.parent = so.name
     JOIN `tabItem` as it ON soi.item_code = it.name
@@ -155,7 +156,8 @@ def get_data(filters):
         soi.idx as idx,
         pi.idx as pidx,
         so.docstatus as docstatus,
-        so.company as company
+        so.company as company,
+        so.breakbulk_master_no
     FROM `tabSales Order Item` as soi
     JOIN `tabSales Order` as so ON soi.parent = so.name
     JOIN `tabItem` as it on soi.item_code = it.name
