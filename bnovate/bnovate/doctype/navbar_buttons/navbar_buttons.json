@@ -6,7 +6,8 @@
  "field_order": [
   "label",
   "type",
-  "destination"
+  "destination",
+  "route_options"
  ],
  "fields": [
   {
@@ -28,11 +29,17 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Destination"
+  },
+  {
+   "description": "JSON encoding of report filter, for example {\"workstation\": \"Quality Check\"}",
+   "fieldname": "route_options",
+   "fieldtype": "Text",
+   "label": "Route Options"
   }
  ],
  "istable": 1,
- "modified": "2024-09-23 13:10:25.507650",
- "modified_by": "douglas.watson@bnovate.com",
+ "modified": "2026-09-17 15:05:47.245322",
+ "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Navbar Buttons",
  "owner": "Administrator",

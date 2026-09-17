@@ -49,8 +49,20 @@ window.onload = async function () {
       button.innerHTML = row.label;
 
       button.addEventListener('click', async function () {
+
+        try {
+          frappe.route_options = JSON.parse(row.route_options || '{}');
+        } catch (e) {
+          console.error("Error parsing route options for button:", row.label, e);
+        }
+
+        // Reset filters if already on this page, otherwise navigate to the page
         if (frappe.get_route()[0] == row.type && frappe.get_route()[1] == row.destination) {
-          cur_list.filter_area.clear();
+          if (row.type == 'query-report') {
+            frappe.query_report.set_route_filters();
+          } else {
+            cur_list.filter_area.clear();
+          }
         } else {
           if (row.type == 'Page') {
             frappe.set_route(row.destination);
