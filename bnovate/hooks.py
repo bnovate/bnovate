@@ -254,7 +254,9 @@ doctype_list_js = {
     "Shipment": ["public/js/doctype_includes/shipment_list.js"],
 }
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
-# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+doctype_calendar_js = {
+    "Work Order": "public/js/doctype_includes/work_order_calendar.js",
+}
 
 # Home Pages
 # ----------
