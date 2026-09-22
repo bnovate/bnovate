@@ -148,6 +148,11 @@ function cartridge_status_link(serial_nos) {
 
 async function edit_date(work_order, start_date, delivery_date) {
 
+    // start_date is a full datetime ("2025-05-01 08:50:23"); the dialog below
+    // only lets the user pick a new date, so keep the original time-of-day
+    // instead of letting it collapse to midnight.
+    const original_time = (start_date && start_date.includes(" ")) ? start_date.split(" ")[1] : "08:00:00";
+
     const fields = [{
         fieldname: "new_start_date",
         fieldtype: "Date",
@@ -166,7 +171,7 @@ async function edit_date(work_order, start_date, delivery_date) {
         return;
     }
 
-    await frappe.db.set_value("Work Order", work_order, "planned_start_date", values.new_start_date);
+    await frappe.db.set_value("Work Order", work_order, "planned_start_date", `${values.new_start_date} ${original_time}`);
     if (values.new_delivery_date) {
         await frappe.db.set_value("Work Order", work_order, "expected_delivery_date", values.new_delivery_date);
     }
