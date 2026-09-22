@@ -58,7 +58,7 @@ def get_events(doctype, start, end, field_map=None, filters=None):
         # Events get squeezed very narrow when several Work Orders overlap in
         # the week/day view, so the wrapped title text alone can become
         # unreadable; the native tooltip (see eventRender) covers that case.
-        row["tooltip"] = "{title} ({name})".format(title=row.title, name=row.name)
+        row["tooltip"] = "{title}".format(title=row.title, name=row.name)
         row["color"] = STATUS_COLORS.get(row.status, DEFAULT_STATUS_COLOR)
 
     return rows
