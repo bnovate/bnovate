@@ -266,7 +266,9 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 		state.qc_required = locals["Item"][state.work_order_doc.production_item].qc_required || false;
 		state.in_qc_workstation = state.work_order_doc.workstation == await bnovate.utils.get_setting("qc_workstation");
 
-		// BOMs can't change after submit, no need to clear cache
+		// inherit_expiry_date_from is allow_on_submit, so the BOM can change after
+		// submit - always clear the cache to avoid acting on a stale copy.
+		frappe.model.clear_doc('BOM', state.work_order_doc.bom_no);
 		state.bom_doc = await frappe.model.with_doc('BOM', state.work_order_doc.bom_no);
 
 		// (re-)load associated stock entries
@@ -563,11 +565,11 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 				let batch_no = el.value || '';
 
 				if (idx) {  // main items
-					state.ste_doc.items.find(i => i.idx == idx && i.item_code == item).batch_no = batch_no.toUpperCase().trim();
+					state.ste_doc.items.find(i => i.idx == idx && i.item_code == item).batch_no = batch_no.trim();
 				}
 
 				if (row) { // additional item
-					state.ste_doc.additional_items.find(i => i._row == row && i.item_code == item).batch_no = batch_no.toUpperCase().trim();
+					state.ste_doc.additional_items.find(i => i._row == row && i.item_code == item).batch_no = batch_no.trim();
 				}
 			}); // BTW, this also modifies the same object pointed to from production_item_entry.
 		// And for serial no
@@ -607,8 +609,9 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 
 		if (state.ste_doc.production_item_entry.has_batch_no) {
 			// Create target batch if it doesn't exist
+			let inherited_expiry_date = await get_inherited_expiry_date(state.ste_doc, state.bom_doc);
 			let batch_doc = await get_or_create_batch(state.work_order_doc.production_item,
-				state.ste_doc.production_item_entry.batch_no);
+				state.ste_doc.production_item_entry.batch_no, inherited_expiry_date);
 
 			// Actually fill the field in the case of auto-numbered batches
 			if (state.ste_doc.production_item_entry.has_auto_batch_number) {
@@ -932,23 +935,17 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 		return Promise.all(promises);
 	}
 
-	// TODO: delete?
-	async function create_batch_with_autonaming(item_code) {
-		return await frappe.db.insert({
-			doctype: "Batch",
-			title: `Item ${item_code}`,
-			item: item_code,
-		})
-	}
-
-	async function get_or_create_batch(item_code, batch_no) {
+	async function get_or_create_batch(item_code, batch_no, expiry_date) {
 		// Creates batch if it doesn't exist yet.
 		// If no batch name is specified, let ERPNext decide it 
 		// (only works for items where that option is set)
+		// If expiry_date is given, it overrides ERPNext's automatic shelf-life calculation
+		// (used for BOMs configured to inherit expiry date from a consumed input item).
 		if (!batch_no) {
 			return await frappe.db.insert({
 				doctype: "Batch",
 				item: item_code,
+				...(expiry_date && { expiry_date }),
 			});
 		}
 
@@ -962,7 +959,41 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 			title: `${batch_no} for item ${item_code}`,
 			batch_id: batch_no,
 			item: item_code,
+			...(expiry_date && { expiry_date }),
 		})
+	}
+
+	async function get_inherited_expiry_date(ste_doc, bom_doc) {
+		// If the BOM specifies an item to inherit the expiry date from, find the batch(es)
+		// consumed for that item in this stock entry and return the earliest of their expiry
+		// dates. Returns null if inheritance isn't configured, the item wasn't actually
+		// consumed, or none of its batches have an expiry date - in all these cases the
+		// caller should fall back to ERPNext's default (shelf-life-based) behaviour.
+		let reagent_item = bom_doc.inherit_expiry_date_from;
+		if (!reagent_item) {
+			return null;
+		}
+
+		let consumed_rows = [...ste_doc.items, ...ste_doc.additional_items]
+			.filter(it => it.s_warehouse && it.item_code == reagent_item);
+
+		let batch_nos = consumed_rows
+			.flatMap(it => (it.batch_no || "").split("\n"))
+			.map(b => b.trim())
+			.filter(x => !!x);
+
+		let batch_docs = await Promise.all(batch_nos.map(b => frappe.model.with_doc("Batch", b)));
+		let expiry_dates = batch_docs
+			.map(b => b?.expiry_date)
+			.filter(x => !!x);
+
+		if (!expiry_dates.length) {
+			return null;
+		}
+
+		console.log(`Inherited expiry date for ${reagent_item} is ${expiry_dates.sort()[0]}`)
+
+		return expiry_dates.sort()[0]; // earliest expiry date, ISO date strings sort lexicographically
 	}
 
 	async function create_serial_number(item_code) {
