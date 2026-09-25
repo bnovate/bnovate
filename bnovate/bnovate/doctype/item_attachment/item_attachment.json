@@ -1,0 +1,37 @@
+{
+ "creation": "2026-09-17 11:32:47.187228",
+ "description": "This builds a table on item that allows scripts to lookup specific attachments, similarly to how 'image' is a specific attachement.\n\nFor example, item will have an 'drawing', 'step', 'datasheet'. Now we can automate actions such as 'fetch datasheet' or 'replace datasheet'.",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "label",
+  "file_url"
+ ],
+ "fields": [
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "reqd": 1
+  },
+  {
+   "fieldname": "file_url",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "File URL"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-09-17 12:56:51.967910",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Item Attachment",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
