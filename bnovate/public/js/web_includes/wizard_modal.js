@@ -40,9 +40,6 @@ const modal_template = `
 `;
 
 const template_page1 = `
-<div class="alert alert-info" role="alert">
-    {{ __("As of 1 Jan 2026, UVC cartridges are replaced by ACC. These offer more functionality for a lower price. Contact sales@bnovate.com for more information.") }}
-</div>
 <table class="table">
     <thead>
         <th>{{ __("Serial No") }}</th>
@@ -59,6 +56,7 @@ const template_page1 = `
                     <option>TCC</option>
                     <option>ICC</option>
                     <option>ACC</option>
+                    <option>CBC</option>
                 </select>
             </td>
         </tr>
@@ -71,6 +69,7 @@ const template_page1 = `
                     <option value=""></option>
                     {% if sn.item_code == "101083" %}
                         <option>ACC</option>
+                        <option>CBC</option>
                     {% else %}
                         <option>TCC</option>
                         <option>ICC</option>
@@ -163,6 +162,18 @@ const template_page4 = `
                     <input type="text" class="form-control" name="po_no">
                 </div>
 
+                <h5>{{ __("Attachments") }}</h5>
+                <div class="form-group">
+                    <div class="wizard-file-dropzone" data-file-dropzone>
+                        <input type="file" name="attachments" multiple style="display: none">
+                        <div>{{ __("Drag and drop files here, or click to browse") }}</div>
+                        <small class="text-muted">{{ __("You can select multiple files") }}</small>
+                    </div>
+                    <div class="wizard-file-list" data-file-list></div>
+                </div>
+
+                
+
                 <h5>{{ __("Remarks") }}</h5>
                 <div class="form-group">
                     <label for="remarks" style="display: none">Remarks</label>
@@ -192,6 +203,7 @@ customElements.define('wizard-modal', class extends HTMLElement {
         this.doc = {};
         this.organize_return = false;
         this.parcel_count = 0;
+        this.files = [];
 
         // Initialize the wizard
         this.currentPage = 1;
@@ -347,6 +359,29 @@ customElements.define('wizard-modal', class extends HTMLElement {
 
         selects.map(s => s.addEventListener('change', () => this.enable_buttons()));
         [...el.querySelectorAll("input")].map(i => i.addEventListener("change", () => this.enable_buttons()));
+
+        const dropzone = el.querySelector("[data-file-dropzone]");
+        const file_input = dropzone?.querySelector("input[type='file']");
+        const file_list = el.querySelector("[data-file-list]");
+        if (dropzone && file_input) {
+            const add_files = (files) => {
+                this.files = [...this.files, ...files];
+                file_list.innerHTML = this.files.map(file =>
+                    `<div>${frappe.utils.escape_html(file.name)} <small class="text-muted">(${Math.ceil(file.size / 1024)} KB)</small></div>`
+                ).join("");
+            };
+            dropzone.addEventListener("click", () => file_input.click());
+            file_input.addEventListener("change", (event) => add_files([...event.target.files]));
+            ["dragenter", "dragover"].forEach(event_name => dropzone.addEventListener(event_name, (event) => {
+                event.preventDefault();
+                dropzone.classList.add("border-primary");
+            }));
+            ["dragleave", "drop"].forEach(event_name => dropzone.addEventListener(event_name, (event) => {
+                event.preventDefault();
+                dropzone.classList.remove("border-primary");
+            }));
+            dropzone.addEventListener("drop", (event) => add_files([...event.dataTransfer.files]));
+        }
     }
 
     build_doc() {
@@ -374,6 +409,7 @@ customElements.define('wizard-modal', class extends HTMLElement {
             remarks,
             organize_return: this.organize_return,
             parcel_count,
+            files: this.files,
         };
         return doc;
     }
