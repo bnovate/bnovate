@@ -115,6 +115,13 @@ def get_data():
                     "is_query_report": True,
                 },
                 {
+                    "type": "report",
+                    "name": "Purchased Items for Quality Control",
+                    "label": _("Purchased Items for Quality Control"),
+                    "doctype": "Purchase Receipt",
+                    "is_query_report": True,
+                },
+                {
                     "type": "page",
                     "name": "work-order-execution",
                     "label": _("Work Order Execution"),
