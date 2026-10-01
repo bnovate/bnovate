@@ -53,7 +53,7 @@ def get_columns(filters):
         {'fieldname': 'work_order', 'fieldtype': 'Data', 'label': _('Work Order'), 'options': 'Work Order', 'width': 100},
         {'fieldname': 'workstation', 'fieldtype': 'Data', 'label': _('Workstation'), 'width': 100, 'align': 'left'},
         {'fieldname': 'status', 'fieldtype': 'Data', 'label': _('Status'), 'width': 100},
-        {'fieldname': 'planned_start_date', 'fieldtype': 'Date', 'label': _('Start date'), 'width': 80},
+        {'fieldname': 'planned_start_date', 'fieldtype': 'Date', 'label': _('Start date'), 'width': filters.simple_view and 80 or 120},
         {'fieldname': 'expected_delivery_date', 'fieldtype': 'Date', 'label': _('Delivery date'), 'width': 80},
         {'fieldname': 'qty', 'fieldtype': 'Float', 'label': _('Qty'), 'width': 100},
         {'fieldname': 'item_code', 'fieldtype': 'Data', 'label':_('Item'), 'options': 'Item', 'width': 300, 'align': 'left'},

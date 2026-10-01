@@ -92,7 +92,18 @@ frappe.query_reports["Work Order Planning"] = {
                         <span class="indicator ${colour}">${legend}</span>
                     </span>
                     `;
-            } else if (value && (col.fieldname === 'planned_start_date' || col.fieldname === 'expected_delivery_date')) {
+            } else if (value && col.fieldname === 'planned_start_date') {
+                let date = value.substr(0, 10);
+                if (simple_view) {
+                    value = date
+                } else {
+                    let date_link = `<a onclick="edit_date('${data.work_order}', '${data.planned_start_date}', '${data.expected_delivery_date || ''}')">${default_formatter(date, row, col, data)}</a>`;
+                    let arrows = `<a onclick="event.stopPropagation(); adjust_wo_order('${data.work_order}', -1)" title="${__('Move up')}" style="margin-left: 6px;"><i class="fa fa-chevron-up"></i></a>` +
+                        `<a onclick="event.stopPropagation(); adjust_wo_order('${data.work_order}', 1)" title="${__('Move down')}" style="margin-left: 3px;"><i class="fa fa-chevron-down"></i></a>`;
+                    value = date_link + arrows;
+                    skip_default = true;
+                }
+            } else if (value && col.fieldname === 'expected_delivery_date') {
                 let date = value.substr(0, 10);
                 if (simple_view) {
                     value = date
@@ -175,6 +186,38 @@ async function edit_date(work_order, start_date, delivery_date) {
     if (values.new_delivery_date) {
         await frappe.db.set_value("Work Order", work_order, "expected_delivery_date", values.new_delivery_date);
     }
+    frappe.query_report.refresh();
+}
+
+async function adjust_wo_order(work_order, direction) {
+    // direction: -1 = move up (earlier), +1 = move down (later).
+    // Swaps this Work Order with its immediate neighbour in the current
+    // planned_start_date order - same reorder() the Work Order Kanban
+    // page's drag-and-drop uses, just nudged one position at a time here.
+    let rows = frappe.query_report.data.filter(row => row.indent === 0);
+    let idx = rows.findIndex(row => row.work_order === work_order);
+    if (idx === -1) {
+        return;
+    }
+
+    let swap_idx = idx + direction;
+    if (swap_idx < 0 || swap_idx >= rows.length) {
+        return; // already at that edge of the list
+    }
+
+    let before, after;
+    if (direction < 0) {
+        before = rows[swap_idx - 1] ? rows[swap_idx - 1].work_order : null;
+        after = rows[swap_idx].work_order;
+    } else {
+        before = rows[swap_idx].work_order;
+        after = rows[swap_idx + 1] ? rows[swap_idx + 1].work_order : null;
+    }
+
+    await frappe.call({
+        method: 'bnovate.bnovate.utils.work_order.reorder',
+        args: { work_order, before, after },
+    });
     frappe.query_report.refresh();
 }
 

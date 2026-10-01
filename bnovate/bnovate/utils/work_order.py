@@ -152,3 +152,41 @@ def set_planned_end_date(doc, method=None):
             frappe.format(planned_end_date, {"fieldtype": "Datetime"}), format_duration(duration_minutes)
         )
     frappe.msgprint(message, alert=True, indicator="blue")
+
+
+@frappe.whitelist()
+def reorder(work_order, before=None, after=None):
+    """ Recompute and persist a new planned_start_date for `work_order` so it
+    sorts between `before` and `after` (the docnames of its new neighbouring
+    Work Orders by planned_start_date - either may be None at a boundary).
+
+    Used to re-order work order from a report or dedicated page.
+    """
+    frappe.has_permission("Work Order", "write", throw=True)
+
+    if not before and not after:
+        # Nothing to reorder against (only item, or unchanged position).
+        return None
+
+    before_date = get_datetime(frappe.db.get_value("Work Order", before, "planned_start_date")) if before else None
+    after_date = get_datetime(frappe.db.get_value("Work Order", after, "planned_start_date")) if after else None
+
+    if before_date and after_date and before_date >= after_date:
+        # Make space for a WO in between the two.
+        after_date = after_date + timedelta(minutes=2)
+        after_doc = frappe.get_doc("Work Order", after)
+        after_doc.planned_start_date = after_date
+        after_doc.save()
+
+    if before_date and after_date:
+        new_date = before_date + (after_date - before_date) / 2
+    elif before_date:
+        new_date = before_date + timedelta(minutes=30)
+    else:
+        new_date = after_date - timedelta(minutes=30)
+
+    # Go through the full document save to trigger hooks
+    doc = frappe.get_doc("Work Order", work_order)
+    doc.planned_start_date = new_date
+    doc.save()
+    return str(doc.planned_start_date)
