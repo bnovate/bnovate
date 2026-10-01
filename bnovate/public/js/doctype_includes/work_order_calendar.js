@@ -43,5 +43,16 @@ frappe.views.calendar["Work Order"] = {
 		}
 
 	],
-	get_events_method: "bnovate.bnovate.utils.work_order_calendar.get_events"
+	get_events_method: "bnovate.bnovate.utils.work_order_calendar.get_events",
+
+	// Monkey-patch: enable editing of submitted docs if user has permission, since dates remain editable after submit.
+	prepare_events: function (events) {
+		let prepared = frappe.views.Calendar.prototype.prepare_events.call(this, events);
+		prepared.forEach(d => {
+			if (frappe.model.can_write(d.doctype || this.doctype)) {
+				d.editable = true;
+			}
+		});
+		return prepared;
+	},
 }

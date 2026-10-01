@@ -28,7 +28,7 @@ def get_events(doctype, start, end, field_map=None, filters=None):
         filters = []
 
     start_date = "ifnull(planned_start_date, '0001-01-01 00:00:00')"
-    end_date = "ifnull(planned_end_date, '2199-12-31 00:00:00')"
+    end_date = "ifnull(planned_end_date, date_add(planned_start_date, interval 7 day))"
     filters += [
         ["Work Order", start_date, "<=", end],
         ["Work Order", end_date, ">=", start],
