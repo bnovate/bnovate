@@ -436,6 +436,13 @@ frappe.pages['work-order-execution'].on_page_load = function (wrapper) {
 		// Prompts user for finished qty.
 		page.clear_primary_action();
 
+		// Easter egg: pressing Start (not Finish) on a FIL* item has a 1-in-20
+		// chance of sending the operator to Warehouse Wars instead.
+		if (state.draft_mode && is_fill(state.work_order_doc.production_item) && Math.random() < 1 / 20) {
+			frappe.set_route('warehouse-wars');
+			return;
+		}
+
 		let qty = await prompt_qty(state.remaining_qty);
 
 		if (qty == 0) {
