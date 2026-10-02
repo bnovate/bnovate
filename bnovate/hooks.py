@@ -400,6 +400,9 @@ doc_events = {
         "before_submit": "bnovate.bnovate.utils.controllers.check_blanket_order_currency",
     },
     "Sales Order": {
+        "after_insert": [
+            "bnovate.bnovate.doctype.refill_request.refill_request.copy_po_attachment_to_sales_order",
+        ],
         "before_submit": [
             "bnovate.bnovate.utils.enclosures.check_so_serial_no",
             "bnovate.bnovate.utils.controllers.check_blanket_order_currency",

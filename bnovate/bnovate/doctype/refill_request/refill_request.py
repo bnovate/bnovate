@@ -246,6 +246,43 @@ def make_sales_order(source_name, target_doc=None):
     }, target_doc, set_missing_values, ignore_permissions=False)
     return doclist
 
+def get_po_file(docname, doctype="Refill Request"):
+    """ Return the most recently attached PO reference PDF for this document, if any.
+    """
+    files = frappe.get_all(
+        "File",
+        filters={"attached_to_doctype": doctype, "attached_to_name": docname},
+        fields=["name", "file_name", "is_private"],
+        order_by="creation desc",
+        limit=1,
+    )
+    return files[0] if files else None
+
+
+def copy_po_attachment_to_sales_order(doc, method=None):
+    """ Copy the Refill Request's attached PO PDF onto a Sales Order made from it.
+
+    Must be called through hooks after_insert as make_sales_order doesn't have a saved doc yet.
+    """
+    refill_requests = list(set(it.refill_request for it in doc.get("items") if it.refill_request))
+
+    for rr in refill_requests:
+        po_file = get_po_file(rr)
+        if not po_file:
+            continue
+
+        source_file = frappe.get_doc("File", po_file.name)
+        frappe.get_doc({
+            "doctype": "File",
+            "attached_to_doctype": "Sales Order",
+            "attached_to_name": doc.name,
+            "folder": "Home",
+            "file_name": source_file.file_name,
+            "is_private": source_file.is_private,
+            "content": source_file.get_content(),
+        }).insert(ignore_permissions=True)
+
+
 def update_status_from_sales_order(sales_order, method=None):
     # Called by hooks.py when an SO changes or by DN below...
     if not method in ('on_submit', 'on_cancel', 'dn_update'):

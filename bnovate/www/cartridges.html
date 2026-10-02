@@ -6,16 +6,15 @@
 
 <div class="row">
     <div class="col">
-        <button id="request-refill" class="btn btn-primary" style="margin-bottom: 10px"
-            title="{{ _('Select cartridges') }}" disabled>{{ _("Request Refill") }}</button> <br />
+        <button id="request-refill" class="btn btn-primary" style="margin-bottom: 10px" title="{{ _('Select cartridges') }}" disabled>{{ _("Request Refill") }}</button> <br />
         {% if cartridges %}
         <p><i>{{ _("Select the cartridges you wish to refill.") }}
-            {% if not allow_unstored_cartridges %}
-            {{ _("If none of your cartridges are at bNovate, you cannot order a refill.") }}
-            {% else %}
-            {{ _("You may only select cartridges with no ongoing refill requests.") }}
-            {% endif %}
-        </i></p>
+                {% if not allow_unstored_cartridges %}
+                {{ _("If none of your cartridges are at bNovate, you cannot order a refill.") }}
+                {% else %}
+                {{ _("You may only select cartridges with no ongoing refill requests.") }}
+                {% endif %}
+            </i></p>
         {% else %}
         <p><i>{{ _("Nothing to display.") }}</i></p>
         {% endif %}
@@ -25,10 +24,10 @@
     <div class="col padding">
         <div id="form-container">
             <!-- <form name="search-form" id="search-form"> -->
-                <div class="form-group">
-                    <label for="search" class="control-label">{{ _("Search") }}</label>
-                    <input type="text" class="form-control" name="search" access="false" id="search">
-                </div>
+            <div class="form-group">
+                <label for="search" class="control-label">{{ _("Search") }}</label>
+                <input type="text" class="form-control" name="search" access="false" id="search">
+            </div>
             <!-- </form> -->
         </div>
     </div>
@@ -65,34 +64,34 @@
         "/assets/bnovate/js/web_includes/helpers.js",
         "/assets/bnovate/js/web_includes/wizard_modal.js",
     ])
-    .then( () => bnovate.translations.get_messages() )
-    .then( () => bnovate.web.get_cartridges() )
-    .then( (data) => {
-        prepare_data(data);
-        env.cartridges = data.cartridges;
-        env.allow_unstored_cartridges = data.allow_unstored_cartridges;
-        env.organize_return = data.organize_return;
-        draw_datatable(env);
-    })
+        .then(() => bnovate.translations.get_messages())
+        .then(() => bnovate.web.get_cartridges())
+        .then((data) => {
+            prepare_data(data);
+            env.cartridges = data.cartridges;
+            env.allow_unstored_cartridges = data.allow_unstored_cartridges;
+            env.organize_return = data.organize_return;
+            draw_datatable(env);
+        })
 
     function prepare_data(data) {
-        data.cartridges.forEach( row => {
+        data.cartridges.forEach(row => {
             env.cartridge_idx[row.serial_no] = row;
 
             row.checked = false;
             row.show = true;
 
-            row.rr_link = row.refill_request ? `<a href="/requests/${row.refill_request}">${ row.refill_request }</a>` : ''
+            row.rr_link = row.refill_request ? `<a href="/requests/${row.refill_request}">${row.refill_request}</a>` : ''
 
             row.address_display = ""
             if (row.shipping_address) {
                 row.address_display = `<span data-html="true" data-toggle="tooltip" data-container="body"
-                        title="${ row.shipping_address }">
+                        title="${row.shipping_address}">
                         ${bnovate.utils.trim(row.shipping_address, "<br>", 20)}
                     </span>`;
             }
             row.address_short = ""
-            if ( row.shipping_address ) {
+            if (row.shipping_address) {
                 row.address_short = bnovate.utils.striptags(bnovate.utils.trim(row.shipping_address, "<br>", 20));
             }
 
@@ -101,12 +100,12 @@
 
     // Set checkbox state when redrawing table
     function check_uncheck_data(data) {
-        data.cartridges.forEach( row => {
+        data.cartridges.forEach(row => {
             row.checkbox = ""
-            if ( (data.allow_unstored_cartridges || row.location == "bNovate") && !(row.refill_request || row.open_sales_order) ) {
-                row.checkbox = `<label for="check-${ row.serial_no }" style="padding: 12px; margin-bottom: 0px;">
-                        <input name="select" id="check-${ row.serial_no }" class="serial-check" type="checkbox"
-                                data-serial="${ row.serial_no }" style="margin-right: 12px" ${ row.checked ? "checked" : ""}>
+            if ((data.allow_unstored_cartridges || row.location == "bNovate") && !(row.refill_request || row.open_sales_order)) {
+                row.checkbox = `<label for="check-${row.serial_no}" style="padding: 12px; margin-bottom: 0px;">
+                        <input name="select" id="check-${row.serial_no}" class="serial-check" type="checkbox"
+                                data-serial="${row.serial_no}" style="margin-right: 12px" ${row.checked ? "checked" : ""}>
                     </label>`;
             }
         })
@@ -115,11 +114,11 @@
     // Marks rows as 'show' or not if condition matches any string in the row, or the translation of the string.
     function apply_filter(cartridges, condition) {
         condition = condition.toLowerCase();
-        cartridges.forEach( row => {
+        cartridges.forEach(row => {
             const matching_cells = Object.values(row)
-                .filter( 
-                    value => typeof(value) === 'string' && 
-                    ( value.toLowerCase().indexOf(condition) >= 0 || __(value).toLowerCase().indexOf(condition) >= 0 )
+                .filter(
+                    value => typeof (value) === 'string' &&
+                        (value.toLowerCase().indexOf(condition) >= 0 || __(value).toLowerCase().indexOf(condition) >= 0)
                 );
             row.show = matching_cells.length > 0;
         })
@@ -146,22 +145,22 @@
 
         // Extra labels extend the clickable area of a checkbox
         const rows = data.cartridges
-            .filter( row => row.show )
-            .map( row => `
+            .filter(row => row.show)
+            .map(row => `
                 <tr>
-                    <td style="padding: 0px">${ row.checkbox }</td>
-                    <td><label for="check-${ row.serial_no }" style="margin-bottom: 0px;">${ row.serial_no }</label></td>
-                    <td><label for="check-${ row.serial_no }" style="margin-bottom: 0px;">${ __(row.location) }</label></td>
-                    <td><label for="check-${ row.serial_no }" style="margin-bottom: 0px;">${ __(row.status) }</label></td>
-                    <td><label for="check-${ row.serial_no }" style="margin-bottom: 0px;">${ moment(row.posting_date).format('DD-MM-YYYY') }</label></td>
-                    <td>${ row.tracking_link ? row.tracking_link : "" }</td>
-                    <td>${ row.rr_link }</td>
-                    <td><label for="check-${ row.serial_no }" style="margin-bottom: 0px;">${ row.address_display }</label></td>
+                    <td style="padding: 0px">${row.checkbox}</td>
+                    <td><label for="check-${row.serial_no}" style="margin-bottom: 0px;">${row.serial_no}</label></td>
+                    <td><label for="check-${row.serial_no}" style="margin-bottom: 0px;">${__(row.location)}</label></td>
+                    <td><label for="check-${row.serial_no}" style="margin-bottom: 0px;">${__(row.status)}</label></td>
+                    <td><label for="check-${row.serial_no}" style="margin-bottom: 0px;">${moment(row.posting_date).format('DD-MM-YYYY')}</label></td>
+                    <td>${row.tracking_link ? row.tracking_link : ""}</td>
+                    <td>${row.rr_link}</td>
+                    <td><label for="check-${row.serial_no}" style="margin-bottom: 0px;">${row.address_display}</label></td>
                     <td>
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-ellipsis-h"></i> </button>
                             <div class="dropdown-menu">
-                                <a class=dropdown-item href="/cartridges/${ row.serial_no }">Cartridge History</a>
+                                <a class=dropdown-item href="/cartridges/${row.serial_no}">Cartridge History</a>
                             </div>
                         </div>
                     </td>
@@ -181,26 +180,54 @@
 
     // Return selected serial numbers
     function get_selected() {
-        return env.cartridges.filter( row => row.checked )
+        return env.cartridges.filter(row => row.checked)
     }
 
-    async function post_request(doc) {
+    async function post_request(doc, po_file) {
         const resp = await frappe.call("bnovate.www.request.make_request", {
             doc
         })
 
         const new_doc = resp.message;
+
+        if (po_file) {
+            await upload_po_file(po_file, new_doc.name);
+        }
+
         location.pathname = `/requests/${new_doc.name}`;
+    }
+
+    // Attach the PO PDF to the just-created Refill Request. Best-effort: the
+    // request itself was already created above, so a failure here shouldn't
+    // block navigation - the customer can still see/retry from the request page.
+    async function upload_po_file(file, docname) {
+        const form_data = new FormData();
+        form_data.append('file', file);
+        form_data.append('method', 'bnovate.www.request.attach_po');
+        form_data.append('docname', docname);
+        form_data.append('is_private', 1);
+
+        try {
+            const resp = await fetch('/api/method/upload_file', {
+                method: 'POST',
+                headers: { 'X-Frappe-CSRF-Token': frappe.csrf_token },
+                body: form_data,
+            });
+            if (!resp.ok) throw new Error(`upload_file returned ${resp.status}`);
+        } catch (e) {
+            console.error('Could not attach PO file:', e);
+            frappe.msgprint(__('Your refill request was created, but the PO file could not be attached. You can try again from the request confirmation page.'));
+        }
     }
 
     function bind_table_elements() {
         // Enable button if any SNs are clicked.
-        [...document.querySelectorAll(".serial-check")].map( c => c.addEventListener("change", (e) => {
+        [...document.querySelectorAll(".serial-check")].map(c => c.addEventListener("change", (e) => {
             // Store state in order to remember before / after filter
             env.cartridge_idx[e.srcElement.dataset.serial].checked = e.srcElement.checked;
 
             const refill_btn = document.querySelector("#request-refill");
-            if ( get_selected().length > 0 ) {
+            if (get_selected().length > 0) {
                 refill_btn.disabled = false;
             } else {
                 refill_btn.disabled = true;
@@ -232,7 +259,7 @@
         draw_datatable(env);
     });
 
-    
+
 </script>
 
 {% endblock %}

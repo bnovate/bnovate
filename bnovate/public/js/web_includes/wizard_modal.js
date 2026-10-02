@@ -162,6 +162,14 @@ const template_page4 = `
                     <input type="text" class="form-control" name="po_no">
                 </div>
 
+                <h5>{{ __("Attach Purchase Order (PDF, optional)") }}</h5>
+                <div class="form-group">
+                    <div id="po-dropzone" style="border: 2px dashed #ccc; border-radius: 6px; padding: 16px; text-align: center; cursor: pointer;">
+                        <p class="text-muted" id="po-dropzone-text" style="margin-bottom: 0;">{{ __("Drag & drop a PDF here, or click to choose a file") }}</p>
+                        <input type="file" id="po-file-input" accept="application/pdf" style="display: none;">
+                    </div>
+                </div>
+
                 <h5>{{ __("Remarks") }}</h5>
                 <div class="form-group">
                     <label for="remarks" style="display: none">Remarks</label>
@@ -191,6 +199,7 @@ customElements.define('wizard-modal', class extends HTMLElement {
         this.doc = {};
         this.organize_return = false;
         this.parcel_count = 0;
+        this.po_file = null;
 
         // Initialize the wizard
         this.currentPage = 1;
@@ -323,6 +332,7 @@ customElements.define('wizard-modal', class extends HTMLElement {
                 template_page4,
                 { doc: this.build_doc() }
             );
+            this.bind_po_dropzone();
         }
 
         $(".wizard-page").hide();
@@ -346,6 +356,49 @@ customElements.define('wizard-modal', class extends HTMLElement {
 
         selects.map(s => s.addEventListener('change', () => this.enable_buttons()));
         [...el.querySelectorAll("input")].map(i => i.addEventListener("change", () => this.enable_buttons()));
+    }
+
+    // Wire up drag-and-drop / click-to-browse for the optional PO PDF.
+    // Rebinds every time the summary page is (re)rendered, since its markup
+    // is recreated from scratch each time show_page() reaches the last page.
+    bind_po_dropzone() {
+        const dropzone = this.modal.querySelector('#po-dropzone');
+        const file_input = this.modal.querySelector('#po-file-input');
+        const text = this.modal.querySelector('#po-dropzone-text');
+        if (!dropzone) return;
+
+        const set_file = (file) => {
+            if (!file) return;
+            if (file.type !== 'application/pdf') {
+                frappe.msgprint(__('Please attach a PDF file.'));
+                return;
+            }
+            this.po_file = file;
+            text.textContent = file.name;
+        };
+
+        dropzone.addEventListener('click', () => file_input.click());
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.style.background = '#f0f8ff';
+        });
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.style.background = '';
+        });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.style.background = '';
+            set_file(e.dataTransfer.files[0]);
+        });
+        file_input.addEventListener('change', (e) => set_file(e.target.files[0]));
+
+        // Going back to Shipping/Billing and forward again re-renders this
+        // page from the template, so re-apply the filename label if a file
+        // was already chosen (the File object itself lives on `this`, not
+        // in the DOM, so it survives the re-render).
+        if (this.po_file) {
+            text.textContent = this.po_file.name;
+        }
     }
 
     build_doc() {
@@ -378,7 +431,7 @@ customElements.define('wizard-modal', class extends HTMLElement {
     }
 
     confirm() {
-        this.callback(this.build_doc());
+        this.callback(this.build_doc(), this.po_file);
         this.hide();
     }
 })

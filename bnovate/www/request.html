@@ -161,6 +161,14 @@ ol.request-ribbon {
 </div>
 {% endif %}
 
+{% if po_file_name %}
+<div class="row">
+	<div class="col-6">
+		<b>{{ _("Purchase Order") }}:</b> <a href="{{ po_file_download_url }}">{{ po_file_name }}</a>
+	</div>
+</div>
+{% endif %}
+
 <div class="row">
 	<div class="col-6">
 		<h5>{{ _("Shipping Address") }}</h5>
