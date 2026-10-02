@@ -67,15 +67,13 @@
                     <!-- <tbody> -->
 
                         {% for row in requests %}
-                        <tr>
-                            <td><a href="/requests/{{ row.name }}">{{ row.name }}</a></td>
+                        <tr class="row-link">
+                            <td><a class="row-link-anchor" href="/requests/{{ row.name }}">{{ row.name }}</a></td>
                             <td>
-                                <a href="/requests/{{ row.name }}">
-                                    <span
-                                        class="indicator {{ row.indicator_color or ('blue' if row.docstatus==1 else 'darkgrey') }}">
-                                        {{ _(row.get('indicator_title')) or _(row.status) or _("Submitted") }}
-                                    </span>
-                                </a>
+                                <span
+                                    class="indicator {{ row.indicator_color or ('blue' if row.docstatus==1 else 'darkgrey') }}">
+                                    {{ _(row.get('indicator_title')) or _(row.status) or _("Submitted") }}
+                                </span>
                             </td>
                             <td>
                                 {% if row.tracking_no and row.status == "Shipped" %}

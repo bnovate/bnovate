@@ -1,19 +1,107 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* bNovate customer hub (website / portal side)
+ *
+ * Follows the bNovate Brand Guideline:
+ *   - Colors (p.5): logo blue #006996, light blue #8bacc8, dark blue #004362,
+ *     grey #414141, beige #f4f0ed, accent orange #f28f25. Orange is an accent
+ *     only and must stay well under 20% of any layout.
+ *   - Typography (p.6): Barlow semi-bold/bold for titles, Avenir for paragraphs.
+ *     Avenir is not freely licensed for the web, so the guideline's alternative,
+ *     Open Sans, is used. Both fonts are self-hosted in public/fonts.
+ *   - Titles are blue with a thin orange rule fading out to the right, as in
+ *     the guideline's own pages.
+ */
 
-body {
-  font-family: 'Libre Franklin', sans-serif;
+/* Fonts */
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/barlow-latin-ext-600-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/barlow-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/barlow-latin-ext-700-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/barlow-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/open-sans-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/assets/bnovate/fonts/open-sans-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Brand tokens */
+
 :root {
-  --line-color: #ffa632;
-  --label-color: #575757;
-  --completed-background-color: #ffecd4;
-  --uncompleted-background-color: #ffffffff;
+  --bn-blue: #006996;
+  --bn-blue-dark: #004362;
+  --bn-blue-light: #8bacc8;
+  --bn-orange: #f28f25;
+  --bn-grey: #414141;
+  --bn-beige: #f4f0ed;
 
-  --error-color: #ff5858;
-  --danger: #f38926;
+  /* Neutral tints derived from the palette, for backgrounds and hairlines */
+  --bn-blue-tint: rgba(139, 172, 200, 0.22);
+  --bn-blue-wash: rgba(139, 172, 200, 0.12);
+  --bn-rule: #dde4ea;
 
-  --dt-header-cell-bg: #ffecd4;
+  --bn-font-title: 'Barlow', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --bn-font-text: 'Open Sans', 'Avenir', 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Used by the wizard and the request status ribbon */
+  --line-color: var(--bn-blue);
+  --label-color: #6b7680;
+  --completed-background-color: var(--bn-blue-light);
+  --uncompleted-background-color: #ffffff;
+
+  --error-color: #d9534f;
+  --danger: #c9372c;
+
+  --dt-header-cell-bg: var(--bn-beige);
+}
+
+body {
+  font-family: var(--bn-font-text);
+  color: var(--bn-grey);
 }
 
 @media (min-width: 992px) {
@@ -32,19 +120,168 @@ body {
   }
 }
 
+/* Typography */
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--bn-font-title);
+  font-weight: 700;
+  color: var(--bn-blue-dark);
+}
+
+h1, h2, .h1, .h2 {
+  color: var(--bn-blue);
+}
+
+h1, .h1 {
+  font-size: 2.25rem;
+  line-height: 1.15;
+}
+
+/* Page titles: blue, with the orange rule that fades out to the right */
+main .page-header {
+  flex: 1 1 auto;
+}
+
+main h1 {
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--bn-orange), rgba(242, 143, 37, 0)) 1;
+}
+
+strong, b, dt, th {
+  font-weight: 700;
+}
+
+a {
+  color: var(--bn-blue);
+}
+
+a:hover {
+  color: var(--bn-blue-dark);
+}
+
+/* Navigation bar */
+
+.navbar {
+  border-bottom: 1px solid var(--bn-rule);
+  box-shadow: 0 1px 8px rgba(0, 67, 98, 0.08) !important;
+}
+
+.navbar-brand {
+  padding: 0.4rem 0;
+}
+
+.navbar-brand img {
+  display: block;
+  height: 48px;
+  width: auto;
+  max-width: none;
+  max-height: none;
+}
+
+.navbar .nav-link {
+  font-family: var(--bn-font-title);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--bn-grey);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: var(--bn-blue);
+}
+
+.navbar .dropdown-menu {
+  border-color: var(--bn-rule);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 67, 98, 0.12);
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: var(--bn-blue-tint);
+  color: var(--bn-blue-dark);
+}
+
+/* Sidebar */
+
+/* Fixed width instead of Bootstrap's 1/6th of a very wide container, so tables get the room */
+@media (min-width: 576px) {
+  .row > .sidebar-column {
+    flex: 0 0 190px;
+    max-width: 190px;
+  }
+
+  .row > .main-column {
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+.sidebar-column {
+  border-right-color: var(--bn-rule) !important;
+}
+
+.web-sidebar .sidebar-items.small {
+  font-size: 0.95rem;
+}
+
+.web-sidebar .sidebar-item a {
+  display: block;
+  padding: 0.15rem 0 0.15rem 0.7rem;
+  border-left: 3px solid transparent;
+  font-family: var(--bn-font-title);
+  font-weight: 600;
+}
+
+.web-sidebar .sidebar-item a.text-muted {
+  color: var(--bn-grey) !important;
+}
+
+.web-sidebar .sidebar-item a.text-muted:hover {
+  color: var(--bn-blue) !important;
+  text-decoration: none;
+}
+
+.web-sidebar .sidebar-item a.text-dark {
+  color: var(--bn-blue) !important;
+  font-weight: 700 !important;
+  border-left-color: var(--bn-orange);
+}
+
 /* Modals */
 
+.modal-content {
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 67, 98, 0.28);
+}
+
 .modal-header {
-    background-color: var(--completed-background-color);
-    display: block; /* Override flex setting, allow buttons to move to right */
+  background-color: var(--bn-beige);
+  display: block; /* Override flex setting, allow buttons to move to right */
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--bn-orange), rgba(242, 143, 37, 0)) 1;
 }
 
 .modal-title {
   margin-top: 5px;
+  font-family: var(--bn-font-title);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--bn-blue);
 }
 
 .modal-dialog {
   max-width: 800px;
+}
+
+.modal-footer {
+  border-top-color: var(--bn-rule);
 }
 
 .indicator::before {
@@ -57,6 +294,17 @@ body {
 
 
 /* Forms */
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--bn-blue);
+}
+
+.form-control:focus {
+  border-color: var(--bn-blue);
+  box-shadow: 0 0 0 0.2rem rgba(0, 105, 150, 0.2);
+}
+
 .has-error .control-label {
   color: var(--error-color);
 }
@@ -67,9 +315,73 @@ body {
 
 /* Buttons */
 
+.btn {
+  font-family: var(--bn-font-title);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary {
+  background-color: var(--bn-blue);
+  border-color: var(--bn-blue);
+  color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:not(:disabled):not(.disabled):active {
+  background-color: var(--bn-blue-dark);
+  border-color: var(--bn-blue-dark);
+  color: #fff;
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 105, 150, 0.35);
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+  background-color: var(--bn-blue);
+  border-color: var(--bn-blue);
+  opacity: 0.45;
+}
+
+.btn-secondary {
+  background-color: #fff;
+  border-color: var(--bn-blue-light);
+  color: var(--bn-blue-dark);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active,
+.btn-secondary:not(:disabled):not(.disabled):active {
+  background-color: var(--bn-blue-tint);
+  border-color: var(--bn-blue);
+  color: var(--bn-blue-dark);
+}
+
 .btn-danger {
   background-color: var(--danger);
   border-color: var(--danger);
+}
+
+/* Cards */
+
+.card {
+  border: 1px solid var(--bn-rule);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 67, 98, 0.06);
+}
+
+.card-header {
+  background-color: var(--bn-beige);
+  border-bottom: 1px solid #e8e1da;
+  font-family: var(--bn-font-title);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--bn-blue-dark);
 }
 
 /* Tooltips */
@@ -83,18 +395,18 @@ body {
 .transaction-list-item {
   margin-top: 1em;
   padding-top: 1em;
-  border-top: 1px solid #ebecf1;
+  border-top: 1px solid var(--bn-rule);
 }
 
 .order-item-table {
   padding-bottom: 1em;
-  border-bottom: 1px solid #ebecf1;
+  border-bottom: 1px solid var(--bn-rule);
 }
 
 .order-items {
   margin-top: 1em;
   padding-top: 1em;
-  border-top: 1px solid #ebecf1;
+  border-top: 1px solid var(--bn-rule);
 }
 
 .order-taxes td, .order-taxes th {
@@ -103,8 +415,71 @@ body {
 
 /* Tables, bootstrap */
 
+/* Keep the dot and the label of a status on one line, whatever the column width */
+.table .indicator {
+  white-space: nowrap;
+}
+
+.table thead th {
+  font-family: var(--bn-font-title);
+  font-weight: 700;
+  color: var(--bn-blue-dark);
+  border-top: 0;
+  border-bottom: 2px solid var(--bn-blue-light);
+}
+
+.table td,
+.table th {
+  border-top-color: #e9eef2;
+}
+
 tr:has(input[type=checkbox]:checked) {
-  background-color: var(--dt-header-cell-bg);
+  background-color: var(--bn-blue-tint);
+}
+
+/* Clickable rows: the link in the first cell stretches over the whole row.
+ * Only that link looks like a link; any other link in the row (e.g. a
+ * tracking URL) is lifted above the overlay so it stays clickable. */
+/* Hover highlight only on rows that can be clicked: link rows and selectable (checkbox) rows */
+.table tbody tr.row-link:hover,
+.table tbody tr:has(input[type=checkbox]:not(:checked)):hover {
+  background-color: var(--bn-blue-wash);
+}
+
+.table tbody tr:has(input[type=checkbox]) {
+  cursor: pointer;
+}
+
+.table tbody tr.row-link {
+  position: relative;
+  /* position: relative alone doesn't make a table row the containing block in every browser */
+  transform: rotate(0);
+  cursor: pointer;
+}
+
+.row-link-anchor {
+  white-space: nowrap;
+}
+
+.row-link-anchor::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.row-link a:not(.row-link-anchor) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Cartridge list: keep serial numbers and dates on one line */
+#table-container table td:nth-child(2),
+#table-container table td:nth-child(5) {
+  white-space: nowrap;
 }
 
 /* Tables (frappe datatable) */
@@ -138,6 +513,48 @@ tr:has(input[type=checkbox]:checked) {
 .dt-cell__content:has(input[type=checkbox]) {
   /* hides a weird artifact next to checkbox */
   overflow: unset;
+}
+
+/* Footer */
+
+/* Keep the footer at the bottom of the window on short pages */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.web-footer {
+  margin-top: auto;
+  padding: 0;
+  min-height: 0;
+  border-top: 0;
+  background-color: var(--bn-blue-dark);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.web-footer .footer-links {
+  padding: 1rem 0;
+}
+
+/* Frappe renders an empty row for the (unused) footer links */
+.web-footer .footer-links > .container > .row:first-child:not(:has(a)) {
+  display: none;
+}
+
+.web-footer .text-muted,
+.web-footer a,
+.web-footer a.text-muted {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.web-footer a:hover {
+  color: #fff !important;
+}
+
+.web-footer .footer-bottom-line {
+  margin-top: 0 !important;
+  border-top-color: rgba(255, 255, 255, 0.15);
 }
 
 
@@ -296,6 +713,13 @@ ol.wizard-ribbon {
   border-color: var(--line-color);
 }
 
+/* The current step carries the orange accent */
+.wizard-ribbon .current:before,
+.request-ribbon .current:before {
+  background-color: var(--bn-orange);
+  border-color: var(--bn-orange);
+}
+
 .wizard-ribbon li + li:after {
   content: "";
   display: block;
@@ -323,7 +747,7 @@ ol.wizard-ribbon {
 
 .wizard-page label:hover,
 .wizard-page label:focus-within {
-background-color: #e9ecef;
+background-color: var(--bn-blue-wash);
 }
 
 .wizard-page .card-group > .card {
@@ -348,7 +772,8 @@ appearance: none;
 }
 
 .wizard-page input[type="radio"]:checked ~ label {
-background-color: var(--completed-background-color);
+background-color: var(--bn-blue-tint);
+box-shadow: inset 3px 0 0 var(--bn-blue);
 }
 
 .wizard-summary .row {
@@ -361,4 +786,25 @@ background-color: var(--completed-background-color);
 
 .wizard-summary .card-body {
   padding: 10px 20px;
+}
+
+/* Purchase order dropzone, last page of the refill wizard */
+.po-dropzone {
+  padding: 16px;
+  border: 2px dashed var(--bn-blue-light);
+  border-radius: 6px;
+  background-color: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.po-dropzone:hover,
+.po-dropzone.dragover {
+  background-color: var(--bn-blue-tint);
+  border-color: var(--bn-blue);
+}
+
+.po-dropzone p {
+  margin-bottom: 0;
 }

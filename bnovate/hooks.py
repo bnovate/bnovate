@@ -315,7 +315,9 @@ standard_portal_menu_items = [
 ]
 
 website_context = {
-    "favicon": "/assets/bnovate/favicon.ico",
+    "favicon": "/assets/bnovate/img/favicon.png",
+    # Overrides the brand_html of Website Settings, which points at a file uploaded to the site
+    "brand_html": '<img src="/assets/bnovate/img/bnovate_logo_main.svg" alt="bNovate Technologies" title="bNovate Technologies">',
     # “splash_image”: “/assets/your_app/images/your_splash.png”
 }
 

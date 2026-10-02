@@ -1,0 +1,174 @@
+{% extends "templates/web.html" %}
+
+{% block style %}
+<style>
+    .docs-lead {
+        font-size: 1.1rem;
+        max-width: 60rem;
+    }
+
+    .docs-note {
+        max-width: 60rem;
+        margin: 1.25rem 0 2rem 0;
+        padding: 0.75rem 1rem;
+        background-color: var(--bn-beige);
+        border-left: 4px solid var(--bn-orange);
+        border-radius: 4px;
+    }
+
+    .docs-note ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .docs-note li + li {
+        margin-top: 0.4rem;
+    }
+
+    .docs-step {
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--bn-rule);
+    }
+
+    .docs-step h3 {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .docs-step-number {
+        flex: 0 0 auto;
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.75rem;
+        border-radius: 50%;
+        background-color: var(--bn-blue);
+        color: #fff;
+        font-size: 1.1rem;
+        line-height: 2rem;
+        text-align: center;
+    }
+
+    .docs-screenshot {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid var(--bn-rule);
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 67, 98, 0.12);
+    }
+
+    .docs-section {
+        margin-top: 2.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+{% block header %}
+<h1>{{ _("How to order a refill") }}</h1>
+{% endblock %}
+
+{% block page_content %}
+
+<p class="docs-lead">
+    {{ _("Cartridges are refilled at bNovate. You can request a refill for one or several cartridges at once from this portal. This page walks you through the process.") }}
+</p>
+
+<div class="docs-note">
+    <ul>
+        <li>{{ _("Your account is configured by our Customer Service team. Please contact them at {0} if any changes are required.").format('<a href="mailto:sales@bnovate.com">sales@bnovate.com</a>') }}</li>
+        <li>{{ _("If your account is configured to organize returns, you can obtain a return label and schedule the pickup directly from the portal.") }}
+            {{ _("Pickup and delivery must be made to the same address.") }}</li>
+    </ul>
+</div>
+
+<div class="docs-step row">
+    <div class="col-lg-5">
+        <h3><span class="docs-step-number">1</span>{{ _("Select your cartridges") }}</h3>
+        <p>{{ _("Open {0} in the menu. The list shows your cartridges and where they are. Tick the cartridges you want to have refilled, then click {1}.").format("<b>" ~ _("Cartridges") ~ "</b>", "<b>" ~ _("Request Refill") ~ "</b>") }}</p>
+        <p>{{ _("Depending on your account, you can only select cartridges that are currently at bNovate. Cartridges that already have a refill request in progress cannot be selected again.") }}</p>
+    </div>
+    <div class="col-lg-7">
+        <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/01-cartridges.jpg" alt="{{ _('Select your cartridges') }}">
+    </div>
+</div>
+
+<div class="docs-step row">
+    <div class="col-lg-5">
+        <h3><span class="docs-step-number">2</span>{{ _("Choose the variant") }}</h3>
+        <p>{{ _("For each cartridge, choose the variant it should be refilled with. Use the {0} row to apply the same variant to all cartridges, then click {1}.").format("<b>[" ~ _("All") ~ "]</b>", "<b>" ~ _("Next") ~ "</b>") }}</p>
+    </div>
+    <div class="col-lg-7">
+        <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/02-variant.jpg" alt="{{ _('Choose the variant') }}">
+    </div>
+</div>
+
+<div class="docs-step row">
+    <div class="col-lg-5">
+        <h3><span class="docs-step-number">3</span>{{ _("Pick the addresses") }}</h3>
+        <p>{{ _("Select the shipping address the refilled cartridges should be delivered to and click {0}. Then select the billing address.").format("<b>" ~ _("Next") ~ "</b>") }}</p>
+        <p>{{ _("If your account is configured for a central billing address, you cannot change the billing address.") }}</p>
+        <p>{{ _("Addresses can be managed under {0} in the menu.").format("<b>" ~ _("Addresses") ~ "</b>") }}</p>
+    </div>
+    <div class="col-lg-7">
+        <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/03-shipping.jpg" alt="{{ _('Pick the addresses') }}">
+    </div>
+</div>
+
+<div class="docs-step row">
+    <div class="col-lg-5">
+        <h3><span class="docs-step-number">4</span>{{ _("Review and confirm") }}</h3>
+        <p>{{ _("Check the summary. You can add your own order reference (PO number), attach your purchase order as a PDF, and leave remarks for bNovate.") }}</p>
+        <p>{{ _("If your account is set up to organize returns, you are also asked how many parcels you will send back.") }}</p>
+        <p>{{ _("Click {0} to send the request.").format("<b>" ~ _("Confirm Order") ~ "</b>") }}</p>
+    </div>
+    <div class="col-lg-7">
+        <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/04-summary.jpg" alt="{{ _('Review and confirm') }}">
+    </div>
+</div>
+
+<div class="docs-step row">
+    <div class="col-lg-5">
+        <h3><span class="docs-step-number">5</span>{{ _("Follow your request") }}</h3>
+        <p>{{ _("Your request now appears under {0}. Its status changes from {1} to {2} once bNovate has processed it, and to {3} when your cartridges are on their way back to you.").format("<b>" ~ _("Refill Requests") ~ "</b>", "<b>" ~ _("Requested") ~ "</b>", "<b>" ~ _("Confirmed") ~ "</b>", "<b>" ~ _("Shipped") ~ "</b>") }}</p>
+    </div>
+    <div class="col-lg-7">
+        <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/05-request.jpg" alt="{{ _('Follow your request') }}">
+    </div>
+</div>
+
+<div class="docs-section">
+    <h2>{{ _("Returning your cartridges") }}</h2>
+    <p class="docs-lead">
+        {{ _("If your account is set up to organize returns, bNovate manually verifies each refill request and then generates a return label. You are notified by email as soon as the label is ready.") }}
+    </p>
+
+    <div class="docs-step row">
+        <div class="col-lg-5">
+            <h3><span class="docs-step-number">6</span>{{ _("Open the request") }}</h3>
+            <p>{{ _("Open your request from the notification email or from {0}. Once the return label is ready, click {1}.").format("<b>" ~ _("Refill Requests") ~ "</b>", "<b>" ~ _("Organize Pickup") ~ "</b>") }}</p>
+        </div>
+        <div class="col-lg-7">
+            <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/06-request-label.jpg" alt="{{ _('Open the request') }}">
+        </div>
+    </div>
+
+    <div class="docs-step row">
+        <div class="col-lg-5">
+            <h3><span class="docs-step-number">7</span>{{ _("Organize the pickup") }}</h3>
+            <ol>
+                <li>{{ _("{0}: check the number of parcels and the pickup address.").format("<b>" ~ _("Verify information") ~ "</b>") }}</li>
+                <li>{{ _("{0}: print the label and tape it to the parcel. Use one label per parcel.").format("<b>" ~ _("Identify parcel(s)") ~ "</b>") }}</li>
+                <li>{{ _("{0}: click {1}, choose a date and a time window of at least two hours, add special instructions if needed, then click {2}.").format("<b>" ~ _("Organize Pickup") ~ "</b>", "<b>" ~ _("Get Availability") ~ "</b>", "<b>" ~ _("Schedule Pickup") ~ "</b>") }}</li>
+            </ol>
+        </div>
+        <div class="col-lg-7">
+            <img class="docs-screenshot" loading="lazy" src="{{ img_dir }}/07-pickup.jpg" alt="{{ _('Organize the pickup') }}">
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -19,19 +19,17 @@
     </thead>
     <tbody>
         {% for row in data %}
-        <tr>
-            <td><a href="/requests/{{ row.name }}">{{ row.name }}</a></td>
+        <tr class="row-link">
+            <td><a class="row-link-anchor" href="/requests/{{ row.name }}">{{ row.name }}</a></td>
             <td>
-                <a href="/requests/{{ row.name }}">
                 <span class="indicator {{ row.indicator_color or ('blue' if row.docstatus==1 else 'darkgrey') }}">
                     {{ _(row.get('indicator_title')) or _(row.status) or _("Submitted") }}
                 </span>
-                </a>
             </td>
-            <td><a href="/requests/{{ row.name }}">{{ frappe.format(row.creation, {'fieldtype': 'Date'}) }}</a></td>
-            <td><a href="/requests/{{ row.name }}">{{ row.shipping_address_display | replace("<br>", ", ") | truncate(50) | striptags }}</a></td>
-            <td><a href="/requests/{{ row.name }}">{{ row.billing_address_display | replace("<br>", ", ") | truncate(50) | striptags }}</a></td>
-            <td><a href="/requests/{{ row.name }}">{{ row.contact_display }}</a></td>
+            <td>{{ frappe.format(row.creation, {'fieldtype': 'Date'}) }}</td>
+            <td>{{ row.shipping_address_display | replace("<br>", ", ") | truncate(50) | striptags }}</td>
+            <td>{{ row.billing_address_display | replace("<br>", ", ") | truncate(50) | striptags }}</td>
+            <td>{{ row.contact_display }}</td>
         </tr>
         {% endfor %}
     </tbody>

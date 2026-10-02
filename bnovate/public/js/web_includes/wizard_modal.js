@@ -164,8 +164,8 @@ const template_page4 = `
 
                 <h5>{{ __("Attach Purchase Order (PDF, optional)") }}</h5>
                 <div class="form-group">
-                    <div id="po-dropzone" style="border: 2px dashed #ccc; border-radius: 6px; padding: 16px; text-align: center; cursor: pointer;">
-                        <p class="text-muted" id="po-dropzone-text" style="margin-bottom: 0;">{{ __("Drag & drop a PDF here, or click to choose a file") }}</p>
+                    <div id="po-dropzone" class="po-dropzone">
+                        <p class="text-muted" id="po-dropzone-text">{{ __("Drag & drop a PDF here, or click to choose a file") }}</p>
                         <input type="file" id="po-file-input" accept="application/pdf" style="display: none;">
                     </div>
                 </div>
@@ -380,14 +380,14 @@ customElements.define('wizard-modal', class extends HTMLElement {
         dropzone.addEventListener('click', () => file_input.click());
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropzone.style.background = '#f0f8ff';
+            dropzone.classList.add('dragover');
         });
         dropzone.addEventListener('dragleave', () => {
-            dropzone.style.background = '';
+            dropzone.classList.remove('dragover');
         });
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropzone.style.background = '';
+            dropzone.classList.remove('dragover');
             set_file(e.dataTransfer.files[0]);
         });
         file_input.addEventListener('change', (e) => set_file(e.target.files[0]));

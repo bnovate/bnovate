@@ -41,6 +41,17 @@
         width: calc(50% - 5px);
     }
 
+    /* Half-width time fields are narrow: trim padding so "10:00" isn't clipped by the clock icon */
+    .timegroup input {
+        padding-left: 6px;
+        padding-right: 4px;
+    }
+
+    .timegroup input::-webkit-calendar-picker-indicator {
+        margin-left: 2px;
+        padding: 0;
+    }
+
     fieldset {
         display: contents;
     }
@@ -48,6 +59,18 @@
     .btn {
         display: block;
         margin: 20px auto;
+    }
+
+    /* Spinner shown while waiting for the carrier. Space is reserved so the page doesn't jump. */
+    .spinner-row {
+        text-align: center;
+        min-height: 2.5rem;
+        margin-top: -0.5rem;
+    }
+
+    .spinner-row i {
+        font-size: 1.75rem;
+        color: var(--bn-blue);
     }
 </style>
 {% endblock %}
@@ -57,7 +80,7 @@
 {% endblock %}
 
 {% block header %}
-<h1>{{ _("Organize Return") }} for {{ rr_doc.name }}</h1>
+<h1>{{ _("Organize Return for {0}").format(rr_doc.name) }}</h1>
 {% endblock %}
 
 
@@ -102,12 +125,12 @@
 
         <button id="get-capabilities" class="btn btn-primary" {% if pickup_status==SCHEDULED %} hidden {% endif %}>{{ _("Get Availability") }}</button>
 
-        <i id="loading" class="fa fa-cog fa-spin" hidden></i>
+        <div class="spinner-row"><i id="loading" class="fa fa-cog fa-spin" hidden></i></div>
         <form id="schedule-form" onsubmit="return false">
             {% if pickup_status == AVAILABLE %}
-            <p>I confirm the package will be available on</p>
+            <p>{{ _("I confirm the package will be available on") }}</p>
             {% elif pickup_status == SCHEDULED %}
-            <p>Pickup is scheduled on</p>
+            <p>{{ _("Pickup is scheduled on") }}</p>
             {% endif %}
             <fieldset id="fields" disabled>
                 <label for="pickup_date" display="hidden" hidden>Date</label>

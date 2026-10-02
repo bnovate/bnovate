@@ -6,6 +6,21 @@ frappe.provide("bnovate.web");
 // frappe.require("/assets/js/control.min.js");
 // frappe.require("/assets/js/dialog.min.js");
 
+bnovate.web.set_language = async function (lang) {
+    await frappe.call("bnovate.www.helpers.set_language", { lang })
+    location.reload();
+}
+
+// Language dropdown in the navbar, see update_context in www/helpers.py
+document.addEventListener("click", (e) => {
+    const link = e.target.closest("a[data-lang]");
+    if (!link) return;
+    e.preventDefault();
+    if (!link.hasAttribute("data-current")) {
+        bnovate.web.set_language(link.dataset.lang);
+    }
+});
+
 bnovate.web.get_cartridges = async function () {
     const resp = await frappe.call("bnovate.www.cartridges.get_cartridges")
     return resp.message;

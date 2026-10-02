@@ -39,10 +39,60 @@ def is_desk_user():
 def is_system_user():
     return is_desk_user()
 
+LANGUAGES = [
+    {"code": "en", "name": "English"},
+    {"code": "fr", "name": "Français"},
+    {"code": "de", "name": "Deutsch"},
+]
+
 def update_context(context):
     """ Called by hooks.py as a 'middleware' on all pages, including Desk pages. """
     build_sidebar(context, context.show_sidebar)
+
+    add_language_menu(context)
     return context
+
+def add_language_menu(context):
+    """ Add a language dropdown to the navbar, right after the Help item.
+
+    Only useful to logged in users, since it sets the default language stored on their User.
+    Entries are rendered by frappe's navbar_items.html: the `target` of an item is printed as
+    raw attributes of its link, which is how data-lang gets there (picked up by helpers.js).
+    """
+    if context.get("top_bar_items") is None or is_guest():
+        return
+
+    current = next((l for l in LANGUAGES if l["code"] == frappe.local.lang), LANGUAGES[0])
+    children = []
+    for lang in LANGUAGES:
+        is_current = lang["code"] == current["code"]
+        children.append(frappe._dict(
+            label=("&#10003; " if is_current else "&emsp; ") + lang["name"],
+            url="/",
+            target='data-lang="{0}"{1}'.format(lang["code"], " data-current" if is_current else ""),
+        ))
+
+    menu = frappe._dict(
+        label='<i class="fa fa-globe"></i> ' + current["name"],
+        right=1,
+        parent_label=None,
+        child_items=children,
+    )
+    # New list: the one in context may be shared between requests
+    context.top_bar_items = list(context.top_bar_items) + [menu]
+
+@frappe.whitelist()
+def set_language(lang):
+    """ Change the default language of the logged in user """
+    if lang not in [l["code"] for l in LANGUAGES]:
+        frappe.throw(_("Unsupported language"))
+    if is_guest():
+        frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
+
+    user = frappe.get_doc("User", frappe.session.user)
+    user.language = lang
+    user.save(ignore_permissions=True)
+    frappe.db.commit()
 
 def get_settings():
     return frappe.get_single("bNovate Settings")

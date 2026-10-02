@@ -23,4 +23,9 @@ def get_portal_translated_dict():
             if filename.endswith(extension):
                 messages.extend(get_messages_from_file(os.path.join(base, filename)))
 
+    # Status labels of the cartridge list are defined in the report, not in the page. The page
+    # translates them client side, with __().
+    messages.extend(get_messages_from_file(
+        frappe.get_app_path("bnovate", "bnovate", "report", "cartridge_status", "cartridge_status.py")))
+
     return make_dict_from_messages(messages)

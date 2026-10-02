@@ -362,7 +362,7 @@ apps/bnovate/bnovate/www/pickup.html,And,Et
 apps/bnovate/bnovate/www/pickup.html,Cancel / Re-schedule Pickup,Annuler / reprogrammer l'enlèvement
 apps/bnovate/bnovate/www/pickup.html,Contact sales@bnovate.com for any changes to the above.,Contactez sales@bnovate.com pour toute modification de ce qui précède.
 apps/bnovate/bnovate/www/pickup.html,Get Availability,Obtenir la disponibilité
-apps/bnovate/bnovate/www/pickup.html,Identify parcel(s),identifier le (les) colis
+apps/bnovate/bnovate/www/pickup.html,Identify parcel(s),Identifier le(s) colis
 apps/bnovate/bnovate/www/pickup.html,No pickup availability,Pas de disponibilité d'enlèvement
 apps/bnovate/bnovate/www/pickup.html,Number of parcels,Nombre de colis
 apps/bnovate/bnovate/www/pickup.html,One label per parcel,Une étiquette par colis
@@ -485,3 +485,36 @@ apps/bnovate/bnovate/www/cartridges.html,"Your refill request was created, but t
 apps/bnovate/bnovate/www/instrument.py,Instrument ,Instrument 
 apps/bnovate/bnovate/www/request.py,No file was uploaded,Aucun fichier n'a été téléversé
 apps/bnovate/bnovate/www/request.py,Only PDF files are allowed,Seuls les fichiers PDF sont autorisés
+apps/bnovate/bnovate/www/request.html,Attached Purchase Order,Bon de commande joint
+apps/bnovate/bnovate/www/docs/refill.html,Addresses can be managed under {0} in the menu.,Les adresses se gèrent sous {0} dans le menu.
+apps/bnovate/bnovate/www/docs/refill.html,Cartridges are refilled at bNovate. You can request a refill for one or several cartridges at once from this portal. This page walks you through the process.,"Les cartouches sont rechargées chez bNovate. Depuis ce portail, vous pouvez demander la recharge d'une ou de plusieurs cartouches à la fois. Cette page vous guide pas à pas."
+apps/bnovate/bnovate/www/docs/refill.html,"Check the summary. You can add your own order reference (PO number), attach your purchase order as a PDF, and leave remarks for bNovate.","Vérifiez le récapitulatif. Vous pouvez indiquer votre propre référence de commande (numéro de commande), joindre votre bon de commande au format PDF et laisser des remarques à l'attention de bNovate."
+apps/bnovate/bnovate/www/docs/refill.html,Choose the variant,Choisir la variante
+apps/bnovate/bnovate/www/docs/refill.html,Click {0} to send the request.,Cliquez sur {0} pour envoyer la demande.
+apps/bnovate/bnovate/www/docs/refill.html,"Depending on your account, you can only select cartridges that are currently at bNovate. Cartridges that already have a refill request in progress cannot be selected again.","Selon votre compte, vous ne pouvez sélectionner que des cartouches se trouvant actuellement chez bNovate. Les cartouches qui font déjà l'objet d'une demande de recharge en cours ne peuvent pas être sélectionnées à nouveau."
+apps/bnovate/bnovate/www/docs/refill.html,Follow your request,Suivre votre demande
+apps/bnovate/bnovate/www/docs/refill.html,"For each cartridge, choose the variant it should be refilled with. Use the {0} row to apply the same variant to all cartridges, then click {1}.","Pour chaque cartouche, choisissez la variante avec laquelle elle doit être rechargée. La ligne {0} permet d'appliquer la même variante à toutes les cartouches. Cliquez ensuite sur {1}."
+apps/bnovate/bnovate/www/docs/refill.html,"If your account is set up to organize returns, bNovate manually verifies each refill request and then generates a return label. You are notified by email as soon as the label is ready.","Si votre compte est configuré pour organiser les retours, bNovate vérifie manuellement chaque demande de recharge, puis génère une étiquette de retour. Vous êtes informé par e-mail dès que l'étiquette est prête."
+apps/bnovate/bnovate/www/docs/refill.html,"If your account is set up to organize returns, you are also asked how many parcels you will send back.","Si votre compte est configuré pour organiser les retours, il vous est aussi demandé combien de colis vous renverrez."
+apps/bnovate/bnovate/www/docs/refill.html,Open the request,Ouvrir la demande
+apps/bnovate/bnovate/www/docs/refill.html,"Open your request from the notification email or from {0}. Once the return label is ready, click {1}.","Ouvrez votre demande depuis l'e-mail de notification ou sous {0}. Dès que l'étiquette de retour est prête, cliquez sur {1}."
+apps/bnovate/bnovate/www/docs/refill.html,"Open {0} in the menu. The list shows your cartridges and where they are. Tick the cartridges you want to have refilled, then click {1}.","Ouvrez {0} dans le menu. La liste affiche vos cartouches et leur emplacement. Cochez les cartouches à recharger, puis cliquez sur {1}."
+apps/bnovate/bnovate/www/docs/refill.html,Organize the pickup,Organiser l'enlèvement
+apps/bnovate/bnovate/www/docs/refill.html,Pick the addresses,Choisir les adresses
+apps/bnovate/bnovate/www/docs/refill.html,Returning your cartridges,Renvoyer vos cartouches
+apps/bnovate/bnovate/www/docs/refill.html,Review and confirm,Vérifier et confirmer
+apps/bnovate/bnovate/www/docs/refill.html,Select the shipping address the refilled cartridges should be delivered to and click {0}. Then select the billing address.,Sélectionnez l'adresse de livraison des cartouches rechargées et cliquez sur {0}. Sélectionnez ensuite l'adresse de facturation.
+apps/bnovate/bnovate/www/docs/refill.html,Select your cartridges,Sélectionner vos cartouches
+apps/bnovate/bnovate/www/docs/refill.html,"Your request now appears under {0}. Its status changes from {1} to {2} once bNovate has processed it, and to {3} when your cartridges are on their way back to you.","Votre demande apparaît maintenant sous {0}. Son statut passe de {1} à {2} dès que bNovate l'a traitée, puis à {3} lorsque vos cartouches sont en route vers vous."
+apps/bnovate/bnovate/www/docs/refill.html,{0}: check the number of parcels and the pickup address.,{0} : vérifiez le nombre de colis et l'adresse d'enlèvement.
+apps/bnovate/bnovate/www/docs/refill.html,"{0}: click {1}, choose a date and a time window of at least two hours, add special instructions if needed, then click {2}.","{0} : cliquez sur {1}, choisissez une date et une plage horaire d'au moins deux heures, ajoutez si besoin des instructions particulières, puis cliquez sur {2}."
+apps/bnovate/bnovate/www/docs/refill.html,{0}: print the label and tape it to the parcel. Use one label per parcel.,{0} : imprimez l'étiquette et collez-la sur le colis. Utilisez une étiquette par colis.
+apps/bnovate/bnovate/www/docs/refill.py,How to order a refill,Comment commander une recharge
+apps/bnovate/bnovate/www/helpers.py,Unsupported language,Langue non prise en charge
+apps/bnovate/bnovate/www/pickup.html,Organize Return for {0},Organiser le retour pour {0}
+apps/bnovate/bnovate/www/pickup.html,I confirm the package will be available on,Je confirme que le colis sera disponible le
+apps/bnovate/bnovate/www/pickup.html,Pickup is scheduled on,Enlèvement prévu le
+apps/bnovate/bnovate/www/docs/refill.html,Your account is configured by our Customer Service team. Please contact them at {0} if any changes are required.,Votre compte est configuré par notre équipe du service clientèle. Veuillez la contacter à l'adresse {0} si des modifications sont nécessaires.
+apps/bnovate/bnovate/www/docs/refill.html,"If your account is configured to organize returns, you can obtain a return label and schedule the pickup directly from the portal.","Si votre compte est configuré pour organiser les retours, vous pouvez obtenir une étiquette de retour et planifier l'enlèvement directement depuis le portail."
+apps/bnovate/bnovate/www/docs/refill.html,Pickup and delivery must be made to the same address.,L'enlèvement et la livraison doivent s'effectuer à la même adresse.
+apps/bnovate/bnovate/www/docs/refill.html,"If your account is configured for a central billing address, you cannot change the billing address.","Si votre compte est configuré avec une adresse de facturation centrale, vous ne pouvez pas modifier l'adresse de facturation."

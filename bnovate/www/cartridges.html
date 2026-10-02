@@ -221,6 +221,17 @@
     }
 
     function bind_table_elements() {
+        // Make the whole row toggle its checkbox, not just the label text. Labels, links, buttons
+        // and the dropdown keep their own behaviour (a label click already toggles the checkbox).
+        [...document.querySelectorAll("#table-container tbody tr")].forEach( tr => {
+            const check = tr.querySelector(".serial-check");
+            if ( !check ) return;
+            tr.addEventListener("click", (e) => {
+                if ( e.target.closest("a, button, input, label, .dropdown") ) return;
+                check.click();
+            });
+        });
+
         // Enable button if any SNs are clicked.
         [...document.querySelectorAll(".serial-check")].map(c => c.addEventListener("change", (e) => {
             // Store state in order to remember before / after filter
