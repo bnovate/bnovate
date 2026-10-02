@@ -483,6 +483,14 @@ scheduler_events = {
 
 # before_tests = "bnovate.install.before_tests"
 
+# Translations
+# ------------------------------
+#
+# Also deliver the strings of on-demand portal scripts (see the function's docstring)
+get_translated_dict = {
+    ("boot", None): "bnovate.bnovate.utils.web_translations.get_portal_translated_dict",
+}
+
 # Overriding Methods
 # ------------------------------
 #

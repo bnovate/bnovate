@@ -395,3 +395,90 @@ apps/bnovate/bnovate/public/js/web_includes/wizard_modal.js,Purchase Order No,Be
 apps/bnovate/bnovate/www/cartridge.py,Cartridge,Kartusche
 apps/bnovate/bnovate/www/instrument.py,Instrument,Instrument
 apps/bnovate/bnovate/www/request.html,Your Order Reference (PO Number),Ihre Bestellnummer (PO-Nummer)
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Final score: {0},Endpunktzahl: {0}
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,GAME OVER,GAME OVER
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Inventory invaders have infested the warehouse!,Inventar-Invasoren haben das Lager befallen!
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,LEVEL CLEAR!,LEVEL GESCHAFFT!
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Next Level,Nächstes Level
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Play Again,Nochmals spielen
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Scan a crate's code with your barcode reader to destroy it.,"Scannen Sie den Code einer Kiste mit Ihrem Barcodeleser, um sie zu zerstören."
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,Score: {0},Punkte: {0}
+apps/bnovate/bnovate/bnovate/page/warehouse_wars/warehouse_wars.js,WAREHOUSE WARS,WAREHOUSE WARS
+apps/bnovate/bnovate/bnovate/page/work_order_execution/work_order_execution.js,4-port valve,4-Port-Ventil
+apps/bnovate/bnovate/bnovate/page/work_order_execution/work_order_execution.js,5-port valve,5-Port-Ventil
+apps/bnovate/bnovate/bnovate/report/batch_report/batch_report.js,As of Date,Stichtag
+apps/bnovate/bnovate/bnovate/report/batch_report/batch_report.js,Expires In Max (Days),Verfällt in max. (Tage)
+apps/bnovate/bnovate/bnovate/report/batch_report/batch_report.js,Only Batches in Stock,Nur Chargen auf Lager
+apps/bnovate/bnovate/bnovate/report/batch_report/batch_report.py,Expires In (Days),Verfällt in (Tage)
+apps/bnovate/bnovate/bnovate/report/bom_search_(bn)/bom_search_(bn).js,Only Active BOMs,Nur aktive Stücklisten
+apps/bnovate/bnovate/bnovate/report/bom_search_(bn)/bom_search_(bn).js,Only Active Output Items,Nur aktive Ausgabeartikel
+apps/bnovate/bnovate/bnovate/report/bom_search_(bn)/bom_search_(bn).js,Only Default BOMs,Nur Standardstücklisten
+apps/bnovate/bnovate/bnovate/report/bom_stock_report_(bn)/bom_stock_report_(bn).py,Enough to build,Ausreichend zum Fertigen
+apps/bnovate/bnovate/bnovate/report/breakbulk_invoice_export/breakbulk_invoice_export.js,"<i class=""fa fa-calculator""></i> Sum Shipping","<i class=""fa fa-calculator""></i> Versand summieren"
+apps/bnovate/bnovate/bnovate/report/breakbulk_invoice_export/breakbulk_invoice_export.js,"<i class=""fa fa-download""></i> Commercial Invoices","<i class=""fa fa-download""></i> Handelsrechnungen"
+apps/bnovate/bnovate/bnovate/report/breakbulk_invoice_export/breakbulk_invoice_export.js,"<i class=""fa fa-download""></i> Export to CSV","<i class=""fa fa-download""></i> Als CSV exportieren"
+apps/bnovate/bnovate/bnovate/report/breakbulk_invoice_export/breakbulk_invoice_export.js,Breakbulk Master No,Breakbulk-Master-Nr.
+apps/bnovate/bnovate/bnovate/report/connectivity_data_usage/connectivity_data_usage.py,Period Start ,Zeitraum Beginn 
+apps/bnovate/bnovate/bnovate/report/deferred_revenue_report/deferred_revenue_report.js,Hide Completed,Abgeschlossene ausblenden
+apps/bnovate/bnovate/bnovate/report/general_ledger_for_export_(bn)/general_ledger_for_export_(bn).py,Stock Entry Reason,Grund der Lagerbuchung
+apps/bnovate/bnovate/bnovate/report/ic_balance_sheet/ic_balance_sheet.js,EUR Exchange Rate,EUR-Wechselkurs
+apps/bnovate/bnovate/bnovate/report/ic_balance_sheet/ic_balance_sheet.js,GBP Exchange Rate,GBP-Wechselkurs
+apps/bnovate/bnovate/bnovate/report/item_wise_sales_history_(bn)/item_wise_sales_history_(bn).js,Filter on,Filtern nach
+apps/bnovate/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Billing Basis,Abrechnungsgrundlage
+apps/bnovate/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Customer Group Parent,Übergeordnete Kundengruppe
+apps/bnovate/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Default Discount Percentage,Standardrabatt in %
+apps/bnovate/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Revenue Stream Parent,Übergeordneter Umsatzstrom
+apps/bnovate/bnovate/bnovate/report/late_purchases/late_purchases.py,Received Qty in Purchase Receipt,Erhaltene Menge im Wareneingang
+apps/bnovate/bnovate/bnovate/report/material_request_report/material_request_report.js,Only Unassigned,Nur nicht zugewiesene
+apps/bnovate/bnovate/bnovate/report/orders_to_fulfill/orders_to_fulfill.js,Breakbulk,Breakbulk
+apps/bnovate/bnovate/bnovate/report/recently_returned_cartridges/recently_returned_cartridges.py,Last DN Customer,Kunde des letzten Lieferscheins
+apps/bnovate/bnovate/bnovate/report/recently_returned_cartridges/recently_returned_cartridges.py,Last DN Customer Name,Kundenname des letzten Lieferscheins
+apps/bnovate/bnovate/bnovate/report/recently_returned_cartridges/recently_returned_cartridges.py,Owned by Name,Name des Besitzers
+apps/bnovate/bnovate/bnovate/report/revenue_analytics_master/revenue_analytics_master.js,Include,Einbeziehen
+apps/bnovate/bnovate/bnovate/report/revenue_analytics_master/revenue_analytics_master.js,Revenue Streams,Umsatzströme
+apps/bnovate/bnovate/bnovate/report/revenue_analytics_master/revenue_analytics_master.py,Revenue Stream,Umsatzstrom
+apps/bnovate/bnovate/bnovate/report/revenue_analytics_master/revenue_analytics_master.py,Stage,Phase
+apps/bnovate/bnovate/bnovate/report/work_order_planning/work_order_planning.js,Move down,Nach unten
+apps/bnovate/bnovate/bnovate/report/work_order_planning/work_order_planning.js,Move up,Nach oben
+apps/bnovate/bnovate/bnovate/utils/__init__.py,Invalid VAT number format. Must start with a two letter country code followed by numbers and letters.,"Ungültiges Format der MwSt-Nummer. Sie muss mit einem zweistelligen Ländercode beginnen, gefolgt von Ziffern und Buchstaben."
+apps/bnovate/bnovate/bnovate/utils/__init__.py,"Please check UK VAT numbers on the <a target=""_blank"" href=""https://www.gov.uk/check-uk-vat-number"">UK government website</a>","Bitte prüfen Sie britische MwSt-Nummern auf der <a target=""_blank"" href=""https://www.gov.uk/check-uk-vat-number"">Website der britischen Regierung</a>"
+apps/bnovate/bnovate/bnovate/utils/__init__.py,VAT number must contain only letters and numbers. No spaces or special characters.,Die MwSt-Nummer darf nur Buchstaben und Ziffern enthalten. Keine Leerzeichen oder Sonderzeichen.
+apps/bnovate/bnovate/bnovate/utils/__init__.py,VAT number must not be empty,Die MwSt-Nummer darf nicht leer sein
+apps/bnovate/bnovate/bnovate/utils/controllers.py,Ship date has been changed. Please set 'Date Change Origin' field to indicate the reason for the change.,"Das Versanddatum wurde geändert. Bitte füllen Sie das Feld 'Date Change Origin' aus, um den Grund der Änderung anzugeben."
+apps/bnovate/bnovate/bnovate/utils/work_order.py,"End time was automatically set to {0}, based on a default duration of {1} (no prior data for this item).","Die Endzeit wurde automatisch auf {0} gesetzt, basierend auf einer Standarddauer von {1} (keine früheren Daten für diesen Artikel)."
+apps/bnovate/bnovate/bnovate/utils/work_order.py,"End time was automatically set to {0}, based on an estimated duration of {1} from prior Work Orders for this item.","Die Endzeit wurde automatisch auf {0} gesetzt, basierend auf einer geschätzten Dauer von {1} aus früheren Arbeitsaufträgen für diesen Artikel."
+apps/bnovate/bnovate/bnovate/utils/work_order.py,"Start time was not set, defaulted to 8:00 AM.","Die Startzeit wurde nicht festgelegt, es wurde 8:00 Uhr verwendet."
+apps/bnovate/bnovate/bnovate/utils/work_order.py,{0}h {1}m,{0} Std. {1} Min.
+apps/bnovate/bnovate/config/bnovate.py,BOM Search (bN),Stücklistensuche (bN)
+apps/bnovate/bnovate/config/bnovate.py,BOM Stock Report (bN),Stücklisten-Lagerbericht (bN)
+apps/bnovate/bnovate/config/bnovate.py,Batch Report,Chargenbericht
+apps/bnovate/bnovate/config/bnovate.py,Breakbulk Invoice Export,Breakbulk-Rechnungsexport
+apps/bnovate/bnovate/config/bnovate.py,Breakbulk Shipment Export,Breakbulk-Versandexport
+apps/bnovate/bnovate/config/bnovate.py,Definition of the IC Accounting aggregation groups,Definition der Aggregationsgruppen der IC-Buchhaltung
+apps/bnovate/bnovate/config/bnovate.py,IC Account Group,IC-Kontengruppe
+apps/bnovate/bnovate/config/bnovate.py,IC Accounting,IC-Buchhaltung
+apps/bnovate/bnovate/config/bnovate.py,IC Balance Sheet,IC-Bilanz
+apps/bnovate/bnovate/config/bnovate.py,IC Profit And Loss Statement,IC-Erfolgsrechnung
+apps/bnovate/bnovate/config/bnovate.py,Material Request Report,Materialanfragebericht
+apps/bnovate/bnovate/config/bnovate.py,Purchased Items for Quality Control,Eingekaufte Artikel für die Qualitätskontrolle
+apps/bnovate/bnovate/config/bnovate.py,Revenue Analytics,Umsatzanalyse
+apps/bnovate/bnovate/config/bnovate.py,Weekly Sales,Wöchentlicher Umsatz
+apps/bnovate/bnovate/public/js/bnovate_common.js,Error looking up VAT number,Fehler bei der Abfrage der MwSt-Nummer
+apps/bnovate/bnovate/public/js/bnovate_common.js,VAT number invalid,MwSt-Nummer ungültig
+apps/bnovate/bnovate/public/js/bnovate_common.js,VAT number valid,MwSt-Nummer gültig
+apps/bnovate/bnovate/public/js/doctype_includes/accounts_settings.js,Apply Deferred Expense,Rechnungsabgrenzungsposten anwenden
+apps/bnovate/bnovate/public/js/doctype_includes/accounts_settings.js,Apply Deferred Revenue,Rechnungsabgrenzung anwenden
+apps/bnovate/bnovate/public/js/doctype_includes/contact.js,User ID is already associated with another contact: ,Diese Benutzer-ID ist bereits einem anderen Kontakt zugeordnet: 
+apps/bnovate/bnovate/public/js/doctype_includes/customer.js,Orders Awaiting Call-Off,Aufträge mit ausstehendem Abruf
+apps/bnovate/bnovate/public/js/doctype_includes/purchase_invoice.js,Deferred Expense Entries,Buchungen der Rechnungsabgrenzungsposten
+apps/bnovate/bnovate/public/js/doctype_includes/sales_invoice.js,Deferred Revenue Entries,Buchungen der Rechnungsabgrenzung
+apps/bnovate/bnovate/public/js/doctype_includes/supplier.js,You are not authorized to approve suppliers.,"Sie sind nicht berechtigt, Lieferanten zu genehmigen."
+apps/bnovate/bnovate/public/js/doctype_includes/supplier.js,You have already approved this supplier.,Sie haben diesen Lieferanten bereits genehmigt.
+apps/bnovate/bnovate/public/js/web_includes/wizard_modal.js,"Attach Purchase Order (PDF, optional)","Bestellung anhängen (PDF, optional)"
+apps/bnovate/bnovate/public/js/web_includes/wizard_modal.js,"Drag & drop a PDF here, or click to choose a file","PDF hierher ziehen oder klicken, um eine Datei auszuwählen"
+apps/bnovate/bnovate/public/js/web_includes/wizard_modal.js,Please attach a PDF file.,Bitte hängen Sie eine PDF-Datei an.
+apps/bnovate/bnovate/www/cartridge.py,Cartridge ,Kartusche 
+apps/bnovate/bnovate/www/cartridges.html,"Your refill request was created, but the PO file could not be attached. You can try again from the request confirmation page.","Ihre Nachfüllanfrage wurde erstellt, aber die Bestelldatei konnte nicht angehängt werden. Sie können es auf der Bestätigungsseite der Anfrage erneut versuchen."
+apps/bnovate/bnovate/www/instrument.py,Instrument ,Instrument 
+apps/bnovate/bnovate/www/request.py,No file was uploaded,Es wurde keine Datei hochgeladen
+apps/bnovate/bnovate/www/request.py,Only PDF files are allowed,Nur PDF-Dateien sind erlaubt
