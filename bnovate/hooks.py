@@ -401,6 +401,9 @@ doc_events = {
     "Purchase Order": {
         "before_submit": "bnovate.bnovate.utils.controllers.check_blanket_order_currency",
     },
+    "Sales Invoice": {
+        "before_validate": "bnovate.bnovate.utils.deferral.set_deferral_flags",
+    },
     "Sales Order": {
         "after_insert": [
             "bnovate.bnovate.doctype.refill_request.refill_request.copy_po_attachment_to_sales_order",

@@ -425,7 +425,7 @@ def create_invoice(from_date, to_date, customer, doctype):
         elif e.dt == "Subscription Contract":
             item['subscription'] = e.reference
             item['sc_detail'] = e.ssi_name
-            item['enable_deferred_revenue'] = 1  # Should be automatic if activated on item
+            item['bn_requires_deferral'] = 1  # Also set by Sales Invoice before_validate hook, from the item
             item['service_start_date'] = e.period_start
             item['service_end_date'] = e.period_end
 

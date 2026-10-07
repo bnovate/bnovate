@@ -296,10 +296,34 @@ def get_columns():
             "width": 120
         },
         {
-            "fieldname": "enable_deferred_revenue",
-            "label": _("Deferred Revenue"),
+            "fieldname": "bn_requires_deferral",
+            "label": _("Requires Deferred Revenue"),
             "fieldtype": "Check",
             "width": 120
+        },
+        {
+            "fieldname": "enable_deferred_revenue",
+            "label": _("Deferred by ERP"),
+            "fieldtype": "Check",
+            "width": 100
+        },
+        {
+            "fieldname": "service_start_date",
+            "label": _("Service Start Date"),
+            "fieldtype": "Date",
+            "width": 100
+        },
+        {
+            "fieldname": "service_end_date",
+            "label": _("Service End Date"),
+            "fieldtype": "Date",
+            "width": 100
+        },
+        {
+            "fieldname": "service_stop_date",
+            "label": _("Service Stop Date"),
+            "fieldtype": "Date",
+            "width": 100
         }
 
     ]
@@ -454,7 +478,11 @@ def get_items(filters):
 
             sr.name as service_report,
             sr.billing_basis,
-            sii.enable_deferred_revenue
+            sii.bn_requires_deferral,
+            sii.enable_deferred_revenue,
+            sii.service_start_date,
+            sii.service_end_date,
+            sii.service_stop_date
 
         FROM sinv
         LEFT JOIN `tabSales Invoice Item` sii ON sii.parent = sinv.name
@@ -523,7 +551,11 @@ def get_items(filters):
 
             NULL as service_report,
             NULL as billing_basis,
-            NULL as enable_deferred_revenue
+            NULL as bn_requires_deferral,
+            NULL as enable_deferred_revenue,
+            NULL as service_start_date,
+            NULL as service_end_date,
+            NULL as service_stop_date
         FROM sinv
         JOIN `tabSales Taxes and Charges` t ON t.parent = sinv.name
         

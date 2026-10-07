@@ -90,7 +90,7 @@ def _make_from_quotation(source_name, target_doc=None, ignore_permissions=False)
 
 def is_subscription_item(quotation_item):
 	""" Return true if item line from QTN is a subscription-able item """
-	return bool(frappe.db.get_value("Item", quotation_item.item_code, "enable_deferred_revenue"))
+	return bool(frappe.db.get_value("Item", quotation_item.item_code, "bn_requires_deferral"))
 
 @frappe.whitelist()
 def make_from_self(source_name, target_doc=None):

@@ -1,0 +1,1 @@
+bnovate.patches.set_bn_requires_deferral

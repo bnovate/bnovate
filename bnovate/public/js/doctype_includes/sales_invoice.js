@@ -27,3 +27,14 @@ frappe.ui.form.on("Sales Invoice", {
 
     },
 })
+
+frappe.ui.form.on("Sales Invoice Item", {
+    // Flag is fetched from the item. Start the service period at the posting date by default;
+    // ERPNext's own service_start_date handler then fills the end date from the item's number of months.
+    bn_requires_deferral(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.bn_requires_deferral && !row.service_start_date && !frm.doc.is_return) {
+            frappe.model.set_value(cdt, cdn, "service_start_date", frm.doc.posting_date);
+        }
+    },
+})

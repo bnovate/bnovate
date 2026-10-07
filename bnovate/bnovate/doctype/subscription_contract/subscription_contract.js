@@ -53,7 +53,7 @@ bnovate.subscription_contract.SubscriptionContractController = erpnext.selling.S
 		});
 		// Override item filters set by SellingController
 		this.frm.set_query("item_code", "items", function () {
-			return { filters: { enable_deferred_revenue: true } }
+			return { filters: { bn_requires_deferral: true } }
 		});
 
 		if (!this.frm.doc.start_date) {
