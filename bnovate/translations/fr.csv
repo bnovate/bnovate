@@ -523,3 +523,4 @@ apps/bnovate/bnovate/custom/item.json,Revenue from this item is deferred. Flags 
 apps/bnovate/bnovate/utils/deferral.py,Row {0}: {1} requires deferred revenue. Please set the Service End Date.,Ligne {0} : {1} nécessite des produits comptabilisés d'avance. Veuillez définir la date de fin du service.
 apps/bnovate/bnovate/utils/deferral.py,Row {0}: Service End Date cannot be before Service Start Date.,Ligne {0} : La date de fin du service ne peut pas être antérieure à la date de début du service.
 apps/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Deferred by ERP,Différé par l'ERP
+apps/bnovate/bnovate/public/js/doctype_includes/payment_reminder.js,Attaching invoices...,Ajout des factures en pièces jointes...

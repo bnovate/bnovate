@@ -235,6 +235,7 @@ doctype_js = {
     ],
     "Item": ["public/js/doctype_includes/item.js"],
     "Supplier": ["public/js/doctype_includes/supplier.js"],
+    "Payment Reminder": ["public/js/doctype_includes/payment_reminder.js"],
     "Purchase Order": ["public/js/doctype_includes/purchase_order.js"],
     "Purchase Receipt": ["public/js/doctype_includes/purchase_receipt.js"],
     "Purchase Invoice": ["public/js/doctype_includes/purchase_invoice.js"],
