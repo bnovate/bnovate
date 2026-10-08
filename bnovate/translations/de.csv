@@ -529,3 +529,5 @@ apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Please save the d
 apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Select Quotation,Angebot auswählen
 apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Compare,Vergleichen
 apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Quotation {0} and Sales Order {1},Angebot {0} und Kundenauftrag {1}
+apps/bnovate/bnovate/public/js/compare.js,Only on {0},Nur auf {0}
+apps/bnovate/bnovate/public/js/compare.js,No differences found,Keine Unterschiede gefunden
