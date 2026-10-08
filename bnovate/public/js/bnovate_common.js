@@ -362,6 +362,22 @@ bnovate.utils.email_dialog = function (frm, template_name) {
   });
 }
 
+// Show warnings passed by the server (bnovate.bnovate.utils.add_warning) in the "warnings" HTML field of the form.
+// Call from refresh. Add an HTML field named "warnings" to the form, close to where it should appear.
+bnovate.utils.show_warnings = function (frm) {
+  const field = frm.fields_dict.warnings;
+  if (!field) {
+    return;
+  }
+
+  const warnings = frm.doc.__onload?.show_warnings || [];
+  const escape = frappe.utils.escape_html;
+  field.wrapper.innerHTML = warnings.length ? `
+    <div style="background-color: #f7cd72; padding: 10px; border-radius: 10px;">
+      ${warnings.map(w => `<b>${escape(w.title)}</b>` + w.lines.map(line => `<br>${escape(line)}`).join('')).join('<br><br>')}
+    </div>` : '';
+}
+
 bnovate.utils.is_fill = function (item_code) {
   return item_code !== undefined && item_code.startsWith("FIL");
 }

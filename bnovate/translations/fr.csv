@@ -524,3 +524,6 @@ apps/bnovate/bnovate/utils/deferral.py,Row {0}: {1} requires deferred revenue. P
 apps/bnovate/bnovate/utils/deferral.py,Row {0}: Service End Date cannot be before Service Start Date.,Ligne {0} : La date de fin du service ne peut pas être antérieure à la date de début du service.
 apps/bnovate/bnovate/report/item_wise_sales_register_(bn)/item_wise_sales_register_(bn).py,Deferred by ERP,Différé par l'ERP
 apps/bnovate/bnovate/public/js/doctype_includes/payment_reminder.js,Attaching invoices...,Ajout des factures en pièces jointes...
+apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,"The quotation has a discount of {0}, which was not applied. Please adjust manually.","Le devis comporte une remise de {0}, qui n'a pas été appliquée. Veuillez l'ajuster manuellement."
+apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,"Not on quotation {0}, priced according to the price list:","Absent du devis {0}, prix selon la liste de prix :"
+apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,On quotation {0} but not on the Service Report:,Sur le devis {0} mais absent du rapport de service :

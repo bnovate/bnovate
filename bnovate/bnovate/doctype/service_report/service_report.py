@@ -4,10 +4,13 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc, map_child_doc, map_doc
 
+from bnovate.bnovate.utils import add_warning
 from erpnext.controllers.queries import get_match_cond
+from erpnext.selling.doctype.quotation.quotation import _make_sales_order as _make_sales_order_from_quotation
 
 BILLING_QUOTATION = "According to Quotation"
 BILLING_SERVICE_AGREEMENT = "Under Service Agreement"
@@ -16,6 +19,11 @@ CHANNEL_DIRECT = "Direct"
 CHANNEL_PARTNER = "Service Partner"
 
 BILLING_PARTNER = "Through Service Partner"
+
+# Pricing copied from the Quotation Item to the Sales Order Item
+QUOTATION_PRICING_FIELDS = (
+    "price_list_rate", "discount_percentage", "discount_amount", "margin_type", "margin_rate_or_amount", "rate",
+)
 
 class ServiceReport(Document):
 
@@ -165,6 +173,52 @@ def make_sales_order(source_name, target_doc=None):
     return _make_sales_order(source_name, target_doc)
 
 def _make_sales_order(source_name, target_doc, ignore_permissions=False):
+    """ Map a Service Report to a Sales Order.
+
+    If billed according to a quotation, the header (currency, exchange rates, price list, taxes, payment terms,
+    discounts) is converted from the quotation like a native Quotation -> Sales Order conversion, and each item is
+    linked to the quotation and takes the pricing of the matching quotation line (by item code). The quantities
+    are those of the Service Report. Items that differ between the Service Report and the quotation are flagged.
+    """
+
+    sr = frappe.get_doc("Service Report", source_name)
+    quotation = None
+    quotation_lines = {}  # quotation_lines[item_code] = [Quotation Item, ...]
+    unmatched = []  # item codes that are not on the quotation
+
+    if sr.billing_basis == BILLING_QUOTATION and sr.quotation:
+        quotation = frappe.get_doc("Quotation", sr.quotation)
+        for line in quotation.items:
+            quotation_lines.setdefault(line.item_code, []).append(line)
+
+        if not target_doc:
+            target_doc = _make_sales_order_from_quotation(quotation.name, ignore_permissions=ignore_permissions)
+            # Items come from the Service Report
+            target_doc.items = []
+            target_doc.packed_items = []
+            if target_doc.discount_amount:
+                # The Service Report only bills part of the quotation
+                add_warning(target_doc, _("The quotation has a discount of {0}, which was not applied. Please adjust manually.").format(
+                    quotation.get_formatted("discount_amount")))
+                target_doc.discount_amount = 0
+
+    def update_item(obj, target, source_parent):
+        if not quotation:
+            return
+
+        lines = quotation_lines.get(obj.item_code)
+        if not lines:
+            unmatched.append(obj.item_code)
+            return
+
+        # If an item is repeated on the quotation, use the lines in order
+        line = lines[0]
+        if len(lines) > 1:
+            lines.pop(0)
+
+        target.prevdoc_docname = quotation.name
+        for fieldname in QUOTATION_PRICING_FIELDS:
+            target.set(fieldname, line.get(fieldname))
 
     def set_missing_values(source, target):
         target.delivery_date = source.intervention_date
@@ -179,10 +233,9 @@ def _make_sales_order(source_name, target_doc, ignore_permissions=False):
                 item.discount_percentage = 100
 
         target.run_method("set_missing_values")
-
-
-    # def update_item(obj, target, source_parent):
-    # 	target.stock_qty = flt(obj.qty) * flt(obj.conversion_factor)
+        if quotation:
+            target.run_method("calculate_taxes_and_totals")
+            add_quotation_warnings(quotation, target, unmatched)
 
     doclist = get_mapped_doc("Service Report", source_name, {
             "Service Report": {
@@ -201,11 +254,26 @@ def _make_sales_order(source_name, target_doc, ignore_permissions=False):
                     "parent": "service_report",
                 },
                 "condition": lambda item: item.qty > 0,
-                # "postprocess": update_item
+                "postprocess": update_item
             },
         }, target_doc, set_missing_values, ignore_permissions=ignore_permissions)
 
     return doclist
+
+def add_quotation_warnings(quotation, sales_order, unmatched):
+    """ Warn about quotation items that are not on the Service Report, and vice versa """
+
+    on_sales_order = set(item.item_code for item in sales_order.items if item.prevdoc_docname == quotation.name)
+    not_on_report = [
+        "{0} {1}: {2} x {3} {4}".format(line.item_code, line.item_name, line.qty, quotation.currency, line.amount)
+        for line in quotation.items if line.item_code not in on_sales_order
+    ]
+
+    if not_on_report:
+        add_warning(sales_order, _("Items listed on quotation {0} but not on the Service Report:").format(quotation.name), not_on_report)
+    if unmatched:
+        add_warning(sales_order, _("Items not listed on quotation {0}, priced according to the price list:").format(quotation.name),
+            [str(item_code) for item_code in unmatched])
 
 def get_stock_levels(warehouse):
     data = frappe.db.sql("""

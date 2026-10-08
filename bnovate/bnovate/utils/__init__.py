@@ -344,3 +344,13 @@ def convert_deferred_expense_to_expense(start_date=None, end_date=None):
 def book_deferred_income_or_expense(doctype, docname):
     doc = frappe.get_doc(doctype, docname)
     return deferred_revenue.book_deferred_income_or_expense(doc)
+
+
+def add_warning(doc, title, lines=None):
+    """ Pass a warning to the form, shown in the form's "warnings" HTML field (see bnovate.utils.show_warnings in bnovate_common.js).
+
+    Warnings are kept in doc.__onload, so they are shown on unsaved documents (e.g. mapped docs) until the doc is saved.
+    """
+    warnings = (doc.get("__onload") or {}).get("show_warnings") or []
+    warnings.append({"title": title, "lines": lines or []})
+    doc.set_onload("show_warnings", warnings)

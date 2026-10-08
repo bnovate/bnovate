@@ -56,6 +56,7 @@ frappe.ui.form.on("Sales Order", {
     },
 
     async refresh(frm) {
+        bnovate.utils.show_warnings(frm);
         setTimeout(() => {
             frm.remove_custom_button(__("Subscription"), __("Create"));
         }, 500);
