@@ -497,11 +497,18 @@ get_translated_dict = {
     ("boot", None): "bnovate.bnovate.utils.web_translations.get_portal_translated_dict",
 }
 
+# Searchable in global search, in addition to ERPNext's doctypes. These are only used when resetting the Global Search Settings;
+# see also patches.
+global_search_doctypes = [
+    {"doctype": "Service Report"},
+]
+
 # Overriding Methods
 # ------------------------------
 #
 override_whitelisted_methods = {
 	# "erpnext.stock.get_item_details.get_item_details": "bnovate.bnovate.utils.overrides.get_item_details",
+	"frappe.utils.global_search.search": "bnovate.bnovate.utils.search.search",
 }
 #
 # each overriding function accepts a `data` argument;

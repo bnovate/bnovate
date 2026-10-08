@@ -104,6 +104,7 @@
   {
    "fieldname": "serial_no",
    "fieldtype": "Link",
+   "in_global_search": 1,
    "label": "Asset Serial No",
    "options": "Serial No",
    "reqd": 1
@@ -373,7 +374,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2025-09-10 18:08:18.266910",
+ "modified": "2026-10-08 14:13:13.801747",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Service Report",

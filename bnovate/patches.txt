@@ -1,1 +1,2 @@
 bnovate.patches.set_bn_requires_deferral
+bnovate.patches.add_service_report_to_global_search
