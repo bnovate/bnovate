@@ -524,3 +524,8 @@ apps/bnovate/bnovate/public/js/doctype_includes/payment_reminder.js,Attaching in
 apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,"The quotation has a discount of {0}, which was not applied. Please adjust manually.","Das Angebot enthält einen Rabatt von {0}, der nicht übernommen wurde. Bitte manuell anpassen."
 apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,"Not on quotation {0}, priced according to the price list:","Nicht im Angebot {0}, Preis gemäss Preisliste:"
 apps/bnovate/bnovate/bnovate/doctype/service_report/service_report.py,On quotation {0} but not on the Service Report:,"Im Angebot {0}, aber nicht im Servicebericht:"
+apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Compare to Quotation,Mit Angebot vergleichen
+apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Please save the document first.,Bitte speichern Sie das Dokument zuerst.
+apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Select Quotation,Angebot auswählen
+apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Compare,Vergleichen
+apps/bnovate/bnovate/public/js/doctype_includes/sales_order.js,Quotation {0} and Sales Order {1},Angebot {0} und Kundenauftrag {1}

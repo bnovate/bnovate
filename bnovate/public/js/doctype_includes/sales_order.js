@@ -7,6 +7,7 @@
 
 frappe.require("/assets/bnovate/js/modals.js")  // provides bnovate.modals
 frappe.require("/assets/bnovate/js/shipping.js")  // provides bnovate.shipping
+frappe.require("/assets/bnovate/js/compare.js")  // provides bnovate.compare
 
 frappe.ui.form.on("Sales Order", {
     async before_load(frm) {
@@ -57,6 +58,13 @@ frappe.ui.form.on("Sales Order", {
 
     async refresh(frm) {
         bnovate.utils.show_warnings(frm);
+
+        // Compare with the quotation(s) this order was created from
+        const quotations = [...new Set((frm.doc.items || []).map(item => item.prevdoc_docname).filter(Boolean))];
+        if (!frm.is_new() && quotations.length) {
+            frm.add_custom_button(__('Compare to Quotation'), () => compare_to_quotation(frm, quotations));
+        }
+
         setTimeout(() => {
             frm.remove_custom_button(__("Subscription"), __("Create"));
         }, 500);
@@ -220,6 +228,35 @@ frappe.ui.form.on('Sales Order Item', {
         );
     }
 })
+
+async function compare_to_quotation(frm, quotations) {
+    if (frm.is_dirty()) {
+        frappe.msgprint(__('Please save the document first.'));
+        return;
+    }
+
+    let quotation = quotations[0];
+    if (quotations.length > 1) {
+        const values = await bnovate.utils.prompt(__('Select Quotation'), [{
+            label: __('Quotation'),
+            fieldname: 'quotation',
+            fieldtype: 'Select',
+            options: quotations,
+            default: quotations[0],
+            reqd: 1,
+        }], __('Compare'), __('Cancel'));
+        if (!values) {
+            return;
+        }
+        quotation = values.quotation;
+    }
+
+    bnovate.compare.print_views({
+        title: __('Quotation {0} and Sales Order {1}', [quotation, frm.doc.name]),
+        left: { doctype: 'Quotation', name: quotation },
+        right: { doctype: 'Sales Order', name: frm.doc.name },
+    });
+}
 
 async function get_deliverability(frm) {
     const report_data = await bnovate.utils.run_report('Orders to Fulfill', { sales_order: frm.doc.name, include_drafts: 1 });
