@@ -370,7 +370,7 @@ bnovate.utils.show_warnings = function (frm) {
     return;
   }
 
-  const warnings = frm.doc.__onload?.show_warnings || [];
+  const warnings = (frm.doc.__onload && frm.doc.__onload.show_warnings) || [];
   const escape = frappe.utils.escape_html;
   field.wrapper.innerHTML = warnings.length ? `
     <div style="background-color: #f7cd72; padding: 10px; border-radius: 10px;">
