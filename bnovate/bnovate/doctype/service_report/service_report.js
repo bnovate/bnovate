@@ -8,6 +8,7 @@ frappe.provide('bnovate.service_report');
 const CHANNEL_DIRECT = 'Direct';
 const CHANNEL_PARTNER = 'Service Partner';
 const BILLING_PARTNER = 'Through Service Partner';
+const BILLING_QUOTATION = 'According to Quotation';
 const INTERVENTION_UPGRADE = 'Software Upgrade';
 
 frappe.ui.form.on('Service Report', {
@@ -117,7 +118,9 @@ frappe.ui.form.on('Service Report', {
 				frappe.model.open_mapped_doc({
 					method: "bnovate.bnovate.doctype.service_report.service_report.make_sales_order",
 					frm: cur_frm,
-					run_link_triggers: true,
+					// Link triggers fetch the current price list rates. When billing according to a quotation, the prices
+					// come from the quotation (like a native Quotation -> Sales Order) and must not be overwritten.
+					run_link_triggers: !(frm.doc.billing_basis === BILLING_QUOTATION && frm.doc.quotation),
 				});
 			}, __("Create"));
 

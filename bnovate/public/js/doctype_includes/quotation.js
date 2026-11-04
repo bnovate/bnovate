@@ -12,6 +12,10 @@ frappe.ui.form.on("Quotation", {
             'items': ['Subscription Contract'],
             'label': 'Subscription',
         });
+        frm.dashboard.add_transactions({
+            'items': ['Service Report'],
+            'label': __('Service'),
+        });
     },
     onload(frm) {
         frm.set_query("custom_shipping_rule", () => {

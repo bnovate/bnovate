@@ -519,6 +519,7 @@ override_whitelisted_methods = {
 override_doctype_dashboards = {
     "Serial No": "bnovate.bnovate.utils.dashboards.get_serial_no_dashboard_data",
     "Sales Order": "bnovate.bnovate.utils.dashboards.get_sales_order_dashboard_data",
+    "Quotation": "bnovate.bnovate.utils.dashboards.get_quotation_dashboard_data",
 }
 
 # Jinja

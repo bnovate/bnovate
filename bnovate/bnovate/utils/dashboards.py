@@ -32,3 +32,10 @@ def get_sales_order_dashboard_data(data):
     data.internal_links['Service Report'] = ['items', 'service_report']
 
     return data
+
+
+def get_quotation_dashboard_data(data):
+    # Service Reports point to the quotation through their own field. The transactions are added in quotation.js
+    data.non_standard_fieldnames['Service Report'] = 'quotation'
+
+    return data
