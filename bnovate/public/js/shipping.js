@@ -59,12 +59,12 @@ bnovate.shipping.use_auto_ship = function (frm) {
         return false;
 
 
-    // If incoterm is EXW or FCA, we don't organize shipping
-    if (frm.doc.incoterm == "EXW" || frm.doc.incoterm == "FCA") {
+    // If incoterm is EXW, FCA, or variants of DDP, we don't organize shipping
+    if (frm.doc.incoterm == "EXW" || frm.doc.incoterm == "FCA" || frm.doc.incoterm.startsWith("DDP")) {
         return false;
     }
 
-    // Remaining incoterms are DDP and DAP.
+    // Remaining incoterms is DAP.
     // If we specify the carrier, and it's not DHL, then we definitely don't ship through API
     // Example: we ship DAP through a freight carrier.
     if (frm.carrier && frm.carrier !== "DHL")
