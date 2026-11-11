@@ -24,6 +24,9 @@ frappe.pages['doom'].on_page_load = function (wrapper) {
     var fullscreenButton = null;
     const assetRoot = "/assets/bnovate/js/lib/doom/"
 
+    // data is almost 100MB, keep out of this repo.
+    const dataUrl = "https://ustymukhman.github.io/WebDOOM/public/doom1.data";
+
     window.Module = {
         monitorRunDependencies: function (toLoad) {
             this.dependencies = Math.max(this.dependencies, toLoad);
@@ -36,7 +39,12 @@ frappe.pages['doom'].on_page_load = function (wrapper) {
         progress: null,
 
         loader: null,
-        canvas: null
+        canvas: null,
+
+        // Everything is served from our assets, except the data package
+        locateFile: function (path) {
+            return path.endsWith('.data') ? dataUrl : assetRoot + path;
+        }
     };
 
     function getCanvas() {
