@@ -4,6 +4,8 @@
  * (same effect as writing a custom script)
  * 
  * - Removes legacy Create Subscription action
+ * - Download buttons: PDF with a cover page, as quotation or as price list
+ * - Blurb (letter printed before the quotation): Enhance button, polishes the text with AI
  */
 
 frappe.ui.form.on("Quotation", {
@@ -37,6 +39,13 @@ frappe.ui.form.on("Quotation", {
         }
     },
     refresh(frm) {
+        add_enhance_blurb_button(frm);
+
+        if (!frm.is_new()) {
+            add_cover_download_button(frm, 'quotation', 'QTN', __('Download as QTN'));
+            add_cover_download_button(frm, 'price_list', __('Price List'), __('Download as Price List'));
+        }
+
         setTimeout(() => {
             frm.remove_custom_button("Subscription", "Create")
             if (frm.doc.docstatus == 1 && frm.doc.status !== 'Lost') {
@@ -125,3 +134,60 @@ frappe.ui.form.on('Quotation Item', {
         );
     }
 })
+
+function add_cover_download_button(frm, kind, label, title) {
+    // Same trick as the Delivery Note: a download link inside the button, the button itself only shows a progress message.
+    // kind is "quotation" or "price_list", see utils/quotation_cover.py
+    const url = frappe.urllib.get_full_url('/api/method/bnovate.bnovate.utils.quotation_cover.download_quotation_pdf?'
+        + 'name=' + encodeURIComponent(frm.doc.name)
+        + '&kind=' + kind
+    );
+    const button = frm.add_custom_button(`<a href="${url}" download="${frm.doc.name}.pdf"><i class="fa fa-download"></i> ${label}</a>`, () => {
+        frappe.show_progress(__('Preparing PDF...'), 50, 100);
+        setTimeout(() => frappe.hide_progress(), 1000);
+    });
+    button.attr('title', title);
+}
+
+// Sparkle button next to the label of the Blurb field, to have the text polished by the AI (see utils/ai.py)
+function add_enhance_blurb_button(frm) {
+    const field = frm.get_field('blurb');
+    if (!field) return;
+
+    let $button = field.$wrapper.find('.bn-enhance-blurb');
+    if (!$button.length) {
+        $button = $(`<button type="button" class="btn btn-default btn-xs bn-enhance-blurb" style="float: right;"
+                title="${__('Let the AI polish this text')}">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="vertical-align: -1px;">
+                <path d="M10 6c.7 5.2 2.8 7.3 8 8-5.2.7-7.3 2.8-8 8-.7-5.2-2.8-7.3-8-8 5.2-.7 7.3-2.8 8-8z"/>
+                <path d="M19 1c.3 2.5 1.5 3.7 4 4-2.5.3-3.7 1.5-4 4-.3-2.5-1.5-3.7-4-4 2.5-.3 3.7-1.5 4-4z"/>
+            </svg> ${__('Enhance')}
+        </button>`);
+        $button.appendTo(field.$wrapper.find('.clearfix').first());
+        $button.on('click', () => enhance_blurb(frm));
+    }
+    $button.toggle(frm.doc.docstatus === 0);
+}
+
+async function enhance_blurb(frm) {
+    const previous = frm.doc.blurb || '';
+    if (!previous.trim()) {
+        frappe.msgprint(__('Please write a few notes in the Blurb first.'));
+        return;
+    }
+
+    const enhanced = await bnovate.ai.enhance_qtn_blurb(frm.doc);
+    if (!enhanced) return;
+
+    await frm.set_value('blurb', enhanced);
+    const alert = frappe.show_alert({
+        message: __('Blurb enhanced'),
+        indicator: 'green',
+        body: `<a data-action="undo">${__('Undo')}</a>`,
+    }, 10, {
+        undo: () => {
+            frm.set_value('blurb', previous);
+            alert.remove();
+        },
+    });
+}

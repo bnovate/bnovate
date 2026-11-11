@@ -555,3 +555,26 @@ apps/bnovate/bnovate/public/js/step_viewer.js,Looking up items...,Recherche des 
 apps/bnovate/bnovate/public/js/step_viewer.js,No item found for {0},Aucun article trouvé pour {0}
 apps/bnovate/bnovate/public/js/step_viewer.js,disabled,désactivé
 apps/bnovate/bnovate/public/js/step_viewer.js,Show all versions in the item list,Afficher toutes les versions dans la liste des articles
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Download as QTN,Télécharger en tant que devis
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Download as Price List,Télécharger en tant que liste de prix
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Preparing PDF...,Préparation du PDF...
+apps/bnovate/bnovate/bnovate/utils/quotation_cover.py,Unknown kind: {0},Type inconnu : {0}
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Let the AI polish this text,Faire améliorer ce texte par l'IA
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Enhance,Améliorer
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Please write a few notes in the Blurb first.,Veuillez d'abord écrire quelques notes dans le texte d'accompagnement.
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Blurb enhanced,Texte amélioré
+apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Undo,Annuler
+apps/bnovate/bnovate/public/js/ai.js,Asking the AI...,Interrogation de l'IA...
+apps/bnovate/bnovate/public/js/ai.js,Translating...,Traduction en cours...
+apps/bnovate/bnovate/public/js/ai.js,Enhancing the text...,Amélioration du texte...
+apps/bnovate/bnovate/bnovate/utils/ai.py,Please set the Gemini API Key and Gemini Model in bNovate Settings.,Veuillez définir la clé API Gemini et le modèle Gemini dans les paramètres bNovate.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Invalid Gemini Model: {0},Modèle Gemini non valide : {0}
+apps/bnovate/bnovate/bnovate/utils/ai.py,Could not reach the Gemini API: {0},Impossible de joindre l'API Gemini : {0}
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini API error ({0}): {1},Erreur de l'API Gemini ({0}) : {1}
+apps/bnovate/bnovate/bnovate/utils/ai.py,The request was blocked by Gemini: {0},La requête a été bloquée par Gemini : {0}
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini returned no answer.,Gemini n'a pas renvoyé de réponse.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not finish its answer: {0},Gemini n'a pas terminé sa réponse : {0}
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini returned an empty answer.,Gemini a renvoyé une réponse vide.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return valid JSON. Please try again.,Gemini n'a pas renvoyé de JSON valide. Veuillez réessayer.
+apps/bnovate/bnovate/bnovate/utils/ai.py,The translation does not have the same structure as the original. Please try again.,La traduction n'a pas la même structure que l'original. Veuillez réessayer.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return the blurb in the expected format. Please try again.,Gemini n'a pas renvoyé le texte au format attendu. Veuillez réessayer.

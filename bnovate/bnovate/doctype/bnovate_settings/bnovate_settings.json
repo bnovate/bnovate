@@ -37,7 +37,15 @@
   "default_customs_tariff_number",
   "default_country_of_origin",
   "portal_section",
-  "portal_home_page"
+  "portal_home_page",
+  "ai_section",
+  "gemini_api_key",
+  "column_break_ai",
+  "gemini_model",
+  "ai_instructions_section",
+  "quotation_blurb_system_instructions",
+  "column_break_ai_instructions",
+  "translation_system_instructions"
  ],
  "fields": [
   {
@@ -228,10 +236,51 @@
    "fieldtype": "Link",
    "label": "QC Workstation",
    "options": "Workstation"
+  },
+  {
+   "fieldname": "ai_section",
+   "fieldtype": "Section Break",
+   "label": "AI"
+  },
+  {
+   "description": "Google Gemini API key, from Google AI Studio.",
+   "fieldname": "gemini_api_key",
+   "fieldtype": "Password",
+   "label": "Gemini API Key"
+  },
+  {
+   "fieldname": "column_break_ai",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Model ID as listed in Google AI Studio, e.g. gemini-2.5-flash",
+   "fieldname": "gemini_model",
+   "fieldtype": "Data",
+   "label": "Gemini Model"
+  },
+  {
+   "description": "Sent to the model with every request, before the content. The output format (JSON) is added automatically: do not describe it here.",
+   "fieldname": "ai_instructions_section",
+   "fieldtype": "Section Break",
+   "label": "AI System Instructions"
+  },
+  {
+   "fieldname": "quotation_blurb_system_instructions",
+   "fieldtype": "Long Text",
+   "label": "Quotation Blurb System Instructions"
+  },
+  {
+   "fieldname": "column_break_ai_instructions",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "translation_system_instructions",
+   "fieldtype": "Long Text",
+   "label": "Translation System Instructions"
   }
  ],
  "issingle": 1,
- "modified": "2025-03-13 17:31:14.335527",
+ "modified": "2026-10-28 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "bNovate Settings",

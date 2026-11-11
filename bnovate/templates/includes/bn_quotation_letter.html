@@ -1,0 +1,30 @@
+{#- Cover letter printed before the contents of a Quotation or Price List: the date and the blurb, then a page break.
+    Included by the print formats, in a Custom HTML entry right after the heading (the heading, like the letterhead, is
+    repeated on every page by the PDF header, so there is no subject line here). -#}
+{%- if doc.blurb and doc.blurb.strip() -%}
+<div class="bn-letter">
+    <div class="bn-letter-date">{{ doc.get_formatted("transaction_date") }}</div>
+    {%- for paragraph in doc.blurb.replace("\r\n", "\n").strip().split("\n\n") %}
+    <p>
+        {%- for line in paragraph.split("\n") %}{{ line | e }}{% if not loop.last %}<br>{% endif %}{% endfor -%}
+    </p>
+    {%- endfor %}
+</div>
+<style>
+    /* The letter has wider margins than the rest of the page and airy paragraphs */
+    .bn-letter { padding: 22mm 16mm 0 16mm; font-size: 10pt; line-height: 1.6; }
+    .bn-letter-date { text-align: right; margin-bottom: 14mm; }
+    .bn-letter p { margin: 0 0 6mm 0; }
+
+    /* Page breaks are ignored inside the floated columns of the print format. Break before the section that follows the
+       letter instead: the second section row of the page. The PDF generator takes the header and footer out of the page,
+       the browser keeps them. */
+    .page-break > .section-break:first-child + .section-break,
+    .page-break > #footer-html + .section-break + .section-break { page-break-before: always; break-before: page; }
+
+    /* The on-screen preview has no pages: mark the end of the letter. */
+    @media screen {
+        .bn-letter { border-bottom: 1px dashed #b8c2cc; padding-bottom: 10mm; margin-bottom: 10mm; }
+    }
+</style>
+{%- endif -%}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{#- Cover page of Quotation PDFs, rendered by wkhtmltopdf (see bnovate/utils/quotation_cover.py).
+    A4, full bleed. Positions are in pt, copied from the reportlab reference of the marketing kit.
+    Fonts and images are embedded as data URIs, wkhtmltopdf is not allowed to read local files. -#}
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    @font-face { font-family: 'Barlow'; font-weight: 400; src: url(data:font/ttf;base64,{{ fonts["Barlow-Regular"] }}) format('truetype'); }
+    @font-face { font-family: 'Barlow'; font-weight: 500; src: url(data:font/ttf;base64,{{ fonts["Barlow-Medium"] }}) format('truetype'); }
+    @font-face { font-family: 'Barlow'; font-weight: 600; src: url(data:font/ttf;base64,{{ fonts["Barlow-SemiBold"] }}) format('truetype'); }
+    @font-face { font-family: 'Barlow'; font-weight: 700; src: url(data:font/ttf;base64,{{ fonts["Barlow-Bold"] }}) format('truetype'); }
+
+    html, body { margin: 0; padding: 0; background: #0a1a2b; }
+    .page { position: relative; width: 210mm; height: 297mm; overflow: hidden; background: #0a1a2b; font-family: 'Barlow', sans-serif; }
+    .page > * { position: absolute; margin: 0; padding: 0; white-space: nowrap; }
+
+    .background { left: 0; top: 0; height: 842pt; }
+
+    .kicker { left: 56.5pt; top: 81.5pt; font-size: 10.5pt; line-height: 12pt; font-weight: 700; color: #f28f25; text-transform: uppercase; }
+    .title { left: 56.5pt; top: 103.6pt; font-weight: 600; color: #ffffff; }  /* size and lines are fitted in quotation_cover.py */
+    .accent { left: 56pt; top: 229.8pt; width: 190pt; height: 2.2pt; background: -webkit-linear-gradient(left, #f28f25, #0a1a2b); }
+
+    .label { left: 56.5pt; font-size: 8.5pt; line-height: 10pt; font-weight: 700; color: #8bacc8; text-transform: uppercase; }
+    .value { left: 148.2pt; font-size: 13pt; line-height: 16pt; font-weight: 600; color: #ffffff; }
+
+    .logo { left: 50pt; top: 729.25pt; width: 150pt; }
+    .divider { left: 216pt; top: 734pt; width: 0.75pt; height: 46pt; background: #8bacc8; }
+    .contact { left: 228pt; font-size: 9.5pt; line-height: 13pt; font-weight: 400; color: #ffffff; }
+
+    .bar { left: 0; top: 836pt; width: 210mm; height: 6pt; background: #f28f25; }
+</style>
+</head>
+<body>
+<div class="page">
+    <img class="background" src="data:image/png;base64,{{ images["cover_bg"] }}">
+
+    <div class="kicker">{{ kicker }}</div>
+    <div class="title" style="font-size: {{ title_size }}pt; line-height: {{ title_line_height }}pt;">{% for line in title_lines %}{{ line | e }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+    <div class="accent"></div>
+
+    {% for label, value in rows %}
+    <div class="label" style="top: {{ 277.1 + loop.index0 * 24 }}pt;">{{ label }}</div>
+    <div class="value" style="top: {{ 273.0 + loop.index0 * 24 }}pt;">{{ value }}</div>
+    {% endfor %}
+
+    <img class="logo" src="data:image/png;base64,{{ images["logo_white"] }}">
+    <div class="divider"></div>
+    {% for line in contact %}
+    <div class="contact" style="top: {{ 734.8 + loop.index0 * 13.25 }}pt;">{{ line }}</div>
+    {% endfor %}
+
+    <div class="bar"></div>
+</div>
+</body>
+</html>
