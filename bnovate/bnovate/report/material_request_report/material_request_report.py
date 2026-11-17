@@ -27,6 +27,9 @@ def get_columns():
         {"fieldname": "ordered_qty", "label": "Ordered Qty", "fieldtype": "Float", "width": 100},
         {"fieldname": "qty_to_order", "label": "Qty to Order", "fieldtype": "Float", "width": 100},
         {"fieldname": "purchase_order", "label": "Purchase Order", "fieldtype": "Link", "options": "Purchase Order", "width": 140, "align": "left"},
+
+        # {"fieldname": "wo_qty", "label": "WO Qty", "fieldtype": "Float", "width": 100},
+        {"fieldname": "work_order", "label": "Work Order", "fieldtype": "Link", "options": "Work Order", "width": 140, "align": "left"},
         # {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "width": 140},
     ]
 
@@ -56,8 +59,10 @@ SELECT
     mr_item.item_code AS item_code,
     IFNULL(mr_item.stock_qty, 0) AS qty,
     IFNULL(mr_item.stock_uom, '') AS uom,
+    -- qty: in the case of a WO, 'ordered_qty' is the total of all WOs planned and submitted.
     IFNULL(mr_item.ordered_qty, 0) AS ordered_qty,
     mr_item.stock_qty - IFNULL(mr_item.ordered_qty, 0) AS qty_to_order,
+
     mr_item.item_name AS item_name,
     mr_item.description AS description,
     item_default.default_supplier AS supplier,
@@ -65,8 +70,16 @@ SELECT
     mr_item.item_group AS item_group,
     mr_item.assigned_to AS assigned_to,
     mr.company AS company,
+
+    -- PO fields
     po_item.parent AS purchase_order,
-    po.status AS po_status
+    po.status AS po_status,
+
+    -- WO fields
+    wo.name AS work_order,
+    wo.status AS wo_status,
+    wo.qty AS wo_qty
+    
 FROM
     `tabMaterial Request` mr
 JOIN `tabMaterial Request Item` mr_item ON mr_item.parent = mr.name
@@ -74,9 +87,9 @@ JOIN `tabItem Default` item_default ON item_default.parent = mr_item.item_code A
 LEFT JOIN `tabSupplier` supplier ON supplier.name = item_default.default_supplier
 LEFT JOIN `tabPurchase Order Item` po_item ON po_item.material_request_item = mr_item.name
 LEFT JOIN `tabPurchase Order` po ON po.name = po_item.parent
+LEFT JOIN `tabWork Order` wo ON wo.material_request_item = mr_item.name
 WHERE
-    mr.material_request_type = "Purchase"
-    AND mr.docstatus = 1
+    mr.docstatus = 1
     AND mr.status != "Stopped"
     AND IFNULL(mr_item.ordered_qty, 0) < IFNULL(mr_item.stock_qty, 0) 
     {conditions}
