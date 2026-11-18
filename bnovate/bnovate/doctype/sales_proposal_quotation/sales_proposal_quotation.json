@@ -1,0 +1,97 @@
+{
+ "creation": "2026-11-17 15:30:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "quotation",
+  "variant_title",
+  "title",
+  "transaction_date",
+  "currency",
+  "grand_total",
+  "variant_section",
+  "variant_intro",
+  "variant_benefits"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Quotation",
+   "options": "Quotation",
+   "reqd": 1
+  },
+  {
+   "columns": 3,
+   "description": "Name of this option in the proposal, without \"Variant 1:\".",
+   "fieldname": "variant_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Variant Title"
+  },
+  {
+   "fetch_from": "quotation.title",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fetch_from": "quotation.transaction_date",
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "quotation.currency",
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fetch_from": "quotation.grand_total",
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Grand Total",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "variant_section",
+   "fieldtype": "Section Break",
+   "label": "Variant Description"
+  },
+  {
+   "description": "One paragraph on the products of this variant.",
+   "fieldname": "variant_intro",
+   "fieldtype": "Text",
+   "label": "Products"
+  },
+  {
+   "description": "One paragraph on what the customer gains with this variant.",
+   "fieldname": "variant_benefits",
+   "fieldtype": "Text",
+   "label": "Benefits"
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-11-18 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Sales Proposal Quotation",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

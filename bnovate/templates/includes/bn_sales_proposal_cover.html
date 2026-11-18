@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{#- Cover page of Quotation PDFs, rendered by wkhtmltopdf (see bnovate/utils/quotation_cover.py).
+{#- Cover page of Sales Proposal PDFs, and the page that introduces the appendices (`minimal`: no logo and contact, an orange gradient at the bottom as on our slides), rendered by wkhtmltopdf (see bnovate/utils/sales_proposal_pdf.py).
     A4, full bleed. Positions are in pt, copied from the reportlab reference of the marketing kit.
     Fonts and images are embedded as data URIs, wkhtmltopdf is not allowed to read local files. -#}
 <html>
@@ -18,7 +18,7 @@
     .background { left: 0; top: 0; height: 842pt; }
 
     .kicker { left: 56.5pt; top: 81.5pt; font-size: 10.5pt; line-height: 12pt; font-weight: 700; color: #f28f25; text-transform: uppercase; }
-    .title { left: 56.5pt; top: 103.6pt; font-weight: 600; color: #ffffff; }  /* size and lines are fitted in quotation_cover.py */
+    .title { left: 56.5pt; top: 103.6pt; font-weight: 600; color: #ffffff; }  /* size and lines are fitted in sales_proposal_pdf.py */
     .accent { left: 56pt; top: 229.8pt; width: 190pt; height: 2.2pt; background: -webkit-linear-gradient(left, #f28f25, #0a1a2b); }
 
     .label { left: 56.5pt; font-size: 8.5pt; line-height: 10pt; font-weight: 700; color: #8bacc8; text-transform: uppercase; }
@@ -29,6 +29,7 @@
     .contact { left: 228pt; font-size: 9.5pt; line-height: 13pt; font-weight: 400; color: #ffffff; }
 
     .bar { left: 0; top: 836pt; width: 210mm; height: 6pt; background: #f28f25; }
+    .bar-gradient { left: 0; top: 832pt; width: 210mm; height: 10pt; background: -webkit-linear-gradient(left, #f28f25, rgba(242, 143, 37, 0)); }
 </style>
 </head>
 <body>
@@ -44,6 +45,9 @@
     <div class="value" style="top: {{ 273.0 + loop.index0 * 24 }}pt;">{{ value }}</div>
     {% endfor %}
 
+    {% if minimal %}
+    <div class="bar-gradient"></div>
+    {% else %}
     <img class="logo" src="data:image/png;base64,{{ images["logo_white"] }}">
     <div class="divider"></div>
     {% for line in contact %}
@@ -51,6 +55,7 @@
     {% endfor %}
 
     <div class="bar"></div>
+    {% endif %}
 </div>
 </body>
 </html>

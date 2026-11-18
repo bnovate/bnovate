@@ -3,7 +3,8 @@
  * Client side helpers for the AI features of utils/ai.py. Usage:
  *
  *   const translations = await bnovate.ai.translate(['Hello', 'World'], 'de');
- *   const blurb = await bnovate.ai.enhance_qtn_blurb(frm.doc);
+ *   const letter = await bnovate.ai.generate_cover_letter(frm.doc);
+ *   const { variants, skipped } = await bnovate.ai.generate_variants(frm.doc);
  *
  ****************************************************/
 
@@ -25,17 +26,13 @@ bnovate.ai.translate = function (texts, target_lang, source_lang = 'en') {
     return bnovate.ai.call('translate', { texts, target_lang, source_lang }, __('Translating...'));
 }
 
-// Fields of a Quotation used to improve its blurb: only send what the server uses.
-bnovate.ai.QTN_BLURB_FIELDS = [
-    'blurb', 'language', 'customer_name', 'contact_person', 'contact_display', 'customer_address',
-    'address_display', 'company', 'sales_contact', 'sales_contact_name',
-];
+// Return the HTML of the cover letter of a Sales Proposal. Works on the form's current values, saved or not.
+// The whole document is sent: the server only reads the fields it needs (see utils/ai.py).
+bnovate.ai.generate_cover_letter = function (doc) {
+    return bnovate.ai.call('generate_cover_letter', { doc }, __('Writing the cover letter...'));
+}
 
-// Return an improved version of the blurb of a Quotation. Works on the form's current values, saved or not.
-bnovate.ai.enhance_qtn_blurb = function (doc) {
-    const fields = {};
-    for (const f of bnovate.ai.QTN_BLURB_FIELDS) {
-        fields[f] = doc[f];
-    }
-    return bnovate.ai.call('enhance_qtn_blurb', { doc: fields }, __('Enhancing the text...'));
+// Describe the variants (the linked quotations) of a Sales Proposal: {variants: [...], skipped: [...]}.
+bnovate.ai.generate_variants = function (doc) {
+    return bnovate.ai.call('generate_variants', { doc }, __('Describing the variants...'));
 }

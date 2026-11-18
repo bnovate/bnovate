@@ -14,6 +14,10 @@ frappe.ui.form.on("Customer", {
             'items': ['Service Report'],
             'label': 'Support',
         })
+        frm.dashboard.add_transactions({
+            'items': ['Sales Proposal'],
+            'label': __('Pre Sales'),  // the group of the Quotations
+        })
     },
     setup(frm) {
         frm.set_query('portal_billing_address', function (doc) {

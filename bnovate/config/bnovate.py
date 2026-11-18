@@ -5,6 +5,18 @@ from frappe import _
 def get_data():
     return [
         {
+            "label": _("Sales"),
+            "icon": "octicon octicon-briefcase",
+            "items": [
+                {
+                    "type": "doctype",
+                    "name": "Sales Proposal",
+                    "label": _("Sales Proposal"),
+                    "description": _("Cover page, cover letter and quotations for a customer")
+                }
+            ]
+        },
+        {
             "label": _("Order Tracking"),
             "icon": "octicon octicon-git-compare",
             "items": [

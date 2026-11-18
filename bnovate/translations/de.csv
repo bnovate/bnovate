@@ -552,18 +552,8 @@ apps/bnovate/bnovate/public/js/step_viewer.js,Looking up items...,Artikel werden
 apps/bnovate/bnovate/public/js/step_viewer.js,No item found for {0},Kein Artikel für {0} gefunden
 apps/bnovate/bnovate/public/js/step_viewer.js,disabled,deaktiviert
 apps/bnovate/bnovate/public/js/step_viewer.js,Show all versions in the item list,Alle Versionen in der Artikelliste anzeigen
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Download as QTN,Als Angebot herunterladen
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Download as Price List,Als Preisliste herunterladen
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Preparing PDF...,PDF wird erstellt...
-apps/bnovate/bnovate/bnovate/utils/quotation_cover.py,Unknown kind: {0},Unbekannte Art: {0}
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Let the AI polish this text,Text von der KI überarbeiten lassen
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Enhance,Verbessern
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Please write a few notes in the Blurb first.,Bitte schreiben Sie zuerst ein paar Notizen in das Anschreiben.
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Blurb enhanced,Text verbessert
-apps/bnovate/bnovate/public/js/doctype_includes/quotation.js,Undo,Rückgängig
 apps/bnovate/bnovate/public/js/ai.js,Asking the AI...,KI wird gefragt...
 apps/bnovate/bnovate/public/js/ai.js,Translating...,Übersetzung läuft...
-apps/bnovate/bnovate/public/js/ai.js,Enhancing the text...,Text wird verbessert...
 apps/bnovate/bnovate/bnovate/utils/ai.py,Please set the Gemini API Key and Gemini Model in bNovate Settings.,Bitte legen Sie den Gemini-API-Schlüssel und das Gemini-Modell in den bNovate-Einstellungen fest.
 apps/bnovate/bnovate/bnovate/utils/ai.py,Invalid Gemini Model: {0},Ungültiges Gemini-Modell: {0}
 apps/bnovate/bnovate/bnovate/utils/ai.py,Could not reach the Gemini API: {0},Die Gemini-API ist nicht erreichbar: {0}
@@ -574,4 +564,58 @@ apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not finish its answer: {0},G
 apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini returned an empty answer.,Gemini hat eine leere Antwort geliefert.
 apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return valid JSON. Please try again.,Gemini hat kein gültiges JSON geliefert. Bitte versuchen Sie es erneut.
 apps/bnovate/bnovate/bnovate/utils/ai.py,The translation does not have the same structure as the original. Please try again.,Die Übersetzung hat nicht dieselbe Struktur wie das Original. Bitte versuchen Sie es erneut.
-apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return the blurb in the expected format. Please try again.,Gemini hat den Text nicht im erwarteten Format geliefert. Bitte versuchen Sie es erneut.
+apps/bnovate/bnovate/config/bnovate.py,"Cover page, cover letter and quotations for a customer","Deckblatt, Anschreiben und Angebote für einen Kunden"
+apps/bnovate/bnovate/config/bnovate.py,Sales,Vertrieb
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Sales Proposal,Verkaufsunterlagen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Sales Proposal Quotation,Angebot der Verkaufsunterlagen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Proposal Elements,Eckpunkte
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,These notes are what the AI uses to write the cover letter.,Anhand dieser Notizen schreibt die KI das Anschreiben.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Needs Identified,Erkannter Bedarf
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,What is the customer trying to achieve or solve?,Was möchte der Kunde erreichen oder lösen?
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Solution Proposed,Vorgeschlagene Lösung
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Which products and services do we offer for it?,Welche Produkte und Dienstleistungen bieten wir dafür an?
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Benefits Expected,Erwarteter Nutzen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,What will the customer gain?,Was gewinnt der Kunde?
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Cover Letter,Anschreiben
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Letter,Brief
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"Written by the AI from the Proposal Elements when you click Generate, and yours to edit.","Wird von der KI aus den Eckpunkten geschrieben, wenn Sie auf Erstellen klicken, und kann von Ihnen bearbeitet werden."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Linked Quotations,Verknüpfte Angebote
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Printed on the cover page. Defaults to the customer name.,Wird auf dem Deckblatt gedruckt. Standardmässig der Kundenname.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Language of the cover and of the printed documents. Defaults to the language of the customer.,Sprache des Deckblatts und der gedruckten Dokumente. Standardmässig die Sprache des Kunden.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Download PDF,PDF herunterladen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and attached PDFs in one PDF","Deckblatt, Anschreiben, Angebote und angehängte PDFs in einem PDF"
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Preparing PDF...,PDF wird erstellt...
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Write the cover letter from the Proposal Elements with the AI,Anschreiben von der KI aus den Eckpunkten schreiben lassen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Generate,Erstellen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Cover letter generated,Anschreiben erstellt
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Undo,Rückgängig
+apps/bnovate/bnovate/public/js/ai.js,Writing the cover letter...,Anschreiben wird geschrieben...
+apps/bnovate/bnovate/bnovate/utils/ai.py,Please fill in the Proposal Elements first.,Bitte füllen Sie zuerst die Eckpunkte aus.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return the cover letter in the expected format. Please try again.,Gemini hat das Anschreiben nicht im erwarteten Format geliefert. Bitte versuchen Sie es erneut.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Row {0}: quotation {1} is listed more than once.,Zeile {0}: Angebot {1} ist mehrfach aufgeführt.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Row {0}: quotation {1} is cancelled.,Zeile {0}: Angebot {1} ist storniert.
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Appendix,Anhang
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The attached file {0} could not be read as a PDF.,Die angehängte Datei {0} konnte nicht als PDF gelesen werden.
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,AI Glossary,KI-Glossar
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Glossary,Glossar
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0}: {1},Variante {0}: {1}
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0},Variante {0}
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Title,Titel der Variante
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Description,Beschreibung der Variante
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Products,Produkte
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Benefits,Vorteile
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_variant_item/sales_proposal_variant_item.json,Item Name,Artikelname
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Variant Products,Produkte der Varianten
+apps/bnovate/bnovate/bnovate/custom/item.json,Commercial Description,Kommerzielle Beschreibung
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Variants System Instructions,System-Anweisungen für Varianten
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Generate Variants,Varianten erstellen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Please add the quotations first.,Bitte fügen Sie zuerst die Angebote hinzu.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Variants generated,Varianten erstellt
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,No variant was written for {0}: none of its items has a commercial description.,Für {0} wurde keine Variante erstellt: Keiner der Artikel hat eine kommerzielle Beschreibung.
+apps/bnovate/bnovate/bnovate/utils/ai.py,None of the linked quotations has an item with a commercial description.,Keines der verknüpften Angebote enthält einen Artikel mit kommerzieller Beschreibung.
+apps/bnovate/bnovate/bnovate/utils/ai.py,Gemini did not return the variants in the expected format. Please try again.,Gemini hat die Varianten nicht im erwarteten Format geliefert. Bitte versuchen Sie es erneut.
+apps/bnovate/bnovate/public/js/ai.js,Describing the variants...,Varianten werden beschrieben...
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Generate Letter,Anschreiben erstellen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Opportunity Link,Opportunity-Link
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"If a Salesforce opportunity is related to this proposal, link it here.","Falls eine Salesforce-Opportunity zu diesen Verkaufsunterlagen gehört, verlinken Sie sie hier."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Clickable link:,Klickbarer Link:

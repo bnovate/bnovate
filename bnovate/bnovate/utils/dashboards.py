@@ -38,4 +38,9 @@ def get_quotation_dashboard_data(data):
     # Service Reports point to the quotation through their own field. The transactions are added in quotation.js
     data.non_standard_fieldnames['Service Report'] = 'quotation'
 
+    # Sales Proposals list quotations in a child table, so the standard count can not find them. Declared as an internal
+    # link so that the standard code leaves the badge alone; quotation.js fills it in (dashboard_update).
+    data.internal_links = data.internal_links or {}
+    data.internal_links['Sales Proposal'] = ['quotations', 'quotation']
+
     return data

@@ -42,10 +42,14 @@
   "gemini_api_key",
   "column_break_ai",
   "gemini_model",
+  "gemini_fallback_model",
   "ai_instructions_section",
-  "quotation_blurb_system_instructions",
+  "cover_letter_system_instructions",
+  "variants_system_instructions",
   "column_break_ai_instructions",
-  "translation_system_instructions"
+  "translation_system_instructions",
+  "ai_glossary_section",
+  "ai_glossary"
  ],
  "fields": [
   {
@@ -259,15 +263,26 @@
    "label": "Gemini Model"
   },
   {
+   "description": "Optional. Used when the main model stays unavailable (overloaded or out of quota), e.g. gemini-2.5-flash-lite",
+   "fieldname": "gemini_fallback_model",
+   "fieldtype": "Data",
+   "label": "Gemini Fallback Model"
+  },
+  {
    "description": "Sent to the model with every request, before the content. The output format (JSON) is added automatically: do not describe it here.",
    "fieldname": "ai_instructions_section",
    "fieldtype": "Section Break",
    "label": "AI System Instructions"
   },
   {
-   "fieldname": "quotation_blurb_system_instructions",
+   "fieldname": "cover_letter_system_instructions",
    "fieldtype": "Long Text",
-   "label": "Quotation Blurb System Instructions"
+   "label": "Cover Letter System Instructions"
+  },
+  {
+   "fieldname": "variants_system_instructions",
+   "fieldtype": "Long Text",
+   "label": "Variants System Instructions"
   },
   {
    "fieldname": "column_break_ai_instructions",
@@ -277,10 +292,21 @@
    "fieldname": "translation_system_instructions",
    "fieldtype": "Long Text",
    "label": "Translation System Instructions"
+  },
+  {
+   "description": "Appended to the system instructions of every AI feature (translations, cover letters...), so the model uses our terminology.",
+   "fieldname": "ai_glossary_section",
+   "fieldtype": "Section Break",
+   "label": "AI Glossary"
+  },
+  {
+   "fieldname": "ai_glossary",
+   "fieldtype": "Long Text",
+   "label": "Glossary"
   }
  ],
  "issingle": 1,
- "modified": "2026-10-28 10:00:00.000000",
+ "modified": "2026-11-18 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "bNovate Settings",

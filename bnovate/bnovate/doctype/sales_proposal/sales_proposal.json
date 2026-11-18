@@ -1,0 +1,297 @@
+{
+ "autoname": "PROP-.#####",
+ "creation": "2026-11-17 15:30:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_section",
+  "title",
+  "customer",
+  "customer_name",
+  "language",
+  "column_break_basic",
+  "company",
+  "transaction_date",
+  "sales_contact",
+  "sales_contact_name",
+  "opportunity_link",
+  "opportunity_link_html",
+  "contact_section",
+  "customer_address",
+  "address_display",
+  "column_break_contact",
+  "contact_person",
+  "contact_display",
+  "contact_mobile",
+  "contact_email",
+  "elements_section",
+  "needs_identified",
+  "solution_proposed",
+  "benefits_expected",
+  "letter_section",
+  "generate_letter",
+  "cover_letter",
+  "quotations_section",
+  "generate_variants",
+  "quotations",
+  "variants_section",
+  "variant_items",
+  "print_section",
+  "letter_head"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_section",
+   "fieldtype": "Section Break",
+   "label": "Basic Information"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Link",
+   "label": "Language",
+   "options": "Language"
+  },
+  {
+   "fieldname": "column_break_basic",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "default": "__user",
+   "fieldname": "sales_contact",
+   "fieldtype": "Link",
+   "label": "Sales Contact",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "sales_contact.full_name",
+   "fieldname": "sales_contact_name",
+   "fieldtype": "Read Only",
+   "label": "Sales Contact Name"
+  },
+  {
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "label": "Address and Contact"
+  },
+  {
+   "fieldname": "customer_address",
+   "fieldtype": "Link",
+   "label": "Customer Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "address_display",
+   "fieldtype": "Small Text",
+   "label": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Contact"
+  },
+  {
+   "fieldname": "contact_display",
+   "fieldtype": "Small Text",
+   "label": "Contact",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_mobile",
+   "fieldtype": "Small Text",
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "fieldname": "elements_section",
+   "fieldtype": "Section Break",
+   "label": "Proposal Elements"
+  },
+  {
+   "description": "What is the customer trying to achieve or solve?",
+   "fieldname": "needs_identified",
+   "fieldtype": "Text",
+   "label": "Needs Identified"
+  },
+  {
+   "description": "Which products and services do we offer for it?",
+   "fieldname": "solution_proposed",
+   "fieldtype": "Text",
+   "label": "Solution Proposed"
+  },
+  {
+   "description": "What will the customer gain?",
+   "fieldname": "benefits_expected",
+   "fieldtype": "Text",
+   "label": "Benefits Expected"
+  },
+  {
+   "fieldname": "letter_section",
+   "fieldtype": "Section Break",
+   "label": "Cover Letter"
+  },
+  {
+   "fieldname": "cover_letter",
+   "fieldtype": "Text Editor",
+   "label": "Letter"
+  },
+  {
+   "fieldname": "quotations_section",
+   "fieldtype": "Section Break",
+   "label": "Linked Quotations"
+  },
+  {
+   "fieldname": "quotations",
+   "fieldtype": "Table",
+   "label": "Quotations",
+   "options": "Sales Proposal Quotation"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "print_section",
+   "fieldtype": "Section Break",
+   "label": "Print Settings"
+  },
+  {
+   "fetch_from": "company.default_letter_head",
+   "fetch_if_empty": 1,
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "label": "Letter Head",
+   "options": "Letter Head"
+  },
+  {
+   "collapsible": 1,
+   "description": "The key products of each variant, with their picture, in the page of the variants. Filled in by Generate Variants, yours to edit.",
+   "fieldname": "variants_section",
+   "fieldtype": "Section Break",
+   "label": "Variant Products"
+  },
+  {
+   "fieldname": "variant_items",
+   "fieldtype": "Table",
+   "label": "Variant Products",
+   "options": "Sales Proposal Variant Item"
+  },
+  {
+   "description": "Writes the title and the two paragraphs of each variant, and fills in its products.",
+   "fieldname": "generate_variants",
+   "fieldtype": "Button",
+   "label": "Generate Variants"
+  },
+  {
+   "description": "Drafts the letter based on the proposal elements.",
+   "fieldname": "generate_letter",
+   "fieldtype": "Button",
+   "label": "Generate Letter"
+  },
+  {
+   "description": "If a Salesforce opportunity is related to this proposal, link it here.",
+   "fieldname": "opportunity_link",
+   "fieldtype": "Data",
+   "label": "Opportunity Link"
+  },
+  {
+   "fieldname": "opportunity_link_html",
+   "fieldtype": "HTML",
+   "label": "Opportunity Link HTML"
+  }
+ ],
+ "modified": "2026-11-18 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Sales Proposal",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer_name,title",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "title",
+ "track_changes": 1
+}
