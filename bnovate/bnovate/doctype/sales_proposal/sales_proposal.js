@@ -32,8 +32,11 @@ frappe.ui.form.on('Sales Proposal', {
 	},
 
 	refresh(frm) {
+		add_appendix_listener(frm);
 		if (!frm.is_new()) {
 			add_download_button(frm);
+			// Envelope icon, like on the Sales Order: email the PDF to the contact of the proposal
+			frm.page.add_action_icon(__('fa fa-envelope-o'), () => email_proposal(frm));
 		}
 
 		show_opportunity_link(frm);
@@ -112,13 +115,13 @@ function add_download_button(frm) {
 	);
 	const filename = `${frm.doc.name}.pdf`;
 	const button = frm.add_custom_button(`<a href="${url}" download="${filename}"><i class="fa fa-download"></i> ${__('Download PDF')}</a>`, () => {
-		frappe.show_progress(__('Preparing PDF...'), 50, 100);
-		setTimeout(() => frappe.hide_progress(), 1000);
+		// nothing to do here: the click on the link starts the download
 	});
 	button.attr('title', __('Cover page, cover letter, quotations and attached PDFs in one PDF'));
 
 	// The PDF is made from the saved document: save pending changes (a generated cover letter...) before downloading.
 	button.find('a').on('click', async (event) => {
+		show_pdf_progress();
 		if (!frm.is_dirty()) {
 			return;
 		}
@@ -267,3 +270,90 @@ function show_opportunity_link(frm) {
 		: '';
 	$(frm.fields_dict.opportunity_link_html.wrapper).html(html);
 }
+
+// The server publishes the progress of the PDF (one step for each part) and hides the bar when it is done. See
+// get_sales_proposal_pdf() in sales_proposal_pdf.py. The timer is for the case where that message never arrives.
+let pdf_progress_timer = null;
+function show_pdf_progress() {
+	frappe.show_progress(__('Preparing PDF'), 1, 100, __('Starting...'));
+	clearTimeout(pdf_progress_timer);
+	pdf_progress_timer = setTimeout(() => frappe.hide_progress(), 3 * 60 * 1000);
+}
+
+// Make the PDF, then open the email dialog with the PDF attached and the text of the email template
+async function email_proposal(frm) {
+	if (frm.is_dirty()) {
+		await frm.save();
+	}
+
+	show_pdf_progress();
+	let file;
+	try {
+		const resp = await frappe.call({
+			method: 'bnovate.bnovate.utils.sales_proposal_pdf.create_email_pdf',
+			args: { name: frm.doc.name },
+		});
+		file = resp.message;
+	} finally {
+		clearTimeout(pdf_progress_timer);
+		frappe.hide_progress();
+	}
+
+	if (file.file_size > 10 * 1024 * 1024) {
+		frappe.show_alert({
+			message: __('The PDF is {0} MB. Many mail servers refuse emails of that size.', [(file.file_size / 1048576).toFixed(1)]),
+			indicator: 'orange',
+		}, 15);
+	}
+
+	// The template is chosen in bNovate Settings, and edited in Email Template. Without one, a plain email.
+	const template = await bnovate.utils.get_setting('sales_proposal_template');
+	bnovate.utils.email_dialog(frm, template, {
+		attachments: [file],
+		attach_print: false,
+		subject: `${__('Sales Proposal')}: ${frm.doc.title || frm.doc.name}`,
+	});
+}
+
+// Files dropped on the form (or added with Attach) that are PDFs become appendices. Frappe has no event for it, so we wrap the
+// function that the sidebar calls for each uploaded file.
+function add_appendix_listener(frm) {
+	const attachments = frm.attachments;
+	if (!attachments || attachments.bn_appendix_listener) return;
+	attachments.bn_appendix_listener = true;
+
+	const attachment_uploaded = attachments.attachment_uploaded.bind(attachments);
+	attachments.attachment_uploaded = (file_doc) => {
+		attachment_uploaded(file_doc);
+		add_appendix(frm, file_doc);
+	};
+}
+
+async function add_appendix(frm, file_doc) {
+	if (!/\.pdf$/i.test(file_doc.file_name || '')) return;
+	if ((frm.doc.appendices || []).some(row => row.file === file_doc.file_url)) return;
+
+	// The file is already stored: save the row too, unless the form has other changes that the user has not saved yet
+	const was_dirty = frm.is_dirty();
+	frm.add_child('appendices', { title: appendix_title(file_doc.file_name), file: file_doc.file_url });
+	frm.refresh_field('appendices');
+	if (!was_dirty) {
+		await frm.save();
+	}
+	frappe.show_alert({ message: __('Added to the appendices: {0}', [file_doc.file_name]), indicator: 'green' }, 5);
+}
+
+// "Datasheet BactoSense.pdf" -> "Datasheet BactoSense"
+function appendix_title(file_name) {
+	return (file_name || '').replace(/\.pdf$/i, '');
+}
+
+frappe.ui.form.on('Sales Proposal Appendix', {
+	file(frm, cdt, cdn) {
+		// A file picked in the table: its name is the default title
+		const row = locals[cdt][cdn];
+		if (row.file && !row.title) {
+			frappe.model.set_value(cdt, cdn, 'title', appendix_title(row.file.split('/').pop()));
+		}
+	},
+});

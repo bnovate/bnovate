@@ -15,6 +15,7 @@ Javascript helpers are in public/js/ai.js.
 
 import html
 import json
+import os
 import re
 import time
 from urllib.parse import quote
@@ -24,7 +25,7 @@ import requests
 from frappe import _
 from frappe.utils.html_utils import sanitize_html
 
-from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_key_products, get_pdf_attachments
+from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_key_products
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 TIMEOUT = 90  # seconds
@@ -316,10 +317,10 @@ def generate_cover_letter(doc):
     """ Write the cover letter of a Sales Proposal from its Proposal Elements. Return the letter as HTML.
 
     Args:
-        doc (dict): the Sales Proposal, as in the form (it may have unsaved changes). Used: name (to find the appendices), needs_identified,
+        doc (dict): the Sales Proposal, as in the form (it may have unsaved changes). Used: needs_identified,
             solution_proposed, benefits_expected, language, customer_name, contact_person, contact_display,
             customer_address, address_display, company, sales_contact, sales_contact_name, and the quotations of the
-            Linked Quotations table. The appendices are the PDFs attached to the saved proposal.
+            Linked Quotations table, and the titles of the Appendices table.
     """
     frappe.has_permission("Sales Proposal", "read", throw=True)
     doc = frappe._dict(_from_client(doc))
@@ -350,9 +351,10 @@ def generate_cover_letter(doc):
                 "items": [{"item_code": item.item_code, "item_name": item.item_name} for item in items],
             })
 
-    appendices = []
-    if doc.name and frappe.db.exists("Sales Proposal", doc.name):
-        appendices = [re.sub(r"\.pdf$", "", a.file_name, flags=re.I) for a in get_pdf_attachments(doc.name)]
+    appendices = [
+        (row.get("title") or "").strip() or os.path.splitext(os.path.basename(row.get("file") or ""))[0]
+        for row in doc.get("appendices") or [] if row.get("file")
+    ]
 
     payload = _compact(dict(
         elements,

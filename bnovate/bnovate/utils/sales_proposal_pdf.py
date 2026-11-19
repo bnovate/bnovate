@@ -21,11 +21,11 @@ from frappe import _
 from frappe.utils import formatdate, strip_html
 from frappe.utils.pdf import get_file_data_from_writer
 from frappe.www.printview import get_print_format_doc
-from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_pdf_attachments
 from PIL import ImageFont
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 LETTER_PRINT_FORMAT = "Sales Proposal"
+EMAIL_PDF_MAX_SIZE = 50 * 1024 * 1024  # bytes. Frappe refuses files of more than 10 MB, but the appendices can make the PDF larger.
 VARIANTS_PRINT_FORMAT = "Sales Proposal Variants"
 QUOTATION_PRINT_FORMAT = "Quotation"
 
@@ -121,12 +121,15 @@ def get_branded_page_pdf(kicker, title, rows=(), minimal=False):
     })
 
 
-def get_cover_pdf(title, date):
+def get_cover_pdf(title, date, contact=None):
     """ Return the cover page as PDF bytes.
 
-    title: big title. date: date of the proposal.
+    title: big title. date: date of the proposal. contact: name of the sales contact of the customer.
     """
-    return get_branded_page_pdf(_("Sales Proposal"), title, [(_("Date"), formatdate(date, DATE_FORMAT) if date else "")])
+    rows = [(_("Date"), formatdate(date, DATE_FORMAT) if date else "")]
+    if contact:
+        rows.append((_("Your contact"), contact))
+    return get_branded_page_pdf(_("Sales Proposal"), title, rows)
 
 
 def get_appendix_pdf():
@@ -134,17 +137,18 @@ def get_appendix_pdf():
     return get_branded_page_pdf(_("Sales Proposal"), _("Appendix"), minimal=True)
 
 
-def get_appendices(name):
-    """ The PDFs attached to a Sales Proposal, as a list of PdfFileReader. """
+def get_appendices(doc):
+    """ The PDFs of the Appendices table of a Sales Proposal, in the order of the table, as a list of PdfFileReader. """
     readers = []
-    for attachment in get_pdf_attachments(name):
+    for row in doc.appendices:
         try:
-            reader = PdfFileReader(io.BytesIO(frappe.get_doc("File", attachment.name).get_content()), strict=False)
+            file = frappe.get_all("File", filters={"file_url": row.file}, limit_page_length=1)[0]
+            reader = PdfFileReader(io.BytesIO(frappe.get_doc("File", file.name).get_content()), strict=False)
             if reader.isEncrypted:
                 reader.decrypt("")
             reader.getNumPages()
         except Exception:
-            frappe.throw(_("The attached file {0} could not be read as a PDF.").format(attachment.file_name))
+            frappe.throw(_("The appendix {0} could not be read as a PDF.").format(row.title or row.file))
         readers.append(reader)
     return readers
 
@@ -167,42 +171,62 @@ def get_print_pdf(doctype, name, print_format, lang=None):
         frappe.local.lang = previous_lang
 
 
-def get_sales_proposal_pdf(name):
-    """ PDF of a Sales Proposal: cover, cover letter (if there is one), the variants (if they are described), then the appendices (if there are any): the page that
-    introduces them, the linked quotations in the order of the table, and the PDFs attached to the proposal. """
-    doc = frappe.get_doc("Sales Proposal", name)
-    doc.check_permission("read")
-
-    appendices = get_appendices(name)
-    parts = []
-
+def _in_language(lang, function, *args):
+    """ Call function with the language of the proposal. """
     previous_lang = frappe.local.lang
     try:
-        frappe.local.lang = doc.language or previous_lang
-        parts.append(get_cover_pdf(doc.title or doc.customer_name, doc.transaction_date))
-        appendix_page = get_appendix_pdf() if (appendices or doc.quotations) else None
+        frappe.local.lang = lang or previous_lang
+        return function(*args)
     finally:
         frappe.local.lang = previous_lang
 
+
+def _progress(done, total, description):
+    """ Show the progress in the browser of the user: Frappe's client listens to this event (socketio_client.js) and shows
+    a progress bar, until it gets 100%. """
+    frappe.publish_progress(max(1, int(100 * done / total)), title=_("Preparing PDF"), description=description)
+
+
+def get_sales_proposal_pdf(name):
+    """ PDF of a Sales Proposal: cover, cover letter (if there is one), the variants (if they are described), then the appendices
+    (if there are any): the page that introduces them, the linked quotations in the order of the table, and the PDFs attached
+    to the proposal.
+
+    Takes a while: the progress of each part is published to the browser.
+    """
+    doc = frappe.get_doc("Sales Proposal", name)
+    doc.check_permission("read")
+
+    appendices = get_appendices(doc)
+
+    # What to print, in order. Each job makes the PDF of one part.
+    jobs = [(_("Cover page"), lambda: _in_language(doc.language, get_cover_pdf, doc.title or doc.customer_name, doc.transaction_date, doc.sales_contact_name))]
     if strip_html(doc.cover_letter or "").strip():
-        parts.append(get_print_pdf("Sales Proposal", name, LETTER_PRINT_FORMAT, doc.language))
-
+        jobs.append((_("Cover letter"), lambda: get_print_pdf("Sales Proposal", name, LETTER_PRINT_FORMAT, doc.language)))
     if any(row.variant_title for row in doc.quotations):
-        parts.append(get_print_pdf("Sales Proposal", name, VARIANTS_PRINT_FORMAT, doc.language))
-
-    if appendix_page:
-        parts.append(appendix_page)
-
+        jobs.append((_("Variants"), lambda: get_print_pdf("Sales Proposal", name, VARIANTS_PRINT_FORMAT, doc.language)))
+    if appendices or doc.quotations:
+        jobs.append((_("Appendix"), lambda: _in_language(doc.language, get_appendix_pdf)))
     for row in doc.quotations:
-        parts.append(get_print_pdf("Quotation", row.quotation, QUOTATION_PRINT_FORMAT, doc.language))
+        jobs.append((_("Quotation {0}").format(row.quotation),
+                     lambda quotation=row.quotation: get_print_pdf("Quotation", quotation, QUOTATION_PRINT_FORMAT, doc.language)))
 
+    parts = []
+    for done, (description, job) in enumerate(jobs):
+        _progress(done, len(jobs) + 1, description)
+        parts.append(job())
+
+    _progress(len(jobs), len(jobs) + 1, _("Putting the pages together"))
     readers = [PdfFileReader(io.BytesIO(part)) for part in parts]
     readers.extend(appendices)
 
     writer = PdfFileWriter()
     for reader in readers:
         writer.appendPagesFromReader(reader)
-    return get_file_data_from_writer(writer)
+    pdf = get_file_data_from_writer(writer)
+
+    frappe.publish_progress(100)  # hides the progress bar
+    return pdf
 
 
 @frappe.whitelist()
@@ -211,3 +235,28 @@ def download_sales_proposal_pdf(name):
     frappe.local.response.filename = "{0}.pdf".format(name)
     frappe.local.response.filecontent = get_sales_proposal_pdf(name)
     frappe.local.response.type = "pdf"
+
+
+@frappe.whitelist()
+def create_email_pdf(name):
+    """ Make the PDF of a Sales Proposal for the email dialog, and attach it to the proposal (a record of what was sent).
+
+    Return the file as the email dialog expects it: name, file_name, file_url, file_size, is_private.
+    """
+    pdf = get_sales_proposal_pdf(name)
+
+    file = frappe.get_doc({
+        "doctype": "File",
+        "file_name": "{0} {1}.pdf".format(name, frappe.utils.now_datetime().strftime("%Y-%m-%d %H%M")),
+        "content": pdf,
+        "is_private": 1,
+        "attached_to_doctype": "Sales Proposal",
+        "attached_to_name": name,
+    })
+    previous_limit = frappe.conf.get("max_file_size")
+    frappe.conf.max_file_size = EMAIL_PDF_MAX_SIZE  # for this request only
+    try:
+        file.insert(ignore_permissions=True)
+    finally:
+        frappe.conf.max_file_size = previous_limit
+    return {"name": file.name, "file_name": file.file_name, "file_url": file.file_url, "file_size": len(pdf), "is_private": 1}

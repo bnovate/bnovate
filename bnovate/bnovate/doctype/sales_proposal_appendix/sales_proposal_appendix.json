@@ -1,0 +1,37 @@
+{
+ "creation": "2026-11-19 11:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "file"
+ ],
+ "fields": [
+  {
+   "columns": 4,
+   "description": "Listed in the cover letter. Defaults to the name of the file.",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  },
+  {
+   "columns": 6,
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "PDF",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-11-19 11:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "bNovate",
+ "name": "Sales Proposal Appendix",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

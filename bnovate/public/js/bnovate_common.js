@@ -324,20 +324,58 @@ bnovate.utils.confirm_dialog = function (text) {
   });
 }
 
-// Email dialog that picks all emails from the doc
-bnovate.utils.email_dialog = function (frm, template_name) {
+// Email dialog that picks all emails from the doc.
+// template_name: Email Template to render with the doc. Without it the dialog opens with options.subject and options.message.
+// options (all optional):
+//   attachments: the files to attach, as {name, file_name, file_url, is_private}. Only these are selected.
+//   attach_print: attach the print of the document (default true).
+//   recipients, cc: addresses, instead of the ones found in the doc.
+bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
   if (frm.is_dirty()) {
     frappe.msgprint('Please save document before emailing');
     return;
   }
 
   // doc.email was set at refresh, fetching from Shipping address
-  var recipients = [frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i).join(', ');
-  var cc = "";
+  var recipients = options.recipients !== undefined ? options.recipients :
+    [frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i).join(', ');
+  var cc = options.cc || "";
 
   var doc = Object.assign({}, frm.doc);
   doc.carrier = frm.doc.carrier || "";
   doc.tracking_no = frm.doc.tracking_no || "";
+
+  const open_composer = (subject, message) => {
+    const attach_print = options.attach_print !== false;
+    frm.composer = new frappe.views.CommunicationComposer({
+      doc: frm.doc,
+      subject: subject,
+      recipients: recipients,
+      cc: cc,
+      attach_document_print: attach_print ? 1 : 0,
+      message: message,
+      attachments: options.attachments || [],
+    });
+    // The composer ticks "attach print" by itself, whatever we ask for
+    if (!attach_print) {
+      frm.composer.dialog.set_value('attach_document_print', 0);
+    }
+    setTimeout(() => {
+      frm.composer.select_attachments();  // ticks every file of the document...
+      if (options.attachments) {
+        // ...but when the caller passes the files to send, the other files of the document (e.g. the appendices that are already in the PDF) stay unticked
+        const wanted = options.attachments.map(f => f.name);
+        $(frm.composer.dialog.fields_dict.select_attachments.wrapper).find('[data-file-name]').each(function () {
+          $(this).prop('checked', wanted.includes($(this).attr('data-file-name')));
+        });
+      }
+    }, 1000);
+  };
+
+  if (!template_name) {
+    open_composer(options.subject || '', options.message || '');
+    return;
+  }
 
   // Render template on the server side:
   let dlg = frappe.show_progress("Rendering email...", 33, 100, "Please wait.");
@@ -349,15 +387,7 @@ bnovate.utils.email_dialog = function (frm, template_name) {
     },
     callback: function (r) {
       dlg.hide();
-      frm.composer = new frappe.views.CommunicationComposer({
-        doc: frm.doc,
-        subject: r.message.subject,
-        recipients: recipients,
-        cc: cc,
-        attach_document_print: 1,
-        message: r.message.message,
-      });
-      setTimeout(() => frm.composer.select_attachments(), 1000);
+      open_composer(r.message.subject, r.message.message);
     },
   });
 }

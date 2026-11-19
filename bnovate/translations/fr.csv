@@ -622,3 +622,23 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Generate
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Opportunity Link,Lien de l'opportunité
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"If a Salesforce opportunity is related to this proposal, link it here.","Si une opportunité Salesforce est liée à ce dossier, indiquez son lien ici."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Clickable link:,Lien cliquable :
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Preparing PDF,Préparation du PDF
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover page,Page de garde
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover letter,Lettre d'accompagnement
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Variants,Variantes
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Quotation {0},Devis {0}
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Putting the pages together,Assemblage des pages
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Starting...,Démarrage...
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Sales Proposal Email Template,Modèle d'e-mail du dossier commercial
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Subject and text of the email that sends a Sales Proposal. Edit the template itself in Email Template: it is data of the site and is never overwritten by an update.,"Objet et texte de l'e-mail qui envoie un dossier commercial. Le modèle lui-même se modifie dans Modèle d'e-mail : c'est une donnée du site, jamais écrasée par une mise à jour."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF is {0} MB. Many mail servers refuse emails of that size.,Le PDF fait {0} Mo. De nombreux serveurs de messagerie refusent les e-mails de cette taille.
+apps/bnovate/bnovate/templates/letter_head_footer,GBP payments,Paiements GBP
+apps/bnovate/bnovate/templates/letter_head_footer,USD payments,Paiements USD
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Appendices,Annexes
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"PDFs added at the end of the proposal, after the quotations, in this order. Files dropped on this form are added here.","PDF ajoutés à la fin du dossier, après les devis, dans cet ordre. Les fichiers déposés sur ce formulaire sont ajoutés ici."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_appendix/sales_proposal_appendix.json,PDF,PDF
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_appendix/sales_proposal_appendix.json,Listed in the cover letter. Defaults to the name of the file.,"Cité dans la lettre. Par défaut, le nom du fichier."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Added to the appendices: {0},Ajouté aux annexes : {0}
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Row {0}: the appendix must be a PDF file.,Ligne {0} : l'annexe doit être un fichier PDF.
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The appendix {0} could not be read as a PDF.,L'annexe {0} n'a pas pu être lue comme PDF.
+apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Your contact,Votre contact

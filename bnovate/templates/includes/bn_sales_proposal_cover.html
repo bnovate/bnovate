@@ -41,8 +41,8 @@
     <div class="accent"></div>
 
     {% for label, value in rows %}
-    <div class="label" style="top: {{ 277.1 + loop.index0 * 24 }}pt;">{{ label }}</div>
-    <div class="value" style="top: {{ 273.0 + loop.index0 * 24 }}pt;">{{ value }}</div>
+    <div class="label" style="top: {{ 277.1 + loop.index0 * 24 }}pt;">{{ label | e }}</div>
+    <div class="value" style="top: {{ 273.0 + loop.index0 * 24 }}pt;">{{ value | e }}</div>
     {% endfor %}
 
     {% if minimal %}

@@ -12,6 +12,7 @@
   "so_template",
   "dn_template",
   "sinv_template",
+  "sales_proposal_template",
   "production_settings",
   "qc_workstation",
   "api_credentials_section",
@@ -112,6 +113,12 @@
    "fieldname": "dn_template",
    "fieldtype": "Link",
    "label": "DN Email Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "sales_proposal_template",
+   "fieldtype": "Link",
+   "label": "Sales Proposal Email Template",
    "options": "Email Template"
   },
   {
@@ -306,7 +313,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-18 14:00:00.000000",
+ "modified": "2026-11-19 09:30:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "bNovate Settings",

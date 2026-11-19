@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import html
 import json
+import os
 
 import frappe
 from frappe import _
@@ -35,6 +36,13 @@ class SalesProposal(Document):
             self.title = self.customer_name
 
         self.validate_quotations()
+        self.validate_appendices()
+
+    def validate_appendices(self):
+        for row in self.appendices:
+            if not (row.file or "").lower().endswith(".pdf"):
+                frappe.throw(_("Row {0}: the appendix must be a PDF file.").format(row.idx))
+            row.title = (row.title or os.path.splitext(os.path.basename(row.file))[0]).strip()
 
     def validate_quotations(self):
         listed = set()
@@ -45,16 +53,6 @@ class SalesProposal(Document):
 
             if frappe.db.get_value("Quotation", row.quotation, "docstatus") == 2:
                 frappe.throw(_("Row {0}: quotation {1} is cancelled.").format(row.idx, row.quotation))
-
-
-def get_pdf_attachments(name):
-    """ The PDF files attached to a Sales Proposal, in the order they were attached: the appendices of the proposal. """
-    return frappe.get_all("File", filters={
-        "attached_to_doctype": "Sales Proposal",
-        "attached_to_name": name,
-        "is_folder": 0,
-        "file_name": ["like", "%.pdf"],
-    }, fields=["name", "file_name"], order_by="creation asc, file_name asc")
 
 
 def get_key_products(quotation):

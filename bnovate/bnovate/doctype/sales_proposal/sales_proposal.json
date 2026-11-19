@@ -36,6 +36,8 @@
   "quotations",
   "variants_section",
   "variant_items",
+  "appendices_section",
+  "appendices",
   "print_section",
   "letter_head"
  ],
@@ -245,9 +247,21 @@
    "fieldname": "opportunity_link_html",
    "fieldtype": "HTML",
    "label": "Opportunity Link HTML"
+  },
+  {
+   "description": "PDFs added at the end of the proposal, after the quotations, in this order. Files dropped on this form are added here.",
+   "fieldname": "appendices_section",
+   "fieldtype": "Section Break",
+   "label": "Appendices"
+  },
+  {
+   "fieldname": "appendices",
+   "fieldtype": "Table",
+   "label": "Appendices",
+   "options": "Sales Proposal Appendix"
   }
  ],
- "modified": "2026-11-18 22:00:00.000000",
+ "modified": "2026-11-19 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Sales Proposal",
