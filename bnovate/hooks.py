@@ -195,6 +195,7 @@ app_include_js = [  # Note to self: in case of changes, may need to run bench bu
     "/assets/bnovate/js/bnovate_common.js",
     "/assets/bnovate/js/iot.js",
     "/assets/bnovate/js/ai.js",
+    "/assets/bnovate/js/crt_theme.js",
     "/assets/js/bnovate_libs.min.js",
     "/assets/bnovate/js/lib/jsconfetti/js-confetti.browser.js",
     # "/assets/js/bnovate.js",   # Empty probably because it wasn't coded as a module.
