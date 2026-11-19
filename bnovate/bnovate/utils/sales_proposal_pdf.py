@@ -19,6 +19,7 @@ import frappe
 import pdfkit
 from frappe import _
 from frappe.utils import formatdate, strip_html
+from frappe.utils.file_manager import get_content_hash
 from frappe.utils.pdf import get_file_data_from_writer
 from frappe.www.printview import get_print_format_doc
 from PIL import ImageFont
@@ -181,18 +182,10 @@ def _in_language(lang, function, *args):
         frappe.local.lang = previous_lang
 
 
-def _progress(done, total, description):
-    """ Show the progress in the browser of the user: Frappe's client listens to this event (socketio_client.js) and shows
-    a progress bar, until it gets 100%. """
-    frappe.publish_progress(max(1, int(100 * done / total)), title=_("Preparing PDF"), description=description)
-
-
 def get_sales_proposal_pdf(name):
     """ PDF of a Sales Proposal: cover, cover letter (if there is one), the variants (if they are described), then the appendices
-    (if there are any): the page that introduces them, the linked quotations in the order of the table, and the PDFs attached
-    to the proposal.
-
-    Takes a while: the progress of each part is published to the browser.
+    (if there are any): the page that introduces them, the linked quotations in the order of the table, and the PDFs of the
+    Appendices table.
     """
     doc = frappe.get_doc("Sales Proposal", name)
     doc.check_permission("read")
@@ -200,33 +193,23 @@ def get_sales_proposal_pdf(name):
     appendices = get_appendices(doc)
 
     # What to print, in order. Each job makes the PDF of one part.
-    jobs = [(_("Cover page"), lambda: _in_language(doc.language, get_cover_pdf, doc.title or doc.customer_name, doc.transaction_date, doc.sales_contact_name))]
+    jobs = [lambda: _in_language(doc.language, get_cover_pdf, doc.title or doc.customer_name, doc.transaction_date, doc.sales_contact_name)]
     if strip_html(doc.cover_letter or "").strip():
-        jobs.append((_("Cover letter"), lambda: get_print_pdf("Sales Proposal", name, LETTER_PRINT_FORMAT, doc.language)))
+        jobs.append(lambda: get_print_pdf("Sales Proposal", name, LETTER_PRINT_FORMAT, doc.language))
     if any(row.variant_title for row in doc.quotations):
-        jobs.append((_("Variants"), lambda: get_print_pdf("Sales Proposal", name, VARIANTS_PRINT_FORMAT, doc.language)))
+        jobs.append(lambda: get_print_pdf("Sales Proposal", name, VARIANTS_PRINT_FORMAT, doc.language))
     if appendices or doc.quotations:
-        jobs.append((_("Appendix"), lambda: _in_language(doc.language, get_appendix_pdf)))
+        jobs.append(lambda: _in_language(doc.language, get_appendix_pdf))
     for row in doc.quotations:
-        jobs.append((_("Quotation {0}").format(row.quotation),
-                     lambda quotation=row.quotation: get_print_pdf("Quotation", quotation, QUOTATION_PRINT_FORMAT, doc.language)))
+        jobs.append(lambda quotation=row.quotation: get_print_pdf("Quotation", quotation, QUOTATION_PRINT_FORMAT, doc.language))
 
-    parts = []
-    for done, (description, job) in enumerate(jobs):
-        _progress(done, len(jobs) + 1, description)
-        parts.append(job())
-
-    _progress(len(jobs), len(jobs) + 1, _("Putting the pages together"))
-    readers = [PdfFileReader(io.BytesIO(part)) for part in parts]
+    readers = [PdfFileReader(io.BytesIO(job())) for job in jobs]
     readers.extend(appendices)
 
     writer = PdfFileWriter()
     for reader in readers:
         writer.appendPagesFromReader(reader)
-    pdf = get_file_data_from_writer(writer)
-
-    frappe.publish_progress(100)  # hides the progress bar
-    return pdf
+    return get_file_data_from_writer(writer)
 
 
 @frappe.whitelist()
@@ -241,9 +224,21 @@ def download_sales_proposal_pdf(name):
 def create_email_pdf(name):
     """ Make the PDF of a Sales Proposal for the email dialog, and attach it to the proposal (a record of what was sent).
 
-    Return the file as the email dialog expects it: name, file_name, file_url, file_size, is_private.
+    Return the file as the email dialog expects it (name, file_name, file_url, file_size, is_private), and the name of the Email
+    Template to use. bNovate Settings is only readable by System Managers (it holds API keys), so the browser can not read the
+    template from there: it comes with this answer.
     """
     pdf = get_sales_proposal_pdf(name)
+    template = frappe.db.get_single_value("bNovate Settings", "sales_proposal_template")
+
+    # Frappe refuses to attach the same file twice to a document, and the PDF of an unchanged proposal is the same file:
+    # send the one that is already attached.
+    duplicate = frappe.db.get_value("File", {
+        "attached_to_doctype": "Sales Proposal", "attached_to_name": name, "is_private": 1, "content_hash": get_content_hash(pdf),
+    }, ["name", "file_name", "file_url"], as_dict=True)
+    if duplicate:
+        return {"name": duplicate.name, "file_name": duplicate.file_name, "file_url": duplicate.file_url, "file_size": len(pdf),
+                "is_private": 1, "email_template": template}
 
     file = frappe.get_doc({
         "doctype": "File",
@@ -259,4 +254,5 @@ def create_email_pdf(name):
         file.insert(ignore_permissions=True)
     finally:
         frappe.conf.max_file_size = previous_limit
-    return {"name": file.name, "file_name": file.file_name, "file_url": file.file_url, "file_size": len(pdf), "is_private": 1}
+    return {"name": file.name, "file_name": file.file_name, "file_url": file.file_url, "file_size": len(pdf),
+            "is_private": 1, "email_template": template}

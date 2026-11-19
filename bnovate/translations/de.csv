@@ -583,7 +583,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Linked Q
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Printed on the cover page. Defaults to the customer name.,Wird auf dem Deckblatt gedruckt. Standardmässig der Kundenname.
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Language of the cover and of the printed documents. Defaults to the language of the customer.,Sprache des Deckblatts und der gedruckten Dokumente. Standardmässig die Sprache des Kunden.
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Download PDF,PDF herunterladen
-apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and attached PDFs in one PDF","Deckblatt, Anschreiben, Angebote und angehängte PDFs in einem PDF"
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Preparing PDF...,PDF wird erstellt...
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Write the cover letter from the Proposal Elements with the AI,Anschreiben von der KI aus den Eckpunkten schreiben lassen
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Generate,Erstellen
@@ -620,12 +619,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Opportun
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"If a Salesforce opportunity is related to this proposal, link it here.","Falls eine Salesforce-Opportunity zu diesen Verkaufsunterlagen gehört, verlinken Sie sie hier."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Clickable link:,Klickbarer Link:
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Preparing PDF,PDF wird vorbereitet
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover page,Deckblatt
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover letter,Anschreiben
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Variants,Varianten
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Quotation {0},Angebot {0}
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Putting the pages together,Seiten werden zusammengefügt
-apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Starting...,Wird gestartet...
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Sales Proposal Email Template,E-Mail-Vorlage für Verkaufsunterlagen
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Subject and text of the email that sends a Sales Proposal. Edit the template itself in Email Template: it is data of the site and is never overwritten by an update.,"Betreff und Text der E-Mail, mit der Verkaufsunterlagen verschickt werden. Die Vorlage selbst wird unter E-Mail-Vorlage bearbeitet: Sie gehört zur Site und wird bei einem Update nie überschrieben."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF is {0} MB. Many mail servers refuse emails of that size.,Das PDF ist {0} MB gross. Viele Mailserver lehnen E-Mails dieser Grösse ab.
@@ -640,3 +633,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Added to t
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Row {0}: the appendix must be a PDF file.,Zeile {0}: Der Anhang muss eine PDF-Datei sein.
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The appendix {0} could not be read as a PDF.,Der Anhang {0} konnte nicht als PDF gelesen werden.
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Your contact,Ihr Kontakt
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF could not be made.,Das PDF konnte nicht erstellt werden.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and appendices in one PDF","Deckblatt, Anschreiben, Angebote und Anhänge in einem PDF"
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Error,Fehler

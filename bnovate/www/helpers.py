@@ -4,11 +4,13 @@
 import frappe
 import urllib
 
+from bnovate.bnovate.utils.permissions import is_guest, is_desk_user, is_system_user # Moved there, used be to here.
 from bnovate.bnovate.utils.shipping import quick_validate_address, AddressError
 
 from frappe import _
 
 from frappe.contacts.doctype.address.address import get_address_display
+
 
 
 def auth(context):
@@ -18,26 +20,6 @@ def auth(context):
     if frappe.session.user=='Guest' or not "@" in frappe.session.user:
         frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
 
-def is_guest():
-    if frappe.session.user=='Administrator':
-        return False
-    if frappe.session.user=='Guest' or not "@" in frappe.session.user:
-        return True
-    return False
-
-def is_desk_user():
-    """ Return True if current user has access to Desk """
-    if frappe.session.user=='Administrator':
-        return True
-    if is_guest():
-        return False
-    user_type = frappe.db.get_value("User", {"name": frappe.session.user}, "user_type")
-    if user_type == "System User":
-        return True
-    return False
-
-def is_system_user():
-    return is_desk_user()
 
 LANGUAGES = [
     {"code": "en", "name": "English"},

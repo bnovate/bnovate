@@ -586,7 +586,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Linked Q
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Printed on the cover page. Defaults to the customer name.,"Imprimé sur la page de garde. Par défaut, le nom du client."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Language of the cover and of the printed documents. Defaults to the language of the customer.,"Langue de la page de garde et des documents imprimés. Par défaut, la langue du client."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Download PDF,Télécharger le PDF
-apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and attached PDFs in one PDF","Page de garde, lettre d'accompagnement, devis et PDF joints dans un seul PDF"
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Preparing PDF...,Préparation du PDF...
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Write the cover letter from the Proposal Elements with the AI,Faire rédiger la lettre d'accompagnement par l'IA à partir des éléments du dossier
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Generate,Générer
@@ -623,12 +622,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,Opportun
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"If a Salesforce opportunity is related to this proposal, link it here.","Si une opportunité Salesforce est liée à ce dossier, indiquez son lien ici."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Clickable link:,Lien cliquable :
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Preparing PDF,Préparation du PDF
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover page,Page de garde
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Cover letter,Lettre d'accompagnement
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Variants,Variantes
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Quotation {0},Devis {0}
-apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Putting the pages together,Assemblage des pages
-apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Starting...,Démarrage...
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Sales Proposal Email Template,Modèle d'e-mail du dossier commercial
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Subject and text of the email that sends a Sales Proposal. Edit the template itself in Email Template: it is data of the site and is never overwritten by an update.,"Objet et texte de l'e-mail qui envoie un dossier commercial. Le modèle lui-même se modifie dans Modèle d'e-mail : c'est une donnée du site, jamais écrasée par une mise à jour."
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF is {0} MB. Many mail servers refuse emails of that size.,Le PDF fait {0} Mo. De nombreux serveurs de messagerie refusent les e-mails de cette taille.
@@ -642,3 +635,6 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Added to t
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Row {0}: the appendix must be a PDF file.,Ligne {0} : l'annexe doit être un fichier PDF.
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The appendix {0} could not be read as a PDF.,L'annexe {0} n'a pas pu être lue comme PDF.
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Your contact,Votre contact
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF could not be made.,Le PDF n'a pas pu être créé.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and appendices in one PDF","Page de garde, lettre d'accompagnement, devis et annexes dans un seul PDF"
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Error,Erreur

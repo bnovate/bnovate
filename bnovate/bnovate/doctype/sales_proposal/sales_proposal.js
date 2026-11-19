@@ -109,32 +109,48 @@ frappe.ui.form.on('Sales Proposal', {
 });
 
 function add_download_button(frm) {
-	// Same trick as the Delivery Note: a download link inside the button, the button itself only shows a progress message.
 	const url = frappe.urllib.get_full_url('/api/method/bnovate.bnovate.utils.sales_proposal_pdf.download_sales_proposal_pdf?'
 		+ 'name=' + encodeURIComponent(frm.doc.name)
 	);
-	const filename = `${frm.doc.name}.pdf`;
-	const button = frm.add_custom_button(`<a href="${url}" download="${filename}"><i class="fa fa-download"></i> ${__('Download PDF')}</a>`, () => {
-		// nothing to do here: the click on the link starts the download
-	});
-	button.attr('title', __('Cover page, cover letter, quotations and attached PDFs in one PDF'));
 
-	// The PDF is made from the saved document: save pending changes (a generated cover letter...) before downloading.
-	button.find('a').on('click', async (event) => {
-		show_pdf_progress();
-		if (!frm.is_dirty()) {
-			return;
+	const button = frm.add_custom_button(`<i class="fa fa-download"></i> ${__('Download PDF')}`, async () => {
+		// The PDF is made from the saved document: save pending changes (a generated cover letter...) first.
+		if (frm.is_dirty()) {
+			await frm.save();
 		}
-		event.preventDefault();
-		await frm.save();
 
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = filename;
-		document.body.appendChild(link);
-		link.click();
-		link.remove();
+		// Fetched by the page, not as a link, to know when it is ready
+		const stop_progress = start_pdf_progress();
+		try {
+			const response = await fetch(url, { credentials: 'same-origin' });
+			if (!response.ok) {
+				show_fetch_error(await response.text());
+				return;
+			}
+			const link = document.createElement('a');
+			link.href = URL.createObjectURL(await response.blob());
+			link.download = `${frm.doc.name}.pdf`;
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+		} finally {
+			stop_progress();
+		}
 	});
+	button.attr('title', __('Cover page, cover letter, quotations and appendices in one PDF'));
+}
+
+// The message of a failed request: Frappe sends the messages of frappe.throw() in _server_messages, in a JSON document
+function show_fetch_error(body) {
+	let message = __('The PDF could not be made.');
+	try {
+		const messages = JSON.parse(JSON.parse(body)._server_messages || '[]');
+		if (messages.length) {
+			message = JSON.parse(messages[0]).message;
+		}
+	} catch (e) { /* not JSON: keep the general message */ }
+	frappe.msgprint({ title: __('Error'), message, indicator: 'red' });
 }
 
 // The AI buttons (Button fields) get a sparkle in front of their label
@@ -271,13 +287,20 @@ function show_opportunity_link(frm) {
 	$(frm.fields_dict.opportunity_link_html.wrapper).html(html);
 }
 
-// The server publishes the progress of the PDF (one step for each part) and hides the bar when it is done. See
-// get_sales_proposal_pdf() in sales_proposal_pdf.py. The timer is for the case where that message never arrives.
-let pdf_progress_timer = null;
-function show_pdf_progress() {
-	frappe.show_progress(__('Preparing PDF'), 1, 100, __('Starting...'));
-	clearTimeout(pdf_progress_timer);
-	pdf_progress_timer = setTimeout(() => frappe.hide_progress(), 3 * 60 * 1000);
+// Progress bar for the PDF. The server takes a few seconds and we can not know how many, so the bar just ticks along: every
+// second it covers 5% of what is left. Returns the function that removes it.
+function start_pdf_progress() {
+	let percent = 0;
+	const show = () => frappe.show_progress(__('Preparing PDF'), Math.max(1, Math.round(percent)), 100);
+	show();
+	const timer = setInterval(() => {
+		percent += (100 - percent) * 0.05;
+		show();
+	}, 1000);
+	return () => {
+		clearInterval(timer);
+		frappe.hide_progress();
+	};
 }
 
 // Make the PDF, then open the email dialog with the PDF attached and the text of the email template
@@ -286,7 +309,7 @@ async function email_proposal(frm) {
 		await frm.save();
 	}
 
-	show_pdf_progress();
+	const stop_progress = start_pdf_progress();
 	let file;
 	try {
 		const resp = await frappe.call({
@@ -295,8 +318,7 @@ async function email_proposal(frm) {
 		});
 		file = resp.message;
 	} finally {
-		clearTimeout(pdf_progress_timer);
-		frappe.hide_progress();
+		stop_progress();
 	}
 
 	if (file.file_size > 10 * 1024 * 1024) {
@@ -306,9 +328,9 @@ async function email_proposal(frm) {
 		}, 15);
 	}
 
-	// The template is chosen in bNovate Settings, and edited in Email Template. Without one, a plain email.
-	const template = await bnovate.utils.get_setting('sales_proposal_template');
-	bnovate.utils.email_dialog(frm, template, {
+	// The template is chosen in bNovate Settings (which most users can not read: the server sends it), and edited in Email
+	// Template. Without one, a plain email.
+	bnovate.utils.email_dialog(frm, file.email_template, {
 		attachments: [file],
 		attach_print: false,
 		subject: `${__('Sales Proposal')}: ${frm.doc.title || frm.doc.name}`,

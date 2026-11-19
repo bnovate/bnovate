@@ -268,9 +268,14 @@ bnovate.utils.run_report = async function (report_name, filters) {
   return resp.message;
 }
 
-// Fetch value from settings
+// Fetch value from settings. Only for the settings that are safe to show to every desk user (WHITELISTED_SETTINGS in doctype/bnovate_settings/bnovate_settings.py: the
+// settings doctype itself is only readable by System Managers). Add a key to that list to use it here.
 bnovate.utils.get_setting = async function (key) {
-  return frappe.db.get_single_value("bNovate Settings", key)
+  const resp = await frappe.call({
+    method: 'bnovate.bnovate.doctype.bnovate_settings.bnovate_settings.get_whitelisted_setting',
+    args: { key },
+  });
+  return resp.message;
 }
 
 // Fetch value from user settings
@@ -347,6 +352,12 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
 
   const open_composer = (subject, message) => {
     const attach_print = options.attach_print !== false;
+
+    // Files to send. Those that are already attached to the document are in the list of the dialog anyway.
+    const wanted = (options.attachments || []).map(f => f.name);
+    const known = (frm.get_files() || []).map(f => f.name);
+    const extra = (options.attachments || []).filter(f => !known.includes(f.name));
+
     frm.composer = new frappe.views.CommunicationComposer({
       doc: frm.doc,
       subject: subject,
@@ -354,22 +365,25 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
       cc: cc,
       attach_document_print: attach_print ? 1 : 0,
       message: message,
-      attachments: options.attachments || [],
+      attachments: extra,
     });
     // The composer ticks "attach print" by itself, whatever we ask for
     if (!attach_print) {
       frm.composer.dialog.set_value('attach_document_print', 0);
     }
-    setTimeout(() => {
-      frm.composer.select_attachments();  // ticks every file of the document...
-      if (options.attachments) {
-        // ...but when the caller passes the files to send, the other files of the document (e.g. the appendices that are already in the PDF) stay unticked
-        const wanted = options.attachments.map(f => f.name);
-        $(frm.composer.dialog.fields_dict.select_attachments.wrapper).find('[data-file-name]').each(function () {
+
+    if (options.attachments) {
+      // The composer ticks every file of the document, each time it draws the list. When the caller passes the files to send,
+      // only those are ticked (the other files, e.g. the appendices that are already in the PDF, are not sent again).
+      frm.composer.select_attachments = function () {
+        if (!this.dialog.display) return;
+        $(this.dialog.fields_dict.select_attachments.wrapper).find('[data-file-name]').each(function () {
           $(this).prop('checked', wanted.includes($(this).attr('data-file-name')));
         });
-      }
-    }, 1000);
+      };
+      frm.composer.select_attachments();
+    }
+    setTimeout(() => frm.composer.select_attachments(), 1000);
   };
 
   if (!template_name) {
