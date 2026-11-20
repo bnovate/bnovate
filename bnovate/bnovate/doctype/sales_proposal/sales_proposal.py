@@ -7,11 +7,12 @@ from __future__ import unicode_literals
 import html
 import json
 import os
+from contextlib import contextmanager
 
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, formatdate, fmt_money
+from frappe.utils import cint, flt, formatdate, fmt_money
 from erpnext.accounts.party import set_address_details, set_contact_details
 from erpnext.controllers.queries import get_match_cond
 
@@ -53,6 +54,120 @@ class SalesProposal(Document):
 
             if frappe.db.get_value("Quotation", row.quotation, "docstatus") == 2:
                 frappe.throw(_("Row {0}: quotation {1} is cancelled.").format(row.idx, row.quotation))
+
+
+EXPENSE_CATEGORIES = ("CAPEX", "OPEX")  # in the order of the columns of the table. The category "Ignore" is left out.
+
+
+def get_cost_groups(quotation):
+    """ The lines of a quotation grouped by section and by customer expense category, with the subtotal of each group.
+
+    A section starts at a line that has a "section header" (the line "A) Purchase of the instrument..."), and goes on until
+    the next one. Subtotals are the net amounts of the lines (after discounts, before taxes), as quoted.
+
+    Return {"currency": "CHF",
+            "rows": [{"group_id": 1, "group": "A) Purchase...", "customer_expense_category": "CAPEX", "item_names": [...], "total": 73000.0}, ...],
+            "unclassified": [{"group": ..., "item_names": [...], "total": ...}]}
+    The rows are in the order of the quotation, CAPEX before OPEX in a section. Lines of category "Ignore" are left out. Lines
+    that have no category are listed apart if they have an amount: the table can not place them. A line whose own category is
+    blank (an old quotation, a line added before the categories) takes the category of its item, else of the group of the item.
+    """
+    lines = frappe.db.sql("""
+        SELECT COALESCE(NULLIF(qi.item_name, ''), item.item_name) AS item_name, qi.section_header, qi.net_amount,
+            COALESCE(NULLIF(qi.customer_expense_category, ''), NULLIF(item.customer_expense_category, ''), NULLIF(grp.customer_expense_category, ''), '')
+                AS customer_expense_category
+        FROM `tabQuotation Item` qi
+        LEFT JOIN `tabItem` item ON item.name = qi.item_code
+        LEFT JOIN `tabItem Group` grp ON grp.name = item.item_group
+        WHERE qi.parent = %s AND qi.parenttype = 'Quotation'
+        ORDER BY qi.idx
+    """, quotation, as_dict=True)
+
+    sections = []  # [{"group": header, "CAPEX": {...}, "OPEX": {...}, "": {...}}]
+    for line in lines:
+        header = html.unescape(line.section_header or "").strip()
+        if header or not sections:
+            sections.append({"group": header or None})
+        section = sections[-1]
+
+        category = line.customer_expense_category or ""
+        if category == "Ignore":
+            continue
+        if category not in EXPENSE_CATEGORIES and not flt(line.net_amount):
+            continue  # a free line without category (a free accessory): nothing to place
+        entry = section.setdefault(category, {"item_names": [], "total": 0.0})
+        name = html.unescape(line.item_name or "").strip()
+        if name and name not in entry["item_names"]:
+            entry["item_names"].append(name)
+        entry["total"] += flt(line.net_amount)
+
+    rows, unclassified = [], []
+    for group_id, section in enumerate(sections, 1):
+        for category in EXPENSE_CATEGORIES:
+            if category in section:
+                rows.append({"group_id": group_id, "group": section["group"], "customer_expense_category": category,
+                             "item_names": section[category]["item_names"], "total": flt(section[category]["total"], 2)})
+        if "" in section:
+            unclassified.append({"group": section["group"], "item_names": section[""]["item_names"], "total": flt(section[""]["total"], 2)})
+
+    return {"currency": frappe.db.get_value("Quotation", quotation, "currency"), "rows": rows, "unclassified": unclassified}
+
+
+@contextmanager
+def _language(lang):
+    previous = frappe.local.lang
+    frappe.local.lang = lang or previous
+    try:
+        yield
+    finally:
+        frappe.local.lang = previous
+
+
+def get_cost_column_titles(lang=None):
+    """ Titles of the columns of the cost table: the customer reads "initial investment" and "running costs", not CAPEX and OPEX. """
+    with _language(lang):
+        return {"CAPEX": _("Initial investment"), "OPEX": _("Running costs")}
+
+
+def render_cost_table(cost_groups, descriptions, explanation="", lang=None):
+    """ HTML of the cost simulation: the explanation, then a table with a line for each section of the quotation.
+
+    The amounts come from the calculation (get_cost_groups), never from the AI, which only writes the descriptions and the
+    explanation. descriptions: {group_id: text}. Texts are plain text and escaped here.
+    """
+    with _language(lang):
+        titles = {"CAPEX": _("Initial investment"), "OPEX": _("Running costs")}
+        currency = cost_groups["currency"]
+
+        def money(value):
+            return html.escape(fmt_money(value, currency=currency)) if value else "&ndash;"
+
+        by_group, totals = {}, {"CAPEX": 0.0, "OPEX": 0.0}
+        for row in cost_groups["rows"]:
+            group = by_group.setdefault(row["group_id"], {"CAPEX": 0.0, "OPEX": 0.0, "fallback": row["group"] or ", ".join(row["item_names"])})
+            group[row["customer_expense_category"]] += row["total"]
+            totals[row["customer_expense_category"]] += row["total"]
+
+        cell = "padding: 4px 8px; border-bottom: 1px solid #d1d8dd;"
+        # The heading row is made of <td>, not <th>/<thead>: the Text Editor of the form does not know those and merges the row into one cell
+        head = "padding: 4px 8px; border-bottom: 2px solid #333; text-align: %s;"
+        lines = ["<table style=\"width: 100%; border-collapse: collapse;\"><tbody><tr>",
+                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "left", html.escape(_("Description"))),
+                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "right", html.escape(titles["CAPEX"])),
+                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "right", html.escape(titles["OPEX"])),
+                 "</tr>"]
+        for group_id, group in by_group.items():
+            description = html.escape(descriptions.get(group_id) or group["fallback"])
+            lines.append("<tr><td style=\"%s\">%s</td><td style=\"%s text-align: right;\">%s</td><td style=\"%s text-align: right;\">%s</td></tr>"
+                         % (cell, description, cell, money(group["CAPEX"]), cell, money(group["OPEX"])))
+        lines.append("<tr><td style=\"%s\"><strong>%s</strong></td><td style=\"%s text-align: right;\"><strong>%s</strong></td>"
+                     "<td style=\"%s text-align: right;\"><strong>%s</strong></td></tr>"
+                     % (cell, html.escape(_("Total")), cell, money(totals["CAPEX"]), cell, money(totals["OPEX"])))
+        lines.append("</tbody></table>")
+        lines.append("<p><em>%s</em></p>" % html.escape(_("Amounts are as quoted, before taxes.")))
+
+        intro = "<p>%s</p>" % html.escape(explanation.strip()) if (explanation or "").strip() else ""
+        return intro + "".join(lines)
 
 
 def get_key_products(quotation):

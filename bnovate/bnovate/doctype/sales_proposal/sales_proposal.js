@@ -238,6 +238,26 @@ async function write_variants(frm) {
 	frm.refresh_field('quotations');
 	frm.refresh_field('variant_items');
 
+	// The cost simulation of every variant
+	const without_costs = [];
+	const unclassified = [];
+	for (const row of frm.doc.quotations) {
+		if (!row.quotation) continue;
+		const simulation = await bnovate.ai.generate_cost_simulation(row.quotation, frm.doc.language, false);
+		if (!simulation) continue;
+		unclassified.push(...(simulation.unclassified || []).map(u => Object.assign({ quotation: row.quotation }, u)));
+		if (simulation.empty) {
+			without_costs.push(row.quotation);
+			continue;
+		}
+		await frappe.model.set_value(row.doctype, row.name, 'cost_simulation', simulation.html);
+	}
+	frm.refresh_field('quotations');
+	if (without_costs.length) {
+		frappe.msgprint(__('No cost simulation was written for {0}: none of its lines has a Customer Expense Category.', [without_costs.join(', ')]));
+	}
+	show_unclassified(unclassified);
+
 	frappe.show_alert({ message: __('Variants generated'), indicator: 'green' }, 10);
 	if (result.skipped.length) {
 		frappe.msgprint(__('No variant was written for {0}: none of its items has a commercial description.', [result.skipped.join(', ')]));
@@ -377,5 +397,33 @@ frappe.ui.form.on('Sales Proposal Appendix', {
 		if (row.file && !row.title) {
 			frappe.model.set_value(cdt, cdn, 'title', appendix_title(row.file.split('/').pop()));
 		}
+	},
+});
+
+// The lines that have an amount but no expense category are not in the table of a cost simulation: say so
+function show_unclassified(entries) {
+	if (!entries.length) return;
+	const escape = frappe.utils.escape_html;
+	const lines = entries.map(u => `<li>${escape(u.quotation || '')} ${escape(u.group || '')} ${escape(u.item_names.join(', '))}: ${u.total}</li>`);
+	frappe.msgprint({
+		title: __('Lines without an expense category'),
+		message: `${__('These lines are not in the table, they have no Customer Expense Category:')}<ul>${lines.join('')}</ul>`,
+		indicator: 'orange',
+	});
+}
+
+frappe.ui.form.on('Sales Proposal Quotation', {
+	async calculate_cost_simulation(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		if (!row.quotation) {
+			frappe.msgprint(__('Please pick a quotation first.'));
+			return;
+		}
+
+		const result = await bnovate.ai.generate_cost_simulation(row.quotation, frm.doc.language);
+		if (!result) return;
+
+		await frappe.model.set_value(cdt, cdn, 'cost_simulation', result.html);
+		show_unclassified(result.unclassified.map(u => Object.assign({ quotation: row.quotation }, u)));
 	},
 });

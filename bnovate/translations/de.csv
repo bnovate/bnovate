@@ -597,8 +597,8 @@ apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Appendix,Anhang
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The attached file {0} could not be read as a PDF.,Die angehängte Datei {0} konnte nicht als PDF gelesen werden.
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,AI Glossary,KI-Glossar
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Glossary,Glossar
-apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0}: {1},Variante {0}: {1}
-apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0},Variante {0}
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Variant {0}: {1},Variante {0}: {1}
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Variant {0},Variante {0}
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Title,Titel der Variante
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Description,Beschreibung der Variante
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Products,Produkte
@@ -636,3 +636,25 @@ apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Your contact,Ihr Kontak
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF could not be made.,Das PDF konnte nicht erstellt werden.
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and appendices in one PDF","Deckblatt, Anschreiben, Angebote und Anhänge in einem PDF"
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Error,Fehler
+apps/bnovate/bnovate/bnovate/custom/item.json,Customer Expense Category,Ausgabenkategorie des Kunden
+apps/bnovate/bnovate/bnovate/custom/item.json,Used for cost estimations,Für Kostenschätzungen
+apps/bnovate/bnovate/bnovate/custom/quotation_item.json,For cost estimates in Sales Proposals,Für Kostenschätzungen in den Verkaufsunterlagen
+apps/bnovate/bnovate/bnovate/custom/item.json,Ignore,Ignorieren
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Initial investment,Anfangsinvestition
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Running costs,Laufende Kosten
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Total,Total
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,"Amounts are as quoted, before taxes.","Beträge wie offeriert, vor Steuern."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Calculate,Berechnen
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Cost Simulation,Kostensimulation
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,"Sums the lines of the quotation by section and expense category, and has the AI write the table.",Summiert die Positionen des Angebots nach Abschnitt und Ausgabenkategorie und lässt die KI die Tabelle schreiben.
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Cost Simulation System Instructions,System-Anweisungen für die Kostensimulation
+apps/bnovate/bnovate/bnovate/utils/ai.py,None of the lines of the quotation has a Customer Expense Category (CAPEX or OPEX).,Keine Position des Angebots hat eine Ausgabenkategorie des Kunden (CAPEX oder OPEX).
+apps/bnovate/bnovate/public/js/ai.js,Calculating the cost simulation...,Kostensimulation wird berechnet...
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Please pick a quotation first.,Bitte wählen Sie zuerst ein Angebot.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Lines without an expense category,Positionen ohne Ausgabenkategorie
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"These lines are not in the table, they have no Customer Expense Category:","Diese Positionen fehlen in der Tabelle, sie haben keine Ausgabenkategorie des Kunden:"
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,No cost simulation was written for {0}: none of its lines has a Customer Expense Category.,Für {0} wurde keine Kostensimulation erstellt: Keine seiner Positionen hat eine Ausgabenkategorie des Kunden.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"Writes the title and the two paragraphs of each variant, fills in its products, and calculates its cost simulation.","Schreibt den Titel und die zwei Absätze jeder Variante, füllt ihre Produkte aus und berechnet ihre Kostensimulation."
+apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Payment Conditions,Zahlungsbedingungen
+apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Terms & Conditions,Allgemeine Geschäftsbedingungen
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Solution highlights,Highlights der Lösung

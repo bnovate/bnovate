@@ -1,11 +1,12 @@
 # (C) 2026, bNovate
 #
-# PDF of a Sales Proposal: a branded cover page, the cover letter, the variants (if they are described), then the appendices: a branded "Appendix" page,
+# PDF of a Sales Proposal: a branded cover page, the cover letter and the variants (if they are described), then the appendices: a branded "Appendix" page,
 # the linked quotations, and the PDFs attached to the proposal.
 #
 # - The cover and the appendix page are rendered from templates/includes/bn_sales_proposal_cover.html by wkhtmltopdf, full bleed (no margins,
-#   no letterhead). The letter is the "Sales Proposal" print format, and each quotation is printed with the "Quotation"
-#   print format. The PDFs are merged, so "Page X of Y" of each part only counts its own pages.
+#   no letterhead). The letter and the variants are the "Sales Proposal" print format (one document, so the page
+#   numbers run through both), and each quotation is printed with the "Quotation" print format. The PDFs are merged, so "Page X of Y" of
+#   each part only counts its own pages.
 # - The big title of the cover is the title of the proposal, shrunk and wrapped to fit.
 # - Fonts and images are embedded in the HTML as data URIs: Frappe's PDF generation does not allow local files.
 #
@@ -27,7 +28,6 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 
 LETTER_PRINT_FORMAT = "Sales Proposal"
 EMAIL_PDF_MAX_SIZE = 50 * 1024 * 1024  # bytes. Frappe refuses files of more than 10 MB, but the appendices can make the PDF larger.
-VARIANTS_PRINT_FORMAT = "Sales Proposal Variants"
 QUOTATION_PRINT_FORMAT = "Quotation"
 
 CONTACT = ["+41 21 552 14 21", "sales@bnovate.com", "www.bnovate.com"]
@@ -183,7 +183,7 @@ def _in_language(lang, function, *args):
 
 
 def get_sales_proposal_pdf(name):
-    """ PDF of a Sales Proposal: cover, cover letter (if there is one), the variants (if they are described), then the appendices
+    """ PDF of a Sales Proposal: cover, cover letter (if there is one) and the variants (if they are described), then the appendices
     (if there are any): the page that introduces them, the linked quotations in the order of the table, and the PDFs of the
     Appendices table.
     """
@@ -194,10 +194,8 @@ def get_sales_proposal_pdf(name):
 
     # What to print, in order. Each job makes the PDF of one part.
     jobs = [lambda: _in_language(doc.language, get_cover_pdf, doc.title or doc.customer_name, doc.transaction_date, doc.sales_contact_name)]
-    if strip_html(doc.cover_letter or "").strip():
+    if strip_html(doc.cover_letter or "").strip() or any(row.variant_title for row in doc.quotations):
         jobs.append(lambda: get_print_pdf("Sales Proposal", name, LETTER_PRINT_FORMAT, doc.language))
-    if any(row.variant_title for row in doc.quotations):
-        jobs.append(lambda: get_print_pdf("Sales Proposal", name, VARIANTS_PRINT_FORMAT, doc.language))
     if appendices or doc.quotations:
         jobs.append(lambda: _in_language(doc.language, get_appendix_pdf))
     for row in doc.quotations:

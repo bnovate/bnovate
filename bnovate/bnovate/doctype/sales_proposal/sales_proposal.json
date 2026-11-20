@@ -226,7 +226,7 @@
    "options": "Sales Proposal Variant Item"
   },
   {
-   "description": "Writes the title and the two paragraphs of each variant, and fills in its products.",
+   "description": "Writes the title and the two paragraphs of each variant, fills in its products, and calculates its cost simulation.",
    "fieldname": "generate_variants",
    "fieldtype": "Button",
    "label": "Generate Variants"
@@ -261,7 +261,7 @@
    "options": "Sales Proposal Appendix"
   }
  ],
- "modified": "2026-11-19 12:00:00.000000",
+ "modified": "2026-11-20 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Sales Proposal",

@@ -23,9 +23,10 @@ from urllib.parse import quote
 import frappe
 import requests
 from frappe import _
+from frappe.utils import cint, fmt_money
 from frappe.utils.html_utils import sanitize_html
 
-from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_key_products
+from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_cost_column_titles, get_cost_groups, get_key_products, render_cost_table
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 TIMEOUT = 90  # seconds
@@ -80,6 +81,23 @@ order, with the same `quotation`. `title`, `products` and `benefits` are plain t
 """
 
 
+COST_SIMULATION_OUTPUT_FORMAT = """\
+# Input and output format
+The user message is a JSON object with `language` (language of the text), `currency`, `column_titles` (the names of the two
+columns of the table: the initial investment and the running costs), `rows` and `totals`. Each row describes the lines of one
+section of a quotation that have the same expense category: {"group_id": number, "group": title of the section (may be
+absent), "customer_expense_category": "CAPEX" (initial investment) or "OPEX" (running costs), "item_names": [...], "total":
+amount}. Rows that have the same `group_id` belong to the same line of the table. `totals` are the totals of the two columns, already
+formatted with the currency: quote them as they are.
+
+Answer with a single JSON object of the form
+{"descriptions": [{"group_id": 1, "description": "..."}], "explanation": "..."}
+and nothing else: no markdown, no code fences, no comments. Give one description for each `group_id` of the input. The
+descriptions and the explanation are plain text: no HTML, no markdown. The table itself and all its amounts are made by our
+code from the input: you do not write them.
+"""
+
+
 # ------------------------------------------------------------------ Gemini
 
 def get_settings():
@@ -107,6 +125,7 @@ def get_settings():
         fallback_model=fallback_model if fallback_model != model else "",
         cover_letter_system_instructions=(settings.cover_letter_system_instructions or "").strip(),
         variants_system_instructions=(settings.variants_system_instructions or "").strip(),
+        cost_simulation_system_instructions=(settings.cost_simulation_system_instructions or "").strip(),
         translation_system_instructions=(settings.translation_system_instructions or "").strip(),
     )
 
@@ -469,3 +488,54 @@ def generate_variants(doc):
                 item["description"] = translated[item["item_code"]]
 
     return {"variants": result, "skipped": skipped}
+
+
+@frappe.whitelist()
+def generate_cost_simulation(quotation, language=None, strict=1):
+    """ Cost simulation of a quotation: a table that shows, for each section of the quotation, the initial investment (CAPEX) and
+    the running costs (OPEX) as quoted, with the explanation written by the AI.
+
+    The sums are calculated by get_cost_groups() and the table is built by render_cost_table(): the AI writes the description of
+    each line and an explanation, and never makes or restates an amount of the table.
+
+    Return {"html": the simulation, "unclassified": [lines that have an amount but no expense category, left out of the table]}.
+    A quotation without any expense category is an error, unless strict is off (when several quotations are done at once): the
+    answer is then {"html": None, "empty": 1, "unclassified": [...]}.
+    """
+    frappe.has_permission("Quotation", "read", doc=quotation, throw=True)
+
+    groups = get_cost_groups(quotation)
+    if not groups["rows"]:
+        if cint(strict):
+            frappe.throw(_("None of the lines of the quotation has a Customer Expense Category (CAPEX or OPEX)."))
+        return {"html": None, "empty": 1, "unclassified": groups["unclassified"]}
+
+    settings = get_settings()
+
+    totals = {"CAPEX": 0.0, "OPEX": 0.0}
+    for row in groups["rows"]:
+        totals[row["customer_expense_category"]] += row["total"]
+    titles = get_cost_column_titles(language)
+
+    payload = _compact(dict(
+        language=language, currency=groups["currency"], column_titles=titles,
+        rows=[dict(row) for row in groups["rows"]],
+        totals={category: fmt_money(total, currency=groups["currency"]) for category, total in totals.items()},
+    ))
+    answer = generate_json(settings.cost_simulation_system_instructions, COST_SIMULATION_OUTPUT_FORMAT, payload)
+
+    wanted = {row["group_id"] for row in groups["rows"]}
+    descriptions = {}
+    if isinstance(answer, dict) and isinstance(answer.get("descriptions"), list):
+        for d in answer["descriptions"]:
+            if isinstance(d, dict) and isinstance(d.get("description"), str) and d["description"].strip():
+                try:
+                    descriptions[int(d.get("group_id"))] = d["description"].strip()
+                except (TypeError, ValueError):
+                    pass
+    if not wanted <= set(descriptions):
+        # The table does not depend on it: a line without description from the model is described by its section and items.
+        frappe.log_error(json.dumps(answer, ensure_ascii=False, indent=1), "Gemini cost simulation: descriptions are missing")
+
+    explanation = answer.get("explanation") if isinstance(answer, dict) and isinstance(answer.get("explanation"), str) else ""
+    return {"html": render_cost_table(groups, descriptions, explanation, language), "unclassified": groups["unclassified"]}

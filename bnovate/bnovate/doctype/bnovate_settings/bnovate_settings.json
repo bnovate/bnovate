@@ -47,6 +47,7 @@
   "ai_instructions_section",
   "cover_letter_system_instructions",
   "variants_system_instructions",
+  "cost_simulation_system_instructions",
   "column_break_ai_instructions",
   "translation_system_instructions",
   "ai_glossary_section",
@@ -292,6 +293,11 @@
    "label": "Variants System Instructions"
   },
   {
+   "fieldname": "cost_simulation_system_instructions",
+   "fieldtype": "Long Text",
+   "label": "Cost Simulation System Instructions"
+  },
+  {
    "fieldname": "column_break_ai_instructions",
    "fieldtype": "Column Break"
   },
@@ -313,7 +319,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-19 09:30:00.000000",
+ "modified": "2026-11-20 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "bNovate Settings",

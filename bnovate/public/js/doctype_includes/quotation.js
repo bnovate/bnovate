@@ -143,3 +143,13 @@ frappe.ui.form.on('Quotation Item', {
         );
     }
 })
+
+frappe.ui.form.on("Quotation Item", {
+    async item_code(frm, cdt, cdn) {
+        // The category is fetched from the item only if the line has none: a line that changes item must take the one of the new item
+        const row = locals[cdt][cdn];
+        if (!row.item_code) return;
+        const resp = await frappe.db.get_value("Item", row.item_code, "customer_expense_category");
+        frappe.model.set_value(cdt, cdn, "customer_expense_category", (resp.message || {}).customer_expense_category || "");
+    },
+});

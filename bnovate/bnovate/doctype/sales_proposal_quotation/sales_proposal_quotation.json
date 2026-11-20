@@ -12,7 +12,9 @@
   "grand_total",
   "variant_section",
   "variant_intro",
-  "variant_benefits"
+  "variant_benefits",
+  "calculate_cost_simulation",
+  "cost_simulation"
  ],
  "fields": [
   {
@@ -83,10 +85,21 @@
    "fieldname": "variant_benefits",
    "fieldtype": "Text",
    "label": "Benefits"
+  },
+  {
+   "description": "Sums the lines of the quotation by section and expense category, and has the AI write the table.",
+   "fieldname": "calculate_cost_simulation",
+   "fieldtype": "Button",
+   "label": "Calculate"
+  },
+  {
+   "fieldname": "cost_simulation",
+   "fieldtype": "Text Editor",
+   "label": "Cost Simulation"
   }
  ],
  "istable": 1,
- "modified": "2026-11-18 19:00:00.000000",
+ "modified": "2026-11-20 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "Sales Proposal Quotation",

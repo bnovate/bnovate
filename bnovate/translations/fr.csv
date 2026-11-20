@@ -600,8 +600,8 @@ apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Appendix,Annexes
 apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,The attached file {0} could not be read as a PDF.,Le fichier joint {0} n'a pas pu être lu comme PDF.
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,AI Glossary,Glossaire IA
 apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Glossary,Glossaire
-apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0}: {1},Variante {0} : {1}
-apps/bnovate/bnovate/bnovate/print_format/sales_proposal_variants/sales_proposal_variants.json,Variant {0},Variante {0}
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Variant {0}: {1},Variante {0} : {1}
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Variant {0},Variante {0}
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Title,Titre de la variante
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Variant Description,Description de la variante
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Products,Produits
@@ -638,3 +638,25 @@ apps/bnovate/bnovate/bnovate/utils/sales_proposal_pdf.py,Your contact,Votre cont
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,The PDF could not be made.,Le PDF n'a pas pu être créé.
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"Cover page, cover letter, quotations and appendices in one PDF","Page de garde, lettre d'accompagnement, devis et annexes dans un seul PDF"
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Error,Erreur
+apps/bnovate/bnovate/bnovate/custom/item.json,Customer Expense Category,Catégorie de dépense du client
+apps/bnovate/bnovate/bnovate/custom/item.json,Used for cost estimations,Utilisé pour les estimations de coûts
+apps/bnovate/bnovate/bnovate/custom/quotation_item.json,For cost estimates in Sales Proposals,Pour les estimations de coûts des dossiers commerciaux
+apps/bnovate/bnovate/bnovate/custom/item.json,Ignore,Ignorer
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Initial investment,Investissement initial
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Running costs,Coûts d'exploitation
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Total,Total
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,"Amounts are as quoted, before taxes.","Montants tels que devisés, hors taxes."
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Calculate,Calculer
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,Cost Simulation,Simulation des coûts
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal_quotation/sales_proposal_quotation.json,"Sums the lines of the quotation by section and expense category, and has the AI write the table.","Additionne les lignes du devis par section et par catégorie de dépense, et fait rédiger le tableau par l'IA."
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Cost Simulation System Instructions,Instructions système de la simulation des coûts
+apps/bnovate/bnovate/bnovate/utils/ai.py,None of the lines of the quotation has a Customer Expense Category (CAPEX or OPEX).,Aucune ligne du devis n'a de catégorie de dépense du client (CAPEX ou OPEX).
+apps/bnovate/bnovate/public/js/ai.js,Calculating the cost simulation...,Calcul de la simulation des coûts...
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Please pick a quotation first.,Veuillez d'abord choisir un devis.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,Lines without an expense category,Lignes sans catégorie de dépense
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,"These lines are not in the table, they have no Customer Expense Category:","Ces lignes ne figurent pas dans le tableau, elles n'ont pas de catégorie de dépense du client :"
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.js,No cost simulation was written for {0}: none of its lines has a Customer Expense Category.,Aucune simulation des coûts n'a été écrite pour {0} : aucune de ses lignes n'a de catégorie de dépense du client.
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"Writes the title and the two paragraphs of each variant, fills in its products, and calculates its cost simulation.","Rédige le titre et les deux paragraphes de chaque variante, remplit ses produits et calcule sa simulation des coûts."
+apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Payment Conditions,Conditions de paiement
+apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Terms & Conditions,Conditions
+apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Solution highlights,Points forts de la solution
