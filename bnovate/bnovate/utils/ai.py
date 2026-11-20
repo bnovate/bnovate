@@ -26,7 +26,7 @@ from frappe import _
 from frappe.utils import cint, fmt_money
 from frappe.utils.html_utils import sanitize_html
 
-from bnovate.bnovate.doctype.sales_proposal.sales_proposal import get_cost_column_titles, get_cost_groups, get_key_products, render_cost_table
+from bnovate.bnovate.doctype.sales_proposal.sales_proposal import COST_COLUMNS, get_cost_column_titles, get_cost_groups, get_key_products, render_cost_table
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 TIMEOUT = 90  # seconds
@@ -84,11 +84,11 @@ order, with the same `quotation`. `title`, `products` and `benefits` are plain t
 COST_SIMULATION_OUTPUT_FORMAT = """\
 # Input and output format
 The user message is a JSON object with `language` (language of the text), `currency`, `column_titles` (the names of the two
-columns of the table: the initial investment and the running costs), `rows` and `totals`. Each row describes the lines of one
+columns of the table, `initial` and `running`), `rows` and `totals`. Each row describes the lines of one
 section of a quotation that have the same expense category: {"group_id": number, "group": title of the section (may be
-absent), "customer_expense_category": "CAPEX" (initial investment) or "OPEX" (running costs), "item_names": [...], "total":
-amount}. Rows that have the same `group_id` belong to the same line of the table. `totals` are the totals of the two columns, already
-formatted with the currency: quote them as they are.
+absent), "customer_expense_category": "CAPEX", "OPEX, at purchase" or "OPEX, later", "item_names": [...], "total":
+amount}. Rows that have the same `group_id` belong to the same line of the table. `totals` are the totals of the two columns
+(`initial` and `running`), already formatted with the currency: quote them as they are.
 
 Answer with a single JSON object of the form
 {"descriptions": [{"group_id": 1, "description": "..."}], "explanation": "..."}
@@ -492,8 +492,8 @@ def generate_variants(doc):
 
 @frappe.whitelist()
 def generate_cost_simulation(quotation, language=None, strict=1):
-    """ Cost simulation of a quotation: a table that shows, for each section of the quotation, the initial investment (CAPEX) and
-    the running costs (OPEX) as quoted, with the explanation written by the AI.
+    """ Cost simulation of a quotation: a table that shows, for each section of the quotation, the initial purchase and
+    the running costs as quoted, with the explanation written by the AI.
 
     The sums are calculated by get_cost_groups() and the table is built by render_cost_table(): the AI writes the description of
     each line and an explanation, and never makes or restates an amount of the table.
@@ -512,9 +512,11 @@ def generate_cost_simulation(quotation, language=None, strict=1):
 
     settings = get_settings()
 
-    totals = {"CAPEX": 0.0, "OPEX": 0.0}
+    totals = dict.fromkeys(COST_COLUMNS, 0.0)
     for row in groups["rows"]:
-        totals[row["customer_expense_category"]] += row["total"]
+        for column, categories in COST_COLUMNS.items():
+            if row["customer_expense_category"] in categories:
+                totals[column] += row["total"]
     titles = get_cost_column_titles(language)
 
     payload = _compact(dict(

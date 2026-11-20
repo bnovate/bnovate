@@ -642,7 +642,7 @@ apps/bnovate/bnovate/bnovate/custom/item.json,Customer Expense Category,Catégor
 apps/bnovate/bnovate/bnovate/custom/item.json,Used for cost estimations,Utilisé pour les estimations de coûts
 apps/bnovate/bnovate/bnovate/custom/quotation_item.json,For cost estimates in Sales Proposals,Pour les estimations de coûts des dossiers commerciaux
 apps/bnovate/bnovate/bnovate/custom/item.json,Ignore,Ignorer
-apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Initial investment,Investissement initial
+apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Initial purchase,Achat initial
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Running costs,Coûts d'exploitation
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,Total,Total
 apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.py,"Amounts are as quoted, before taxes.","Montants tels que devisés, hors taxes."

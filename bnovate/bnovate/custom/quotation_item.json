@@ -300,7 +300,7 @@
    "modified_by": "Administrator",
    "name": "Quotation Item-customer_expense_category",
    "no_copy": 0,
-   "options": "\nCAPEX\nOPEX\nIgnore",
+   "options": "\nCAPEX\nOPEX, at purchase\nOPEX, later\nIgnore",
    "owner": "Administrator",
    "parent": null,
    "parentfield": null,
