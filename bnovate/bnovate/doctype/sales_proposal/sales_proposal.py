@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import html
 import json
 import os
+import re
 from contextlib import contextmanager
 
 import frappe
@@ -129,45 +130,66 @@ def get_cost_column_titles(lang=None):
         return {"CAPEX": _("Initial investment"), "OPEX": _("Running costs")}
 
 
+# The heading row is made of <td>, not <th>/<thead>: the Text Editor of the form does not know those and merges the row into one cell.
+# Jinja does not escape by itself: every text is passed through | e.
+COST_TABLE_TEMPLATE = """
+{% macro amount(value) %}{% if value %}{{ money(value) | e }}{% else %}&ndash;{% endif %}{% endmacro %}
+{% if explanation %}<p>{{ explanation | e }}</p>{% endif %}
+<table style="width: 100%; border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <td style="{{ head_style }} text-align: left;"><strong>{{ _("Description") | e }}</strong></td>
+            {% for title in column_titles %}
+            <td style="{{ head_style }} text-align: right;"><strong>{{ title | e }}</strong></td>
+            {% endfor %}
+        </tr>
+        {% for line in lines %}
+        <tr>
+            <td style="{{ cell_style }}">{{ line.description | e }}</td>
+            {% for category in categories %}
+            <td style="{{ cell_style }} text-align: right;">{{ amount(line[category]) }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr>
+            <td style="{{ cell_style }}"><strong>{{ _("Total") | e }}</strong></td>
+            {% for category in categories %}
+            <td style="{{ cell_style }} text-align: right;"><strong>{{ amount(totals[category]) }}</strong></td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+<p><em>{{ _("Amounts are as quoted, before taxes.") | e }}</em></p>
+"""
+
+
 def render_cost_table(cost_groups, descriptions, explanation="", lang=None):
     """ HTML of the cost simulation: the explanation, then a table with a line for each section of the quotation.
 
     The amounts come from the calculation (get_cost_groups), never from the AI, which only writes the descriptions and the
-    explanation. descriptions: {group_id: text}. Texts are plain text and escaped here.
+    explanation. descriptions: {group_id: text}. Texts are plain text. The HTML is made by COST_TABLE_TEMPLATE.
     """
+    categories = ["CAPEX", "OPEX"]
+    by_group, totals = {}, {category: 0.0 for category in categories}
+    for row in cost_groups["rows"]:
+        group = by_group.setdefault(row["group_id"], dict.fromkeys(categories, 0.0))
+        group["description"] = descriptions.get(row["group_id"]) or row["group"] or ", ".join(row["item_names"])
+        group[row["customer_expense_category"]] += row["total"]
+        totals[row["customer_expense_category"]] += row["total"]
+
     with _language(lang):
         titles = {"CAPEX": _("Initial investment"), "OPEX": _("Running costs")}
-        currency = cost_groups["currency"]
-
-        def money(value):
-            return html.escape(fmt_money(value, currency=currency)) if value else "&ndash;"
-
-        by_group, totals = {}, {"CAPEX": 0.0, "OPEX": 0.0}
-        for row in cost_groups["rows"]:
-            group = by_group.setdefault(row["group_id"], {"CAPEX": 0.0, "OPEX": 0.0, "fallback": row["group"] or ", ".join(row["item_names"])})
-            group[row["customer_expense_category"]] += row["total"]
-            totals[row["customer_expense_category"]] += row["total"]
-
-        cell = "padding: 4px 8px; border-bottom: 1px solid #d1d8dd;"
-        # The heading row is made of <td>, not <th>/<thead>: the Text Editor of the form does not know those and merges the row into one cell
-        head = "padding: 4px 8px; border-bottom: 2px solid #333; text-align: %s;"
-        lines = ["<table style=\"width: 100%; border-collapse: collapse;\"><tbody><tr>",
-                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "left", html.escape(_("Description"))),
-                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "right", html.escape(titles["CAPEX"])),
-                 "<td style=\"%s\"><strong>%s</strong></td>" % (head % "right", html.escape(titles["OPEX"])),
-                 "</tr>"]
-        for group_id, group in by_group.items():
-            description = html.escape(descriptions.get(group_id) or group["fallback"])
-            lines.append("<tr><td style=\"%s\">%s</td><td style=\"%s text-align: right;\">%s</td><td style=\"%s text-align: right;\">%s</td></tr>"
-                         % (cell, description, cell, money(group["CAPEX"]), cell, money(group["OPEX"])))
-        lines.append("<tr><td style=\"%s\"><strong>%s</strong></td><td style=\"%s text-align: right;\"><strong>%s</strong></td>"
-                     "<td style=\"%s text-align: right;\"><strong>%s</strong></td></tr>"
-                     % (cell, html.escape(_("Total")), cell, money(totals["CAPEX"]), cell, money(totals["OPEX"])))
-        lines.append("</tbody></table>")
-        lines.append("<p><em>%s</em></p>" % html.escape(_("Amounts are as quoted, before taxes.")))
-
-        intro = "<p>%s</p>" % html.escape(explanation.strip()) if (explanation or "").strip() else ""
-        return intro + "".join(lines)
+        rendered = frappe.render_template(COST_TABLE_TEMPLATE, {
+            "explanation": (explanation or "").strip(),
+            "categories": categories,
+            "column_titles": [titles[category] for category in categories],
+            "lines": list(by_group.values()),
+            "totals": totals,
+            "money": lambda value: fmt_money(value, currency=cost_groups["currency"]),
+            "cell_style": "padding: 4px 8px; border-bottom: 1px solid #d1d8dd;",
+            "head_style": "padding: 4px 8px; border-bottom: 2px solid #333;",
+        })
+    return re.sub(r">\s+<", "><", rendered).strip()
 
 
 def get_key_products(quotation):
