@@ -36,7 +36,7 @@ frappe.ui.form.on('Sales Proposal', {
 		if (!frm.is_new()) {
 			add_download_button(frm);
 			// Envelope icon, like on the Sales Order: email the PDF to the contact of the proposal
-			frm.page.add_action_icon(__('fa fa-envelope-o'), () => email_proposal(frm));
+			bnovate.utils.add_email_icon(frm, custom_mail_dialog);
 		}
 
 		show_opportunity_link(frm);
@@ -324,10 +324,7 @@ function start_pdf_progress() {
 }
 
 // Make the PDF, then open the email dialog with the PDF attached and the text of the email template
-async function email_proposal(frm) {
-	if (frm.is_dirty()) {
-		await frm.save();
-	}
+async function custom_mail_dialog(frm) {
 
 	const stop_progress = start_pdf_progress();
 	let file;
@@ -348,9 +345,8 @@ async function email_proposal(frm) {
 		}, 15);
 	}
 
-	// The template is chosen in bNovate Settings (which most users can not read: the server sends it), and edited in Email
-	// Template. Without one, a plain email.
-	bnovate.utils.email_dialog(frm, file.email_template, {
+	const template_name = await bnovate.utils.get_setting('sales_proposal_template') || "Sales Proposal";
+	bnovate.utils.email_dialog(frm, template_name, {
 		attachments: [file],
 		attach_print: false,
 		subject: `${__('Sales Proposal')}: ${frm.doc.title || frm.doc.name}`,

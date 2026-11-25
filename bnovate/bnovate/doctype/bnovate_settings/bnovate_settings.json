@@ -12,6 +12,7 @@
   "so_template",
   "dn_template",
   "sinv_template",
+  "payment_reminder_template",
   "sales_proposal_template",
   "production_settings",
   "qc_workstation",
@@ -126,6 +127,12 @@
    "fieldname": "sinv_template",
    "fieldtype": "Link",
    "label": "SINV Email Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "payment_reminder_template",
+   "fieldtype": "Link",
+   "label": "Payment Reminder Email Template",
    "options": "Email Template"
   },
   {
@@ -319,7 +326,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-20 13:00:00.000000",
+ "modified": "2026-11-24 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "bNovate",
  "name": "bNovate Settings",

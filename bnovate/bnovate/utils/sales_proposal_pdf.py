@@ -222,12 +222,9 @@ def download_sales_proposal_pdf(name):
 def create_email_pdf(name):
     """ Make the PDF of a Sales Proposal for the email dialog, and attach it to the proposal (a record of what was sent).
 
-    Return the file as the email dialog expects it (name, file_name, file_url, file_size, is_private), and the name of the Email
-    Template to use. bNovate Settings is only readable by System Managers (it holds API keys), so the browser can not read the
-    template from there: it comes with this answer.
+    Return the file as the email dialog expects it (name, file_name, file_url, file_size, is_private).
     """
     pdf = get_sales_proposal_pdf(name)
-    template = frappe.db.get_single_value("bNovate Settings", "sales_proposal_template")
 
     # Frappe refuses to attach the same file twice to a document, and the PDF of an unchanged proposal is the same file:
     # send the one that is already attached.
@@ -236,7 +233,7 @@ def create_email_pdf(name):
     }, ["name", "file_name", "file_url"], as_dict=True)
     if duplicate:
         return {"name": duplicate.name, "file_name": duplicate.file_name, "file_url": duplicate.file_url, "file_size": len(pdf),
-                "is_private": 1, "email_template": template}
+                "is_private": 1}
 
     file = frappe.get_doc({
         "doctype": "File",
@@ -253,4 +250,4 @@ def create_email_pdf(name):
     finally:
         frappe.conf.max_file_size = previous_limit
     return {"name": file.name, "file_name": file.file_name, "file_url": file.file_url, "file_size": len(pdf),
-            "is_private": 1, "email_template": template}
+            "is_private": 1}

@@ -660,3 +660,4 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"Writes 
 apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Payment Conditions,Conditions de paiement
 apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Terms & Conditions,Conditions
 apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Solution highlights,Points forts de la solution
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Payment Reminder Email Template,Modèle d'e-mail du rappel de paiement

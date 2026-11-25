@@ -658,3 +658,4 @@ apps/bnovate/bnovate/bnovate/doctype/sales_proposal/sales_proposal.json,"Writes 
 apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Payment Conditions,Zahlungsbedingungen
 apps/bnovate/bnovate/bnovate/print_format/quotation (database only),Terms & Conditions,Allgemeine Geschäftsbedingungen
 apps/bnovate/bnovate/bnovate/print_format/sales_proposal/sales_proposal.json,Solution highlights,Highlights der Lösung
+apps/bnovate/bnovate/bnovate/doctype/bnovate_settings/bnovate_settings.json,Payment Reminder Email Template,E-Mail-Vorlage für Zahlungserinnerung

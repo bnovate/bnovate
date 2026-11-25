@@ -350,18 +350,10 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
     [frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i).join(', ');
   var cc = options.cc || "";
 
-  // var doc = Object.assign({}, frm.doc);
-  // doc.carrier = frm.doc.carrier || "";
-  // doc.tracking_no = frm.doc.tracking_no || "";
-
   const open_composer = (subject, message) => {
     const attach_print = options.attach_print !== false;
 
-    // TODO simplify later
-    // Files to send. Those that are already attached to the document are in the list of the dialog anyway.
-    const wanted = (options.attachments || []).map(f => f.name);
-    const known = (frm.get_files() || []).map(f => f.name);
-    const extra = (options.attachments || []).filter(f => !known.includes(f.name));
+    const attachment_names = (options.attachments || []).map(f => f.name);
 
     frm.composer = new frappe.views.CommunicationComposer({
       doc: options.doc || frm.doc,
@@ -370,7 +362,6 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
       cc: cc,
       attach_document_print: attach_print ? 1 : 0,
       message: message,
-      attachments: extra,
     });
     // The composer ticks "attach print" by itself, whatever we ask for
     if (!attach_print) {
@@ -382,10 +373,9 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
       frm.composer.select_attachments = function () {
         if (!this.dialog.display) return;
         $(this.dialog.fields_dict.select_attachments.wrapper).find('[data-file-name]').each(function () {
-          $(this).prop('checked', wanted.includes($(this).attr('data-file-name')));
+          $(this).prop('checked', attachment_names.includes($(this).attr('data-file-name')));
         });
       };
-      // frm.composer.select_attachments();
     }
     setTimeout(() => {
       frm.composer.select_attachments();

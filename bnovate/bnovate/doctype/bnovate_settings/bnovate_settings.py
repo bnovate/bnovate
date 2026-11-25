@@ -28,6 +28,7 @@ def get_whitelisted_setting(key):
         "so_template",
         "dn_template",
         "sinv_template",
+        "payment_reminder_template",
         "sales_proposal_template",
         "qc_workstation",
     )
