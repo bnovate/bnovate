@@ -59,6 +59,10 @@ frappe.ui.form.on("Sales Order", {
     async refresh(frm) {
         bnovate.utils.show_warnings(frm);
 
+        if (frm.doc.docstatus === 1) {
+            bnovate.utils.add_email_icon(frm, custom_email_dialog);
+        }
+
         // Compare with the quotation(s) this order was created from
         const quotations = [...new Set((frm.doc.items || []).map(item => item.prevdoc_docname).filter(Boolean))];
         if (!frm.is_new() && quotations.length) {
@@ -228,6 +232,18 @@ frappe.ui.form.on('Sales Order Item', {
         );
     }
 })
+
+// Send email to shipping address contact, if available, otherwise to customer contact, plus all other customer-related email fields in the doc.
+async function custom_email_dialog(frm) {
+    // Called after is_dirty() check.
+
+    const addr = await frappe.db.get_doc("Address", frm.doc.shipping_address_name || frm.doc.customer_address);
+
+    const recipients = Array.from(new Set([addr.email_id || '', frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i))).join(', ');
+    const template_name = await bnovate.utils.get_setting('so_template') || "Sale Order SO";
+
+    return bnovate.utils.email_dialog(frm, template_name, { recipients });
+}
 
 async function compare_to_quotation(frm, quotations) {
     if (frm.is_dirty()) {

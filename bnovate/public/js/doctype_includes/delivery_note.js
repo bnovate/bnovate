@@ -46,6 +46,7 @@ frappe.ui.form.on("Delivery Note", {
     },
 
     refresh(frm) {
+        bnovate.utils.add_email_icon(frm, custom_mail_dialog);
 
         // const pdf_url = bnovate.utils.get_pdf_url(frm.doc.doctype, frm.doc.name, "Commercial Invoice CHF", frm.doc.language);
         // frm.add_custom_button(`<a href="${pdf_url}" download="${frm.doc.name}_invoice_CHF.pdf"><i class="fa fa-download"></i> Details</a> `, () => {
@@ -160,6 +161,24 @@ frappe.ui.form.on("Delivery Note", {
 
     },
 })
+
+async function custom_mail_dialog(frm) {
+
+    const addr = await frappe.db.get_doc("Address", frm.doc.shipping_address_name || frm.doc.customer_address)
+    const recipients = Array.from(new Set([addr.email_id || '', frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i))).join(', ');
+    const template_name = await bnovate.utils.get_setting('dn_template') || "Delivery Confirmation";
+
+    var doc = Object.assign({}, frm.doc);
+    doc.carrier = frm.doc.carrier || "";
+    doc.tracking_no = frm.doc.tracking_no || "";
+
+    return bnovate.utils.email_dialog(frm, template_name, {
+        recipients,
+        doc,
+        attach_print: true,
+        print_format: 'Delivery Note',
+    });
+}
 
 // Return next weekday date, starting 'days_from_now' from today
 // Setting days_from_now to 0 will return today if today is a weekday
@@ -389,7 +408,7 @@ function override_action_buttons(frm) {
                 frm.doc.carrier = values.carrier;
                 frm.doc.tracking_no = values.tracking_no;
                 frm.save("Update");
-                bnovate.utils.email_dialog(frm, await bnovate.utils.get_setting('dn_template'));
+                custom_mail_dialog(frm);
             })
         }
     }

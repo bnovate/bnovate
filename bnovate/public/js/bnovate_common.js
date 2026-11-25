@@ -329,37 +329,42 @@ bnovate.utils.confirm_dialog = function (text) {
   });
 }
 
-// Email dialog that picks all emails from the doc.
-// template_name: Email Template to render with the doc. Without it the dialog opens with options.subject and options.message.
+// Email dialog with some extra config.
+// template_name: Email Template to render with the doc. Without it the dialog opens with options.subject and options.message or empty.
 // options (all optional):
-//   attachments: the files to attach, as {name, file_name, file_url, is_private}. Only these are selected.
+//   attachments: the files to attach, as {name, file_name, file_url, is_private}. Empty list for none. If not specified, all are ticked.
 //   attach_print: attach the print of the document (default true).
-//   recipients, cc: addresses, instead of the ones found in the doc.
+//   recipients, cc: addresses, instead of the ones found in the doc. Comma separated string.
+//   print_format: name of the print format to attach (default: the one of the document).
+//   subject, message: if no template_name, the subject and message to use (default empty).
+//   doc: passed to the composer and template instead of frm.doc.
 bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
+
+  // Can't hurt to check again.
   if (frm.is_dirty()) {
     frappe.msgprint('Please save document before emailing');
     return;
   }
 
-  // doc.email was set at refresh, fetching from Shipping address
   var recipients = options.recipients !== undefined ? options.recipients :
     [frm.doc.email || '', frm.doc.email_id || '', frm.doc.contact_email || ''].filter(i => i).join(', ');
   var cc = options.cc || "";
 
-  var doc = Object.assign({}, frm.doc);
-  doc.carrier = frm.doc.carrier || "";
-  doc.tracking_no = frm.doc.tracking_no || "";
+  // var doc = Object.assign({}, frm.doc);
+  // doc.carrier = frm.doc.carrier || "";
+  // doc.tracking_no = frm.doc.tracking_no || "";
 
   const open_composer = (subject, message) => {
     const attach_print = options.attach_print !== false;
 
+    // TODO simplify later
     // Files to send. Those that are already attached to the document are in the list of the dialog anyway.
     const wanted = (options.attachments || []).map(f => f.name);
     const known = (frm.get_files() || []).map(f => f.name);
     const extra = (options.attachments || []).filter(f => !known.includes(f.name));
 
     frm.composer = new frappe.views.CommunicationComposer({
-      doc: frm.doc,
+      doc: options.doc || frm.doc,
       subject: subject,
       recipients: recipients,
       cc: cc,
@@ -372,18 +377,22 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
       frm.composer.dialog.set_value('attach_document_print', 0);
     }
 
-    if (options.attachments) {
-      // The composer ticks every file of the document, each time it draws the list. When the caller passes the files to send,
-      // only those are ticked (the other files, e.g. the appendices that are already in the PDF, are not sent again).
+    if (options.attachments) { // if specified, even if it's an empty list.
+      // By default all attachments are ticked.  If attachments is specified, only tick those - by monkey patching.
       frm.composer.select_attachments = function () {
         if (!this.dialog.display) return;
         $(this.dialog.fields_dict.select_attachments.wrapper).find('[data-file-name]').each(function () {
           $(this).prop('checked', wanted.includes($(this).attr('data-file-name')));
         });
       };
-      frm.composer.select_attachments();
+      // frm.composer.select_attachments();
     }
-    setTimeout(() => frm.composer.select_attachments(), 1000);
+    setTimeout(() => {
+      frm.composer.select_attachments();
+      if (options.print_format) {
+        frm.composer.dialog.set_value('select_print_format', options.print_format);
+      }
+    }, 1000);
   };
 
   if (!template_name) {
@@ -397,12 +406,48 @@ bnovate.utils.email_dialog = function (frm, template_name, options = {}) {
     method: 'frappe.email.doctype.email_template.email_template.get_email_template',
     args: {
       template_name: template_name,
-      doc: doc,
+      doc: options.doc || frm.doc,
     },
     callback: function (r) {
       dlg.hide();
       open_composer(r.message.subject, r.message.message);
     },
+  });
+}
+
+// Open the email dialog of a document with the Email Template chosen in bNovate Settings, to the address of the document.
+// template_setting: key of the setting that holds the Email Template: so_template, dn_template, sinv_template,
+//   payment_reminder_template... (a key of WHITELISTED_SETTINGS in bnovate_settings.py)
+// options: those of bnovate.utils.email_dialog, plus
+//   address: function (frm) that returns the name of the Address (or a promise of it) whose email is the first recipient. By default
+// TODO delete
+//     the shipping address of the document, else its customer address. The contact email of the document comes second.
+bnovate.utils.email_doc = async function (frm, template_setting, options = {}) {
+  const get_address = options.address || (frm => frm.doc.shipping_address_name || frm.doc.customer_address);
+  const address = await get_address(frm);
+  let address_email = "";
+  if (address) {
+    const resp = await frappe.db.get_value("Address", address, "email_id");
+    address_email = resp.message.email_id || "";
+  }
+  const recipients = [...new Set([address_email, frm.doc.contact_email].filter(Boolean))].join(", ");
+  const template_name = await bnovate.utils.get_setting(template_setting);
+  bnovate.utils.email_dialog(frm, template_name, Object.assign({}, options, { recipients }));
+}
+
+// Add the envelope icon to the page of a document. Checks document is saved then calls custom_email_dialog(frm) or the general email_doc util.
+bnovate.utils.add_email_icon = function (frm, custom_email_dialog) {
+  frm.page.add_action_icon(__("fa fa-envelope-o"), async () => {
+    if (frm.is_dirty()) {
+      frappe.msgprint(__('Please save the document before emailing'));
+      return;
+    }
+
+    if (custom_email_dialog && typeof custom_email_dialog === 'function') {
+      return custom_email_dialog(frm);
+    } else {
+      return bnovate.utils.email_doc(frm);  // TODO remove
+    }
   });
 }
 
