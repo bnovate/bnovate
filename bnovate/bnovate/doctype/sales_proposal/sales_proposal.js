@@ -346,7 +346,7 @@ async function custom_mail_dialog(frm) {
 	}
 
 	const template_name = await bnovate.utils.get_setting('sales_proposal_template') || "Sales Proposal";
-	bnovate.utils.email_dialog(frm, template_name, {
+	return bnovate.utils.email_dialog(frm, template_name, {
 		attachments: [file],
 		attach_print: false,
 		subject: `${__('Sales Proposal')}: ${frm.doc.title || frm.doc.name}`,
