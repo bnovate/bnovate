@@ -3,7 +3,7 @@
 # PDF of a Sales Proposal: a branded cover page, the cover letter and the variants (if they are described), then the appendices: a branded "Appendix" page,
 # the linked quotations, and the PDFs attached to the proposal.
 #
-# - The cover and the appendix page are rendered from templates/includes/bn_sales_proposal_cover.html by wkhtmltopdf, full bleed (no margins,
+# - The cover and the appendix page are rendered from bn_sales_proposal_cover.html (next to this file) by wkhtmltopdf, full bleed (no margins,
 #   no letterhead). The letter and the variants are the "Sales Proposal" print format (one document, so the page
 #   numbers run through both), and each quotation is printed with the "Quotation" print format. The PDFs are merged, so "Page X of Y" of
 #   each part only counts its own pages.
@@ -96,7 +96,7 @@ def get_branded_page_pdf(kicker, title, rows=(), minimal=False):
     minimal: no logo and contact details, just a gradient at the bottom.
     """
     title_lines, title_size = fit_title(title)
-    html = frappe.render_template("templates/includes/bn_sales_proposal_cover.html", {
+    html = frappe.render_template("bnovate/doctype/sales_proposal/bn_sales_proposal_cover.html", {
         "kicker": kicker,
         "title_lines": title_lines,
         "title_size": title_size,

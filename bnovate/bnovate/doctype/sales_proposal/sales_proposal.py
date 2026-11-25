@@ -22,7 +22,7 @@ from erpnext.controllers.queries import get_match_cond
 class SalesProposal(Document):
     """ The documents we send to a customer to win a deal: cover page, cover letter, quotations, appendices...
 
-    The PDF is assembled by utils/sales_proposal_pdf.py, the cover letter is written by utils/ai.py.
+    The PDF is assembled by sales_proposal_pdf.py, the cover letter is written by utils/ai.py.
     """
 
     def onload(self):

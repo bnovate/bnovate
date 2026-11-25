@@ -109,7 +109,7 @@ frappe.ui.form.on('Sales Proposal', {
 });
 
 function add_download_button(frm) {
-	const url = frappe.urllib.get_full_url('/api/method/bnovate.bnovate.utils.sales_proposal_pdf.download_sales_proposal_pdf?'
+	const url = frappe.urllib.get_full_url('/api/method/bnovate.bnovate.doctype.sales_proposal.sales_proposal_pdf.download_sales_proposal_pdf?'
 		+ 'name=' + encodeURIComponent(frm.doc.name)
 	);
 
@@ -330,7 +330,7 @@ async function custom_mail_dialog(frm) {
 	let file;
 	try {
 		const resp = await frappe.call({
-			method: 'bnovate.bnovate.utils.sales_proposal_pdf.create_email_pdf',
+			method: 'bnovate.bnovate.doctype.sales_proposal.sales_proposal_pdf.create_email_pdf',
 			args: { name: frm.doc.name },
 		});
 		file = resp.message;
